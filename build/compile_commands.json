@@ -1,0 +1,31 @@
+[
+{
+  "directory": "/home/mark/projects/liegroups/build",
+  "command": "/usr/bin/c++   -I../include -I/usr/include/eigen3 -isystem test/googletest-download/googletest-src/googletest/include -isystem test/googletest-download/googletest-src/googletest  -g   -std=gnu++11 -o test/CMakeFiles/SO2_test.dir/lie_groups/SO2_test.cpp.o -c /home/mark/projects/liegroups/test/lie_groups/SO2_test.cpp",
+  "file": "/home/mark/projects/liegroups/test/lie_groups/SO2_test.cpp"
+},
+
+{
+  "directory": "/home/mark/projects/liegroups/build",
+  "command": "/usr/bin/c++   -I../include -I/usr/include/eigen3 -isystem test/googletest-download/googletest-src/googlemock/include -isystem test/googletest-download/googletest-src/googlemock -isystem test/googletest-download/googletest-src/googletest/include -isystem test/googletest-download/googletest-src/googletest  -g   -Wall -Wshadow -Werror -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++11 -o test/googletest-download/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googlemock/src/gmock_main.cc",
+  "file": "/home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googlemock/src/gmock_main.cc"
+},
+
+{
+  "directory": "/home/mark/projects/liegroups/build",
+  "command": "/usr/bin/c++   -I../include -I/usr/include/eigen3 -Itest/googletest-download/googletest-src/googlemock/include -Itest/googletest-download/googletest-src/googlemock -isystem test/googletest-download/googletest-src/googletest/include -isystem test/googletest-download/googletest-src/googletest  -g   -Wall -Wshadow -Werror -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++11 -o test/googletest-download/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googlemock/src/gmock-all.cc",
+  "file": "/home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googlemock/src/gmock-all.cc"
+},
+
+{
+  "directory": "/home/mark/projects/liegroups/build",
+  "command": "/usr/bin/c++   -I../include -I/usr/include/eigen3 -isystem test/googletest-download/googletest-src/googletest/include -isystem test/googletest-download/googletest-src/googletest  -g   -Wall -Wshadow -Werror -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++11 -o test/googletest-download/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googletest/src/gtest_main.cc",
+  "file": "/home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googletest/src/gtest_main.cc"
+},
+
+{
+  "directory": "/home/mark/projects/liegroups/build",
+  "command": "/usr/bin/c++   -I../include -I/usr/include/eigen3 -Itest/googletest-download/googletest-src/googletest/include -Itest/googletest-download/googletest-src/googletest  -g   -Wall -Wshadow -Werror -DGTEST_HAS_PTHREAD=1 -fexceptions -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -std=c++11 -o test/googletest-download/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googletest/src/gtest-all.cc",
+  "file": "/home/mark/projects/liegroups/build/test/googletest-download/googletest-src/googletest/src/gtest-all.cc"
+}
+]
