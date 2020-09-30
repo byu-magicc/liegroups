@@ -11,9 +11,10 @@ class GroupBase {
 
 public:
 
+
     Eigen::MatrixXd g_; 
 
-    // virtual GroupBase operator*(const GroupBase& b)=0;
+    // virtual GroupBase operator * (const GroupBase& b)=0;
 
     virtual void Print()=0;
 

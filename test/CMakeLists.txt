@@ -27,7 +27,9 @@ add_subdirectory(${GTEST_DIR}/googletest-src ${GTEST_DIR}/googletest-build EXCLU
 ########################################
 
 
-add_executable(SO2_test lie_groups/SO2_test.cpp)
+add_executable(SO2_test
+ lie_groups/SO2_test.cpp 
+ ../src/lie_groups/SO2.cpp)
 target_link_libraries(SO2_test gtest_main)
 
 add_custom_target(gtests_SO2 SO2_test)

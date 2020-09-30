@@ -10,12 +10,26 @@ class SO2 : public GroupBase {
 
 public:
 
-SO2(){
+/**
+ * Default constructor. Initializes group element to identity.
+ */
+SO2();
 
-g_ = Eigen::Matrix<double,2,2>::Identity();
+
+/**
+ * Copy constructor.
+ */ 
+SO2(const SO2 & g);
+
+/**
+* Initializes group element to the one given.
+*/
+SO2(const Eigen::Matrix<double,2,2> & g);
 
 
-}
+// SO2 operator * (const SO2* g){
+//     return g_*g.g_;
+// }
 
 void Print() {
 
