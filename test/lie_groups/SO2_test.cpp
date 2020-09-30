@@ -15,7 +15,7 @@ double th = 0.3;
 g <<  cos(th), -sin(th), sin(th), cos(th);
 
 SO2 g1;
-SO2 g2(g);
+SO2 g2(g,true);
 SO2 g3(g2);
 
 ASSERT_EQ(g1.g_,Eigen::Matrix2d::Identity()) << "Default constructor not set to identity";
@@ -24,7 +24,7 @@ ASSERT_EQ(g3.g_,g) << "Copy constructor constructor error";
 
 // Not valid element. Determinant is 1 but is not unitary
 g <<  2, 0, 0, 0.5;
-SO2 g4(g);
+SO2 g4(g,true);
 
 
 ASSERT_NE(g4.g_,g) << "Assignment constructor error: Excepted invalid element";
