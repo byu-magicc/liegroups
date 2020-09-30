@@ -27,9 +27,23 @@ add_subdirectory(${GTEST_DIR}/googletest-src ${GTEST_DIR}/googletest-build EXCLU
 ########################################
 
 
-add_executable(SO2_test
- lie_groups/SO2_test.cpp 
- ../src/lie_groups/SO2.cpp)
-target_link_libraries(SO2_test gtest_main)
+
+# Lie Algebra Tests
+add_executable(so2_test
+lie_algebras/so2_test
+../src/lie_algebras/so2.cpp)
+target_link_libraries(so2_test gtest_main)
+
+add_executable(se2_test
+lie_algebras/se2_test
+../src/lie_algebras/se2.cpp)
+
+target_link_libraries(se2_test gtest_main)
+
+
+# add_executable(SO2_test
+#  lie_groups/SO2_test.cpp 
+#  ../src/lie_groups/SO2.cpp)
+# target_link_libraries(SO2_test gtest_main)
 
 add_custom_target(gtests_SO2 SO2_test)
