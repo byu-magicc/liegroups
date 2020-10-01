@@ -6,6 +6,9 @@
 
 namespace lie_groups {
 
+constexpr double kse2_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
+
+
 class se2  {
 
 public:
@@ -64,16 +67,36 @@ Eigen::Matrix3d Adjoint();
 Eigen::Matrix3d Wedge();
 
 /**
+ * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
+ * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
+ * @return The result of the Wedge operation.
+ */
+static Eigen::Matrix3d Wedge(const Eigen::Matrix<double,3,1>& data);
+
+/**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @return The result of the Vee operation.
  */
 Eigen::Matrix<double,3,1> Vee();
 
 /**
+ * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
+ * @param data The data of an element
+ * @return The result of the Vee operation.
+ */
+static Eigen::Matrix<double,3,1> Vee(const Eigen::Matrix3d& data);
+
+/**
  * Computes the exponential of the element of the Lie algebra.
- * @return The data associated to the group element.
  */
 Eigen::Matrix3d Exp();
+
+/**
+ * Computes the logaritm of the element of the Lie algebra.
+ * @param data The data associated with an element of \f$ SE(2) \f$
+ * @return The data of an element of the Cartesian space associated with the Lie algebra
+ */
+static Eigen::Matrix<double,3,1> Log(const Eigen::Matrix3d data);
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
@@ -82,7 +105,6 @@ double Norm();
 
 /**
  * Computes and returns the matrix of the Left Jacobian.
- * This will always return the identity map for \f$se(2)\f$.
  */ 
 Eigen::Matrix3d Jl();
 
@@ -98,7 +120,6 @@ se2 Jl(const se2& u);
 
 /**
  * Computes and returns the matrix of the Left Jacobian inverse.
- * This will always return the identity map for \f$se(2)\f$.
  */ 
 Eigen::Matrix3d JlInv();
 
@@ -113,7 +134,6 @@ se2 JlInv(const se2& u);
 
 /**
  * Computes and returns the matrix of the Right Jacobian
- * This will always return the identity map for \f$se(2)\f$.
  */ 
 Eigen::Matrix3d Jr();
 
@@ -128,7 +148,6 @@ se2 Jr(const se2& u);
 
 /**
  * Computes and returns the matrix of the right Jacobian inverse.
- * This will always return the identity map for \f$se(2)\f$.
  */ 
 Eigen::Matrix3d JrInv();
 
@@ -188,17 +207,14 @@ static Eigen::Matrix2d SSM(double x);
  */ 
 static bool isElement(const Eigen::Matrix3d& data);
 
-// Helper functions for testing
-Eigen::Matrix2d getWl();
-Eigen::Matrix2d getWr();
-Eigen::Matrix2d getDl();
-Eigen::Matrix2d getDr();
-
-
 
 private:
 
 // The following are used to compute the Jacobians
+static Eigen::Matrix2d Wl(const double th);
+static Eigen::Matrix2d Wr(const double th);
+static Eigen::Matrix2d Dl(const double th);
+static Eigen::Matrix2d Dr(const double th);
 Eigen::Matrix2d Wl();
 Eigen::Matrix2d Wr();
 Eigen::Matrix2d Dl();

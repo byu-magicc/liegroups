@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 
 namespace lie_groups {
-
+//#########################################################################
 TEST(so2TEST, Constructors) {
 
 // default constructor
@@ -39,6 +39,9 @@ ASSERT_EQ(u6.data_(0),0) << "Error with the identity function";
 
 }
 
+//#########################################################################
+
+
 // Tests the Bracket, Adjoint, Wedge, Vee, Exp, and Norm functions
 TEST(so2TEST, BAWVEN) {
 
@@ -60,6 +63,7 @@ ASSERT_EQ(u4.Wedge(),V) << "Error with wedge function";
 
 // Vee test
 ASSERT_EQ(u4.Vee(),u4.data_) << "Error with vee function";
+ASSERT_EQ(so2::Vee(u4.Wedge()),u4.data_) << "Error with vee function";
 
 // Exp test
 Eigen::Matrix<double,1,1> v1 = Eigen::Matrix<double,1,1>::Random();
@@ -76,6 +80,9 @@ ASSERT_EQ(u6.Norm(),v2.norm()) << "Error with norm function";
 
 
 }
+
+//#########################################################################
+
 
 TEST(so2Test, OperatorTest) {
 

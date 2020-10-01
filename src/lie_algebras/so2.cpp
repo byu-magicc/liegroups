@@ -27,7 +27,7 @@ so2::so2(const Eigen::Matrix<double,2,2>& data, bool verify) {
 
     if(verify)
     {
-        if (data.transpose() + data == Eigen::Matrix2d::Zero()  )
+        if (isElement(data) )
             data_(0) = data(1,0);
         else {
             std::cerr << "so2::Constructor - Input data not valid. Setting to identity element" << std::endl;
@@ -55,16 +55,33 @@ Eigen::Matrix2d so2::Adjoint() {
 //---------------------------------------------------------------------
 
 Eigen::Matrix2d so2::Wedge() {
-    Eigen::Matrix2d m;
-    m << 0, -data_(0), data_(0), 0;
-    return m;
+    return Wedge(data_);
 }
+
+//---------------------------------------------------------------------
+
+Eigen::Matrix2d so2::Wedge(const Eigen::Matrix<double,1,1>& data) {
+    Eigen::Matrix2d m;
+    m << 0, -data(0), data(0), 0;
+    return m; 
+}
+
 
 //---------------------------------------------------------------------
 
 Eigen::Matrix<double,1,1> so2::Vee() {
     return data_;
 }
+
+//---------------------------------------------------------------------
+
+Eigen::Matrix<double,1,1> so2::Vee(const Eigen::Matrix2d& data) {
+    Eigen::Matrix<double,1,1> m;
+    m << data(1,0);
+    return m;
+}
+
+//---------------------------------------------------------------------
 
 Eigen::Matrix2d so2::Exp() {
     Eigen::Matrix2d m;
@@ -160,6 +177,18 @@ void so2::Print() {
 
 so2  so2::Identity() {
     return so2();
+}
+
+//---------------------------------------------------------------------
+
+bool so2::isElement(const Eigen::Matrix2d& data) {
+
+    if ( (data.transpose() + data).norm() >= kso2_threshold_) {
+        return false;
+    } else {
+        return true;
+    }
+
 }
     
 }

@@ -40,6 +40,12 @@ lie_algebras/se2_test
 
 target_link_libraries(se2_test gtest_main)
 
+add_executable(so3_test
+lie_algebras/so3_test
+../src/lie_algebras/so3.cpp)
+
+target_link_libraries(so3_test gtest_main)
+
 
 # add_executable(SO2_test
 #  lie_groups/SO2_test.cpp 
