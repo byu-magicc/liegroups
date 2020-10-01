@@ -91,6 +91,14 @@ Eigen::Matrix2d so2::Exp() {
 
 //---------------------------------------------------------------------
 
+Eigen::Matrix<double,1,1> so2::Log(const Eigen::Matrix2d& data) {
+    Eigen::Matrix<double,1,1> m;
+    m(0) = atan2(data(1,0),data(0,0));
+    return m;
+}
+
+//---------------------------------------------------------------------
+
 double so2::Norm() {
     return data_.norm();
 }

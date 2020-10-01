@@ -73,6 +73,9 @@ Eigen::Matrix2d g=u5.Exp();
 ASSERT_EQ(g.transpose()*g, Eigen::Matrix2d::Identity()) << "Error with exp function";
 ASSERT_EQ(g.determinant(), 1) << "Error with exp function";
 
+// Log test
+ASSERT_LT((so2::Log(u5.Exp())-u5.data_).norm(),kso2_threshold_) << "Error with log function";
+
 // Norm test
 Eigen::Matrix<double,1,1> v2 = Eigen::Matrix<double,1,1>::Random();
 so2 u6(v2);

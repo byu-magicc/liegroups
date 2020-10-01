@@ -106,7 +106,7 @@ Eigen::Matrix3d se2::Exp() {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix<double,3,1> se2::Log(const Eigen::Matrix3d data) {
+Eigen::Matrix<double,3,1> se2::Log(const Eigen::Matrix3d& data) {
     Eigen::Matrix<double,3,1> u;
     u(2) = atan2(data(1,0),data(0,0)); // Compute the angle
     Eigen::Matrix2d wl = Wl(u(2));

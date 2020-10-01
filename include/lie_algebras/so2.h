@@ -91,6 +91,13 @@ static Eigen::Matrix<double,1,1> Vee(const Eigen::Matrix2d& data);
 Eigen::Matrix2d Exp();
 
 /**
+ * Computes the logaritm of the element of the Lie algebra.
+ * @param data The data associated with an element of \f$ SO(2) \f$
+ * @return The data of an element of the Cartesian space associated with the Lie algebra
+ */
+static Eigen::Matrix<double,1,1> Log(const Eigen::Matrix2d& data);
+
+/**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
  */ 
 double Norm();

@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include "lie_algebras/so3.h"
 
 namespace lie_groups {
 
@@ -97,7 +98,7 @@ Eigen::Matrix<double,4,4> Exp();
  * @param data The data associated with an element of \f$ SE(3) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<double,6,1> Log(const Eigen::Matrix<double,6,6> data);
+static Eigen::Matrix<double,6,1> Log(const Eigen::Matrix<double,4,4>& data);
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
@@ -206,20 +207,14 @@ static Eigen::Matrix3d SSM(const Eigen::Matrix<double,3,1>& x);
  * Verifies that the parameter data belongs to 
  * an element of \f$se(3)\f$
  */ 
-static bool isElement(const Eigen::Matrix<double,6,6>& data);
+static bool isElement(const Eigen::Matrix<double,4,4>& data);
 
 
 private:
 
 // The following are used to compute the Jacobians
-static Eigen::Matrix3d Wl(const double th);
-static Eigen::Matrix3d Wr(const double th);
-static Eigen::Matrix3d Dl(const double th);
-static Eigen::Matrix3d Dr(const double th);
-Eigen::Matrix3d Wl();
-Eigen::Matrix3d Wr();
-Eigen::Matrix3d Dl();
-Eigen::Matrix3d Dr();
+static Eigen::Matrix3d Bl(const Eigen::Matrix<double, 6,1>& u);
+static Eigen::Matrix3d Br(const Eigen::Matrix<double, 6,1>& u);
 
 
 };

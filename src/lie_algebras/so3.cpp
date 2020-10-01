@@ -106,7 +106,7 @@ Eigen::Matrix3d so3::Exp() {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix<double,3,1> so3::Log(const Eigen::Matrix3d data) {
+Eigen::Matrix<double,3,1> so3::Log(const Eigen::Matrix3d& data) {
 
     Eigen::Matrix<double,3,1> u;
 

@@ -23,7 +23,7 @@ se3::se3(const Eigen::Matrix<double,6,1> data) : p_(data_.data()), th_(data_.dat
 
 //---------------------------------------------------------------------
 
-se3::se3(const Eigen::Matrix<double,6,6>& data, bool verify) : p_(data_.data()), th_(data_.data()+3) {
+se3::se3(const Eigen::Matrix<double,4,4>& data, bool verify) : p_(data_.data()), th_(data_.data()+3) {
 
     if(verify)
     {
@@ -33,11 +33,11 @@ se3::se3(const Eigen::Matrix<double,6,6>& data, bool verify) : p_(data_.data()),
         }
         else {
             std::cerr << "se3::Constructor - Input data not valid. Setting to identity element" << std::endl;
-            data_ = Eigen::Matrix<double,3,1>::Zero();
+            data_ = Eigen::Matrix<double,6,1>::Zero();
         }
     }
     else {
-        data_ = se3::Vee(data)
+        data_ = se3::Vee(data);
     }
 
 }
@@ -92,23 +92,25 @@ Eigen::Matrix<double,6,1> se3::Vee(const Eigen::Matrix4d& data) {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix3d se3::Exp() {
+Eigen::Matrix<double,4,4> se3::Exp(){
     
-    Eigen::Matrix3d m;
-    m.block(0,0,2,2) << cos(th_(0)), - sin(th_(0)), sin(th_(0)), cos(th_(0));
-    m.block(0,2,2,1) = this->Wl()*p_;
-    m.block(2,0,1,2).setZero();
-    m(2,2) = 1;
+    Eigen::Matrix<double,4,4> m;
+    so3 omega(th_);
+    m.block(0,0,3,3) = omega.Exp();
+    m.block(0,3,3,1) = omega.Jl()*p_;
+    m.block(3,0,1,4) << 0,0,0,1;
     return m;
 }
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix<double,3,1> se3::Log(const Eigen::Matrix3d data) {
-    Eigen::Matrix<double,3,1> u;
-    u(2) = atan2(data(1,0),data(0,0)); // Compute the angle
-    Eigen::Matrix2d wl = Wl(u(2));
-    u.block(0,0,2,1) = wl.inverse()*data.block(0,2,2,1);
+Eigen::Matrix<double,6,1> se3::Log(const Eigen::Matrix<double,4,4>& data) {
+    
+    Eigen::Matrix<double,6,1> u;
+    so3 omega(so3::Log(data.block(0,0,3,3)));
+    u.block(3,0,3,1) = omega.Vee();
+    u.block(0,0,3,1) = omega.JlInv()*data.block(0,3,3,1);
+    
     return u;    
 }
 
@@ -120,12 +122,15 @@ double se3::Norm() {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix3d se3::Jl() {
+Eigen::Matrix<double,6,6> se3::Jl() {
 
-    Eigen::Matrix3d m;
-    m.setIdentity();
-    m.block(0,0,2,2) = this->Wl();
-    m.block(0,2,2,1) = this->Dl()*p_;
+    so3 omega(th_);
+
+    Eigen::Matrix<double,6,6> m;
+    m.block(0,0,3,3) = omega.Jl();
+    m.block(0,3,3,3) = Bl(data_);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
 
     return m;
 }
@@ -138,13 +143,15 @@ se3 se3::Jl(const se3& u) {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix3d se3::JlInv() {
+Eigen::Matrix<double,6,6> se3::JlInv() {
 
-    Eigen::Matrix2d w_inv = (this->Wl()).inverse();
-    Eigen::Matrix3d m;
-    m.setIdentity();
-    m.block(0,0,2,2) = w_inv;
-    m.block(0,2,2,1) = -w_inv*this->Dl()*p_;
+    so3 omega(th_);
+
+    Eigen::Matrix<double,6,6> m;
+    m.block(0,0,3,3) = omega.JlInv();
+    m.block(0,3,3,3) = -m.block(0,0,3,3)*Bl(data_)*m.block(0,0,3,3);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
 
     return m;
 }
@@ -157,12 +164,15 @@ se3 se3::JlInv(const se3& u) {
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix3d se3::Jr() {
+Eigen::Matrix<double,6,6> se3::Jr() {
 
-    Eigen::Matrix3d m;
-    m.setIdentity();
-    m.block(0,0,2,2) = this->Wr();
-    m.block(0,2,2,1) = this->Dr()*p_;
+    so3 omega(th_);
+
+    Eigen::Matrix<double,6,6> m;
+    m.block(0,0,3,3) = omega.Jr();
+    m.block(0,3,3,3) = Br(data_);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
 
     return m;
 }
@@ -175,13 +185,17 @@ se3 se3::Jr(const se3& u) {
 
 //---------------------------------------------------------------------
  
-Eigen::Matrix3d se3::JrInv() {
+Eigen::Matrix<double,6,6> se3::JrInv() {
     
-    Eigen::Matrix2d w_inv = (this->Wr()).inverse();
-    Eigen::Matrix3d m;
-    m.setIdentity();
-    m.block(0,0,2,2) = w_inv;
-    m.block(0,2,2,1) = -w_inv*this->Dr()*p_;
+    so3 omega(th_);
+
+    Eigen::Matrix<double,6,6> m;
+    m.block(0,0,3,3) = omega.JrInv();
+    m.block(0,3,3,3) = -m.block(0,0,3,3)*Br(data_)*m.block(0,0,3,3);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
+
+    return m;
 
     return m;
 }
@@ -239,14 +253,14 @@ Eigen::Matrix3d se3::SSM(const Eigen::Matrix<double,3,1>& x) {
 
 //---------------------------------------------------------------------
 
-bool se3::isElement(const Eigen::Matrix3d& data) {
+bool se3::isElement(const Eigen::Matrix<double,4,4>& data) {
 
     bool is_element = true;
      
-    if ( (data.block(0,0,2,2).transpose() + data.block(0,0,2,2)).norm() >= kse3_threshold_) {
+    if ( !so3::isElement(data.block(0,0,3,3))) {
         is_element = false;
     }
-    else if (data.block(2,0,1,3) != Eigen::Matrix<double,1,3>::Zero()) {
+    else if (data.block(3,0,1,4) != Eigen::Matrix<double,1,4>::Zero()) {
         is_element = false;
     }
 
@@ -254,86 +268,69 @@ bool se3::isElement(const Eigen::Matrix3d& data) {
 }
 
 
-//--------------------------------------------------------
-//                  Private functions
-//--------------------------------------------------------
-Eigen::Matrix2d se3::Wl(){return Wl(th_(0));}
-Eigen::Matrix2d se3::Wr(){return Wr(th_(0));}
-Eigen::Matrix2d se3::Dl(){return Dl(th_(0));}
-Eigen::Matrix2d se3::Dr(){return Dr(th_(0));}
+/////////////////////////////////////////////////
+//                  Private Functions
+/////////////////////////////////////////////////
+
+Eigen::Matrix3d se3::Bl(const Eigen::Matrix<double, 6,1>& u) {
+
+Eigen::Matrix<double,3,3> m;
+Eigen::Map<const Eigen::Matrix<double,3,1>> p(u.data());
+Eigen::Map<const Eigen::Matrix<double,3,1>> w(u.data()+3);
+
+double th = w.norm();
 
 
-Eigen::Matrix2d se3::Wl(const double th) {
+if (th <= kse3_threshold_) { // Close to the identity element;
+    m.setIdentity();
+} else {
+    double th2 = pow(th,2);
+    double th3 = pow(th,3);
+    double th4 = pow(th,4);
+    double a = (cos(th)-1)/th2;
+    double b = (th - sin(th))/th3;
+    double c = -sin(th)/th3 + 2*(1-cos(th))/th4;
+    double d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    Eigen::Matrix3d q;
+    q = w.dot(p)*(-c*SSM(w) + d*SSM(w)*SSM(w));
 
-    Eigen::Matrix2d m;
+    m = -a*SSM(p) + b*(SSM(w)*SSM(p) + SSM(p)*SSM(w)) + q;
+}
 
-    if (fabs(th) > kse3_threshold_) {
-        double a = (1-cos(th))/th;
-        double b = sin(th)/th;
-        m = a*se3::SSM(1) + b*Eigen::Matrix2d::Identity();
-    }
-    else
-    {
-        m.setIdentity();
-    }
-    
 return m;
+
 }
 
-//---------------------------------------------------
-Eigen::Matrix2d se3::Wr(const double th) {
+//---------------------------------------------------------------------
 
-    Eigen::Matrix2d m;
+Eigen::Matrix3d se3::Br(const Eigen::Matrix<double, 6,1>& u) {
 
-    if (fabs(th) > kse3_threshold_) {
-        double a = (cos(th)-1)/th;
-        double b = sin(th)/th;
-        m = a*se3::SSM(1) + b*Eigen::Matrix2d::Identity();
-    }
-    else
-    {
-        m.setIdentity();
-    }
-    
+Eigen::Matrix<double,3,3> m;
+Eigen::Map<const Eigen::Matrix<double,3,1>> p(u.data());
+Eigen::Map<const Eigen::Matrix<double,3,1>> w(u.data()+3);
+
+double th = w.norm();
+
+
+if (th <= kse3_threshold_) { // Close to the identity element;
+    m.setIdentity();
+} else {
+    double th2 = pow(th,2);
+    double th3 = pow(th,3);
+    double th4 = pow(th,4);
+    double a = (cos(th)-1)/th2;
+    double b = (th - sin(th))/th3;
+    double c = -sin(th)/th3 + 2*(1-cos(th))/th4;
+    double d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    Eigen::Matrix3d q;
+    q = w.dot(p)*(c*SSM(w) + d*SSM(w)*SSM(w));
+    m = a*SSM(p) + b*(SSM(w)*SSM(p) + SSM(p)*SSM(w)) + q;
+}
+
 return m;
+
+
 }
 
-//---------------------------------------------------
-Eigen::Matrix2d se3::Dl(const double th) {
 
-    Eigen::Matrix2d m;
-
-    if (fabs(th) > kse3_threshold_) {
-        double a = (cos(th)-1)/(th*th);
-        double b = (th-sin(th))/(th*th);
-        m = a*se3::SSM(1) + b*Eigen::Matrix2d::Identity();
-    }
-    else
-    {
-        m.setIdentity();
-    }
-
-    return m;
-}
-
-//---------------------------------------------------
-Eigen::Matrix2d se3::Dr(const double th) {
-
-    Eigen::Matrix2d m;
-
-    if (fabs(th) > kse3_threshold_) {
-        double a = (1-cos(th))/(th*th);
-        double b = (th-sin(th))/(th*th);
-        m = a*se3::SSM(1) + b*Eigen::Matrix2d::Identity();
-    }
-    else
-    {
-        m.setIdentity();
-    }
-
-    return m;
-}
-
-//---------------------------------------------------
-    
 }

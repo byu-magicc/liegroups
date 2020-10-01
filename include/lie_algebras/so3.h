@@ -93,7 +93,7 @@ Eigen::Matrix3d Exp();
  * @param data The data associated with an element of \f$ SO(3) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<double,3,1> Log(const Eigen::Matrix3d data);
+static Eigen::Matrix<double,3,1> Log(const Eigen::Matrix3d& data);
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
