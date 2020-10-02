@@ -3,23 +3,7 @@
 
 namespace lie_groups {
 
-so3::so3() {
 
-    data_ = Eigen::Matrix<double,3,1>::Zero();
-
-}
-
-//---------------------------------------------------------------------
-
-so3::so3(const so3 & u) {
-    data_ = u.data_;
-}
-
-//---------------------------------------------------------------------
-
-so3::so3(const Eigen::Matrix<double,3,1> data) {
-    data_ = data;
-}
 
 //---------------------------------------------------------------------
 
@@ -46,62 +30,19 @@ so3::so3(const Eigen::Matrix<double,3,3>& data, bool verify) {
 
 }
 
-//---------------------------------------------------------------------
-
-so3 so3::Bracket(const so3& u) {   
-
-    return so3(this->Adjoint()*u.data_);;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix3d so3::Adjoint() {
-    return this->Wedge();
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix3d so3::Wedge() {
-    return Wedge(data_);
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix3d so3::Wedge(const Eigen::Matrix<double,3,1>& data) {
+Eigen::Matrix3d so3::Exp(const Eigen::Matrix<double,3,1>& data) {
     Eigen::Matrix3d m;
-    m << 0, -data(2), data(1), data(2), 0, -data(0), -data(1), data(0), 0;
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix<double,3,1> so3::Vee() {
-    return data_;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix<double,3,1> so3::Vee(const Eigen::Matrix3d& data) {
-    Eigen::Matrix<double,3,1> m;
-    m << data(2,1), data(0,2), data(1,0);
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix3d so3::Exp() {
-    
-    Eigen::Matrix3d m;
-    double th = data_.norm();
+    double th = data.norm();
 
     if (th < kso3_threshold_) { // See if the element is close to the identity element.
         m.setIdentity();
     } else {  // Use Rodriguez formula 
         double a = sin(th)/th;
         double b = (1.0-cos(th))/pow(th,2);
-        m = Eigen::Matrix3d::Identity() + a*this->Wedge() + b*this->Wedge()*this->Wedge();
+        m = Eigen::Matrix3d::Identity() + a*Wedge(data) + b*Wedge(data)*Wedge(data);
     }
     return m;
+
 }
 
 //---------------------------------------------------------------------
@@ -126,12 +67,6 @@ Eigen::Matrix<double,3,1> so3::Log(const Eigen::Matrix3d& data) {
 
 //---------------------------------------------------------------------
 
-double so3::Norm() {
-    return data_.norm();
-}
-
-//---------------------------------------------------------------------
-
 Eigen::Matrix3d so3::Jl() {
 
     Eigen::Matrix3d m;
@@ -149,11 +84,6 @@ Eigen::Matrix3d so3::Jl() {
     return m;
 }
 
-//---------------------------------------------------------------------
-
-so3 so3::Jl(const so3& u) {
-    return so3(this->Jl()*u.data_);
-}
 
 //---------------------------------------------------------------------
 
@@ -178,12 +108,6 @@ Eigen::Matrix3d so3::JlInv() {
 
 //---------------------------------------------------------------------
 
-so3 so3::JlInv(const so3& u) {
-    return so3(this->JlInv()*u.data_);
-}
-
-//---------------------------------------------------------------------
-
 Eigen::Matrix3d so3::Jr() {
 
     Eigen::Matrix3d m;
@@ -201,11 +125,6 @@ Eigen::Matrix3d so3::Jr() {
     return m;
 }
 
-//---------------------------------------------------------------------
-
-so3 so3::Jr(const so3& u) {
-    return so3(this->Jr()*u.data_);
-}
 
 //---------------------------------------------------------------------
  
@@ -226,49 +145,6 @@ Eigen::Matrix3d so3::JrInv() {
 
     return m;
 }
-
-//---------------------------------------------------------------------
-
-so3 so3::JrInv(const so3& u) {
-    return so3(this->JrInv()*u.data_);
-}
-
-//---------------------------------------------------------------------
-
-so3 so3::operator + (const so3& u) {
-    return so3(data_ + u.data_);
-}
-
-//---------------------------------------------------------------------
-
-so3 so3::operator - (const so3& u) {
-    return so3(data_ - u.data_);
-}
-
-//---------------------------------------------------------------------
-
-void so3::operator = (const so3& u) {
-    data_ = u.data_;
-}
-
-//---------------------------------------------------------------------
-
-so3 so3::operator * (const double scalar) {
-    return so3(scalar*data_);
-}
-
-//---------------------------------------------------------------------
-
-void so3::Print() {
-    std::cout << "so3: " << std::endl << data_ << std::endl;
-}
-
-//---------------------------------------------------------------------
-
-so3  so3::Identity() {
-    return so3();
-}
-
 
 //---------------------------------------------------------------------
 

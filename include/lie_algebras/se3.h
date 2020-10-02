@@ -23,19 +23,19 @@ Eigen::Map<Eigen::Matrix<double,3,1>> th_; /** < The angular velocity */
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-se3();
+se3() : p_(data_.data()), th_(data_.data()+3), data_(Eigen::Matrix<double,6,1>::Zero()){}
 
 
 /**
  * Copy constructor.
  */ 
-se3(const se3 & u);
+se3(const se3 & u) : p_(data_.data()), th_(data_.data()+3), data_(u.data_) {}
 
 /**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$se(3)\f$
 */
-se3(const Eigen::Matrix<double,6,1> data);
+se3(const Eigen::Matrix<double,6,1> data) : p_(data_.data()), th_(data_.data()+3), data_(data){}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -54,44 +54,65 @@ se3(const Eigen::Matrix<double,4,4> & data, bool verify);
  * @param u An element of the Lie algebra.
  * @return The result of the Lie bracket operation.
  */ 
-se3 Bracket(const se3& u);
+se3 Bracket(const se3& u){return se3(this->Adjoint()*u.data_);}
 
 /**
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity element.
  */ 
-Eigen::Matrix<double,6,6> Adjoint();
+Eigen::Matrix<double,6,6> Adjoint() {    
+    Eigen::Matrix<double,6,6> m = Eigen::Matrix<double,6,6>::Zero();
+    m.block(0,0,3,3) = se3::SSM(th_);
+    m.block(3,3,3,3) = se3::SSM(th_);
+    m.block(0,3,3,3) = se3::SSM(p_);
+
+    return m;}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @return The result of the Wedge operation.
  */
-Eigen::Matrix4d Wedge();
+Eigen::Matrix4d Wedge(){return Wedge(data_);}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
  * @return The result of the Wedge operation.
  */
-static Eigen::Matrix4d Wedge(const Eigen::Matrix<double,6,1>& data);
+static Eigen::Matrix4d Wedge(const Eigen::Matrix<double,6,1>& data) {   
+    Eigen::Matrix4d m = Eigen::Matrix4d::Zero();
+    m.block(0,0,3,3) = se3::SSM(data.block(3,0,3,1));
+    m.block(0,3,3,1) = data.block(0,0,3,1);
+    return m;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @return The result of the Vee operation.
  */
-Eigen::Matrix<double,6,1> Vee();
+Eigen::Matrix<double,6,1> Vee(){return data_;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @param data The data of an element
  * @return The result of the Vee operation.
  */
-static Eigen::Matrix<double,6,1> Vee(const Eigen::Matrix4d& data);
+static Eigen::Matrix<double,6,1> Vee(const Eigen::Matrix4d& data){
+    Eigen::Matrix<double,6,1> m;
+    m.block(0,0,3,1) = data.block(0,3,3,1);
+    m.block(3,0,3,1) << data(2,1), data(0,2), data(1,0);
+    return m;
+}
 
 /**
  * Computes the exponential of the element of the Lie algebra.
  */
-Eigen::Matrix<double,4,4> Exp();
+Eigen::Matrix<double,4,4> Exp(){return se3::Exp(this->data_);}
+
+/**
+ * Computes the exponential of the element of the Lie algebra.
+ * @return The data associated to the group element.
+ */
+static Eigen::Matrix<double,4,4> Exp(const Eigen::Matrix<double,6,1>& data);
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
@@ -103,7 +124,7 @@ static Eigen::Matrix<double,6,1> Log(const Eigen::Matrix<double,4,4>& data);
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
  */ 
-double Norm();
+double Norm(){return data_.norm();}
 
 /**
  * Computes and returns the matrix of the Left Jacobian.
@@ -118,7 +139,7 @@ Eigen::Matrix<double,6,6> Jl();
  * @param u An element of the Lie algebra.
  * @return It will return the parameter u.
  */ 
-se3 Jl(const se3& u);
+se3 Jl(const se3& u){return se3(this->Jl()*u.data_);}
 
 /**
  * Computes and returns the matrix of the Left Jacobian inverse.
@@ -132,7 +153,7 @@ Eigen::Matrix<double,6,6> JlInv();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-se3 JlInv(const se3& u);
+se3 JlInv(const se3& u){return se3(this->JlInv()*u.data_);}
 
 /**
  * Computes and returns the matrix of the Right Jacobian
@@ -146,7 +167,7 @@ Eigen::Matrix<double,6,6> Jr();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-se3 Jr(const se3& u);
+se3 Jr(const se3& u){return se3(this->Jr()*u.data_);}
 
 /**
  * Computes and returns the matrix of the right Jacobian inverse.
@@ -160,48 +181,52 @@ Eigen::Matrix<double,6,6> JrInv();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-se3 JrInv(const se3& u);
+se3 JrInv(const se3& u){ return se3(this->JrInv()*u.data_);}
 
 /**
  * Adds two elements of the Algebra together
  * @param u An element of the Lie algebra.
  */ 
-se3 operator + (const se3& u);
+se3 operator + (const se3& u){return se3(data_ + u.data_);}
 
 /**
  * Subtracts two elements of the Algebra together
  * @param u An element of the Lie algebra.
  */ 
-se3 operator - (const se3& u);
+se3 operator - (const se3& u){return se3(data_ - u.data_);}
 
 /**
  * Creates a deep copy of the element
  * @param u An element of the Lie algebra.
  */
-void operator = (const se3& u);
+void operator = (const se3& u){data_ = u.data_;}
 
 /**
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-se3 operator * (const double scalar);
+se3 operator * (const double scalar){return se3(scalar*data_);}
 
 /**
  * Prints the data of the element.
  */ 
-void Print();
+void Print(){std::cout << data_ << std::endl;}
 
 /**
  * Returns the Identity element.
  */
-static se3 Identity();
+static se3 Identity(){return se3();}
 
 /**
  * Computes and returns the skew symmetric matrix of the
  * parameter.
  * @param x 
  */ 
-static Eigen::Matrix3d SSM(const Eigen::Matrix<double,3,1>& x);
+static Eigen::Matrix3d SSM(const Eigen::Matrix<double,3,1>& x){
+    Eigen::Matrix3d m;
+    m << 0, -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), 0;
+    return m;
+}
 
 /**
  * Verifies that the parameter data belongs to 

@@ -87,12 +87,13 @@ Eigen::Matrix3d A;
 double factorial=1;
 E.setZero();
 A.setIdentity();
+Eigen::Matrix3d W = u4.Wedge();
 
-for (long int i = 1; i < 10000; i++) {
+for (long int i = 1; i < 1000; ++i) {
 
-    E = E+A/factorial;
-    A = A*u4.Wedge();
-    factorial = factorial*i;
+    E += A/factorial;
+    A *= W;
+    factorial *= i;
 }
 ASSERT_LE((u4.Exp()-E).norm(), 1e-10 ) << "Error with exp function";
 

@@ -1,79 +1,79 @@
-#ifndef _LIEGROUPS_INCLUDE_LIEGROUPS_SO2_
-#define _LIEGROUPS_INCLUDE_LIEGROUPS_SO2_
+#ifndef _LIEGROUPS_INCLUDE_LIEGROUPS_SO3_
+#define _LIEGROUPS_INCLUDE_LIEGROUPS_SO3_
 
 #include <Eigen/Dense>
 #include <iostream>
-#include <lie_algebras/so2.h>
+#include <lie_algebras/so3.h>
 
 namespace lie_groups {
 
-constexpr double kSO2_threshold_ = 1e-7;
+constexpr double kSO3_threshold_ = 1e-7;
 
-class SO2 {
+class SO3 {
 
 public:
 
-Eigen::Matrix2d data_;
+Eigen::Matrix3d data_;
 
 /**
  * Default constructor. Initializes group element to identity.
  */
-SO2() : data_(Eigen::Matrix<double,2,2>::Identity()){}
+SO3() : data_(Eigen::Matrix3d::Identity()){}
 
 
 /**
  * Copy constructor.
  */ 
-SO2(const SO2 & g) : data_(g.data_) {}
+SO3(const SO3 & g) : data_(g.data_) {}
 
 /**
 * Initializes group element to the one given. If verify is true
-* it will check that the input is an element of \f$SO(2)\f$
-* @param[in] data The data pertaining to an element of \f$SO(2)\f$
+* it will check that the input is an element of \f$SO(3)\f$
+* @param[in] data The data pertaining to an element of \f$SO(3)\f$
 * @param verify If true, the constructor will verify that the provided 
-* element is a member of \f$SO(2)\f$
+* element is a member of \f$SO(3)\f$
 */
-SO2(const Eigen::Matrix2d & data, bool verify);
+SO3(const Eigen::Matrix3d & data, bool verify);
 
 /**
 * Initializes group element to the data of the one given. 
-* @param[in] data  The data pertaining to an element of \f$SO(2)\f$
+* @param[in] data  The data pertaining to an element of \f$SO(3)\f$
 */
-SO2(const Eigen::Matrix2d & data) :data_(data){}
+SO3(const Eigen::Matrix3d & data) :data_(data){}
 
 /**
  * Returns the inverse of the element
  */ 
-SO2 Inverse(){  return SO2(data_.transpose());}
+SO3 Inverse(){  return SO3(data_.transpose());}
 
 /**
  * Returns the identity element
  */ 
-static SO2 Identity(){return SO2();}
+static SO3 Identity(){return SO3();}
 
 /**
  * Returns the matrix adjoint map.
  * For this Lie group it is the identity map.
  */ 
-Eigen::Matrix<double,1,1> Adjoint(){return Eigen::Matrix<double,1,1>::Identity();}
+Eigen::Matrix3d Adjoint(){return data_;}
 
 /**
  * Computes the log of the element.
  */ 
-Eigen::Matrix<double,1,1> Log();
+Eigen::Matrix<double,3,1> Log();
 
 /**
  * Performs the left group action on itself. i.e. this is on the left of
  * the bilinear operation.
  */ 
-SO2 operator * (const SO2& g){ return SO2(data_ *g.data_);}
+SO3 operator * (const SO3& g){ return SO3(data_ *g.data_);}
 
 
 /**
  * Assignment Operator. Deep copy of the input parameter
  * @param g The element to be copied.
  */ 
-void operator = (const SO2& g){ this->data_ = g.data_; }
+void operator = (const SO3& g){ this->data_ = g.data_; }
 
 /**
  * Performs the OPlus operation 
@@ -81,15 +81,15 @@ void operator = (const SO2& g){ this->data_ = g.data_; }
  * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-static Eigen::Matrix2d OPlus(const Eigen::Matrix2d& g_data, const Eigen::Matrix<double,1,1>& u_data)
-{return g_data*so2::Exp(u_data);}
+static Eigen::Matrix3d OPlus(const Eigen::Matrix3d& g_data, const Eigen::Matrix<double,3,1>& u_data)
+{return g_data*so3::Exp(u_data);}
 
 /**
  * Performs the OPlus operation 
  * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-Eigen::Matrix2d OPlus(const Eigen::Matrix<double,1,1>& u_data)
+Eigen::Matrix3d OPlus(const Eigen::Matrix<double,3,1>& u_data)
 {return OPlus(this->data_,u_data);}
 
 /**
@@ -97,7 +97,7 @@ Eigen::Matrix2d OPlus(const Eigen::Matrix<double,1,1>& u_data)
  * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-void OPlusEq(const Eigen::Matrix<double,1,1>& u_data)
+void OPlusEq(const Eigen::Matrix<double,3,1>& u_data)
 {data_ = this->OPlus(u_data);}
 
 /**
@@ -106,23 +106,23 @@ void OPlusEq(const Eigen::Matrix<double,1,1>& u_data)
  * @param u_data The data belonging to an element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-static Eigen::Matrix2d BoxPlus(const Eigen::Matrix2d& g_data, const Eigen::Matrix2d& u_data)
-{return OPlus(g_data,so2::Vee(u_data));}
+static Eigen::Matrix3d BoxPlus(const Eigen::Matrix3d& g_data, const Eigen::Matrix3d& u_data)
+{return OPlus(g_data,so3::Vee(u_data));}
 
 /**
  * Performs the BoxPlus operation 
  * @param u_data The data belonging to an element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-Eigen::Matrix2d BoxPlus(const Eigen::Matrix2d& u_data)
-{return this->OPlus(so2::Vee(u_data));}
+Eigen::Matrix3d BoxPlus(const Eigen::Matrix3d& u_data)
+{return this->OPlus(so3::Vee(u_data));}
 
 /**
  * Performs the BoxPlus operation and assigns the result to the group element
  * @param u_data The data belonging to an element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-void BoxPlusEq(const Eigen::Matrix2d& u_data)
+void BoxPlusEq(const Eigen::Matrix3d& u_data)
 {data_ = this->BoxPlus(u_data);}
 
 /**
@@ -131,23 +131,23 @@ void BoxPlusEq(const Eigen::Matrix2d& u_data)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-static SO2 BoxPlus(const SO2& g, const so2& u)
-{return SO2(OPlus(g.data_,u.data_));}
+static SO3 BoxPlus(const SO3& g, const so3& u)
+{return SO3(OPlus(g.data_,u.data_));}
 
 /**
  * Performs the BoxPlus operation 
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SO2 BoxPlus(const so2& u)
-{return SO2::BoxPlus(*this,u);}
+SO3 BoxPlus(const so3& u)
+{return SO3::BoxPlus(*this,u);}
 
 /**
  * Performs the BoxPlus operation and assigns the result to the group element
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-void BoxPlusEq(const so2& u)
+void BoxPlusEq(const so3& u)
 {data_ = (this->BoxPlus(u)).data_;}
 
 
@@ -157,8 +157,8 @@ void BoxPlusEq(const so2& u)
  * @param g_data2 The data of \f$ g_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
-static Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matrix2d& g2_data)
-{return so2::Log(g1_data*g2_data);}
+static Eigen::Matrix<double,3,1> OMinus(const Eigen::Matrix3d& g1_data,const Eigen::Matrix3d& g2_data)
+{return so3::Log(g1_data.transpose()*g2_data);}
 
 
 /**
@@ -166,8 +166,8 @@ static Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g1_data,const Eig
  * @param g_data The data of  \f$ g_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
-Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g_data)
-{return SO2::OMinus(data_,g_data);}
+Eigen::Matrix<double,3,1> OMinus(const Eigen::Matrix3d& g_data)
+{return SO3::OMinus(data_,g_data);}
 
 /**
  * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
@@ -175,8 +175,8 @@ Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g_data)
  * @param g_data2 The data of \f$ g_2 \f$
  * @return The data of an element of the Lie algebra
  */ 
-static Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matrix2d& g2_data)
-{return so2::Wedge(SO2::OMinus(g1_data, g2_data));}
+static Eigen::Matrix3d BoxMinus(const Eigen::Matrix3d& g1_data,const Eigen::Matrix3d& g2_data)
+{return so3::Wedge(SO3::OMinus(g1_data, g2_data));}
 
 
 /**
@@ -184,7 +184,7 @@ static Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matr
  * @param g_data The data of  \f$ g_2 \f$
  * @return The data of an element of the Lie algebra
  */ 
-Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g_data)
+Eigen::Matrix3d BoxMinus(const Eigen::Matrix3d& g_data)
 {return BoxMinus(this->data_,g_data);}
 
 /**
@@ -192,7 +192,7 @@ Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g_data)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-so2 BoxMinus(const SO2& g){return so2(so2::Vee(this->BoxMinus(g.data_)));}
+so3 BoxMinus(const SO3& g){return so3(so3::Vee(this->BoxMinus(g.data_)));}
 
 /**
  * Prints the content of the data
@@ -204,11 +204,11 @@ void Print() {
 /**
  * Verifies that the data of an element properly corresponds to the set. 
  */ 
-static bool isElement(const Eigen::Matrix2d& data);
+static bool isElement(const Eigen::Matrix3d& data);
 
 };
 
 }
 
 
-#endif // _LIEGROUPS_INCLUDE_LIEGROUPS_SO2_
+#endif // _LIEGROUPS_INCLUDE_LIEGROUPS_SO3_

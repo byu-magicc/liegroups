@@ -18,19 +18,19 @@ Eigen::Matrix<double,1,1> data_;
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-so2();
+so2() : data_(Eigen::Matrix<double,1,1>::Zero()){}
 
 
 /**
  * Copy constructor.
  */ 
-so2(const so2 & u);
+so2(const so2 & u) : data_(u.data_){}
 
 /**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$so(2)\f$
 */
-so2(const Eigen::Matrix<double,1,1> data);
+so2(const Eigen::Matrix<double,1,1> data) : data_(data){}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -39,6 +39,8 @@ so2(const Eigen::Matrix<double,1,1> data);
 * @param verify If true, the constructor will verify that the element given is an element of the Lie algebra.
 */
 so2(const Eigen::Matrix2d & data, bool verify);
+
+
 
 //---------------------------------------------------------------------
 
@@ -49,46 +51,62 @@ so2(const Eigen::Matrix2d & data, bool verify);
  * @param u An element of the Lie algebra.
  * @return The result of the Lie bracket operation.
  */ 
-so2 Bracket(const so2& u);
+so2 Bracket(const so2& u) {return so2();}
 
 /**
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity element.
  */ 
-Eigen::Matrix2d Adjoint();
+Eigen::Matrix2d Adjoint() {return Eigen::Matrix2d::Identity();}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @return The result of the Wedge operation.
  */
-Eigen::Matrix2d Wedge();
+Eigen::Matrix2d Wedge() {return Wedge(data_);}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
  * @return The result of the Wedge operation.
  */
-static Eigen::Matrix2d Wedge(const Eigen::Matrix<double,1,1>& data);
+static Eigen::Matrix2d Wedge(const Eigen::Matrix<double,1,1>& data) {
+    Eigen::Matrix2d m;
+    m << 0, -data(0), data(0), 0;
+    return m; 
+}
 
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @return The result of the Vee operation.
  */
-Eigen::Matrix<double,1,1> Vee();
+Eigen::Matrix<double,1,1> Vee() {return data_;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @param data The data of an element
  * @return The result of the Vee operation.
  */
-static Eigen::Matrix<double,1,1> Vee(const Eigen::Matrix2d& data);
+static Eigen::Matrix<double,1,1> Vee(const Eigen::Matrix2d& data) {
+    Eigen::Matrix<double,1,1> m;
+    m << data(1,0);
+    return m;  
+}
+
+/**
+ * Computes the exponential of the element of the Lie algebra.
+ * @param data The data pertaining to an element of the Cartesian 
+ * space isomorphic to the Lie algebra
+ * @return The data associated to the group element.
+ */
+static Eigen::Matrix2d Exp(const Eigen::Matrix<double,1,1> &data);
 
 /**
  * Computes the exponential of the element of the Lie algebra.
  * @return The data associated to the group element.
  */
-Eigen::Matrix2d Exp();
+Eigen::Matrix2d Exp(){ return so2::Exp(this->data_);}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
@@ -100,13 +118,13 @@ static Eigen::Matrix<double,1,1> Log(const Eigen::Matrix2d& data);
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
  */ 
-double Norm();
+double Norm() {return data_.norm();}
 
 /**
  * Computes and returns the matrix of the Left Jacobian.
  * This will always return the identity map for \f$so(2)\f$.
  */ 
-Eigen::Matrix2d Jl();
+Eigen::Matrix2d Jl(){return Eigen::Matrix2d::Identity();}
 
 /**
  * Computes the left Jacobian using the element of *this and applies it to the
@@ -116,13 +134,13 @@ Eigen::Matrix2d Jl();
  * @param u An element of the Lie algebra.
  * @return It will return the parameter u.
  */ 
-so2 Jl(const so2& u);
+so2 Jl(const so2& u){return u;}
 
 /**
  * Computes and returns the matrix of the Left Jacobian inverse.
  * This will always return the identity map for \f$so(2)\f$.
  */ 
-Eigen::Matrix2d JlInv();
+Eigen::Matrix2d JlInv(){return Eigen::Matrix2d::Identity();}
 
 /**
  * Computes the left Jacobian inverse using the element of *this and applies it to the
@@ -131,13 +149,13 @@ Eigen::Matrix2d JlInv();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-so2 JlInv(const so2& u);
+so2 JlInv(const so2& u){return u;}
 
 /**
  * Computes and returns the matrix of the Right Jacobian
  * This will always return the identity map for \f$so(2)\f$.
  */ 
-Eigen::Matrix2d Jr();
+Eigen::Matrix2d Jr(){return Eigen::Matrix2d::Identity();}
 
 /**
  * Computes the right Jacobian using the element of *this and applies it to the
@@ -146,13 +164,13 @@ Eigen::Matrix2d Jr();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-so2 Jr(const so2& u);
+so2 Jr(const so2& u){return u;}
 
 /**
  * Computes and returns the matrix of the right Jacobian inverse.
  * This will always return the identity map for \f$so(2)\f$.
  */ 
-Eigen::Matrix2d JrInv();
+Eigen::Matrix2d JrInv(){return Eigen::Matrix2d::Identity();}
 
 /**
  * Computes the right Jacobian inverse using the element of *this and applies it to the
@@ -161,41 +179,41 @@ Eigen::Matrix2d JrInv();
  * the parameter u.
  * @param u An element of the Lie algebra.
  */ 
-so2 JrInv(const so2& u);
+so2 JrInv(const so2& u) {return u;}
 
 /**
  * Adds two elements of the Algebra together
  * @param u An element of the Lie algebra.
  */ 
-so2 operator + (const so2& u);
+so2 operator + (const so2& u){return so2(data_ + u.data_);}
 
 /**
  * Subtracts two elements of the Algebra together
  * @param u An element of the Lie algebra.
  */ 
-so2 operator - (const so2& u);
+so2 operator - (const so2& u){return so2(data_ - u.data_);}
 
 /**
  * Creates a deep copy of the element
  * @param u An element of the Lie algebra.
  */
-void operator = (const so2& u);
+void operator = (const so2& u){data_ = u.data_;}
 
 /**
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-so2 operator * (const double scalar);
+so2 operator * (const double scalar){return so2(scalar*data_);}
 
 /**
  * Prints the data of the element.
  */ 
-void Print();
+void Print(){std::cout << data_ << std::endl;}
 
 /**
  * Returns the Identity element.
  */
-static so2 Identity();
+static so2 Identity(){return so2();}
 
 /**
  * Verifies that the parameter data belongs to 

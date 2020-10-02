@@ -3,23 +3,8 @@
 
 namespace lie_groups {
 
-se3::se3() : p_(data_.data()), th_(data_.data()+3) {
 
-    data_ = Eigen::Matrix<double,6,1>::Zero();
 
-}
-
-//---------------------------------------------------------------------
-
-se3::se3(const se3 & u) : p_(data_.data()), th_(data_.data()+3) {
-    data_ = u.data_;
-}
-
-//---------------------------------------------------------------------
-
-se3::se3(const Eigen::Matrix<double,6,1> data) : p_(data_.data()), th_(data_.data()+3) {
-    data_ = data;
-}
 
 //---------------------------------------------------------------------
 
@@ -42,65 +27,19 @@ se3::se3(const Eigen::Matrix<double,4,4>& data, bool verify) : p_(data_.data()),
 
 }
 
-//---------------------------------------------------------------------
 
-se3 se3::Bracket(const se3& u) {   
-
-    return se3(this->Adjoint()*u.data_);;
-}
 
 //---------------------------------------------------------------------
 
-Eigen::Matrix<double,6,6> se3::Adjoint() {
-    Eigen::Matrix<double,6,6> m = Eigen::Matrix<double,6,6>::Zero();
-    m.block(0,0,3,3) = se3::SSM(th_);
-    m.block(3,3,3,3) = se3::SSM(th_);
-    m.block(0,3,3,3) = se3::SSM(p_);
-
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix4d se3::Wedge() {
-    return Wedge(data_);
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix4d se3::Wedge(const Eigen::Matrix<double,6,1>& data) {
-    Eigen::Matrix4d m = Eigen::Matrix4d::Zero();
-    m.block(0,0,3,3) = se3::SSM(data.block(3,0,3,1));
-    m.block(0,3,3,1) = data.block(0,0,3,1);
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix<double,6,1> se3::Vee() {
-    return data_;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix<double,6,1> se3::Vee(const Eigen::Matrix4d& data) {
-    Eigen::Matrix<double,6,1> m;
-    m.block(0,0,3,1) = data.block(0,3,3,1);
-    m.block(3,0,3,1) << data(2,1), data(0,2), data(1,0);
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix<double,4,4> se3::Exp(){
-    
+Eigen::Matrix<double,4,4> se3::Exp(const Eigen::Matrix<double,6,1>& data) {
     Eigen::Matrix<double,4,4> m;
-    so3 omega(th_);
+    so3 omega(data.block(3,0,3,1));
     m.block(0,0,3,3) = omega.Exp();
-    m.block(0,3,3,1) = omega.Jl()*p_;
+    m.block(0,3,3,1) = omega.Jl()*data.block(0,0,3,1);
     m.block(3,0,1,4) << 0,0,0,1;
-    return m;
+    return m;  
 }
+
 
 //---------------------------------------------------------------------
 
@@ -112,12 +51,6 @@ Eigen::Matrix<double,6,1> se3::Log(const Eigen::Matrix<double,4,4>& data) {
     u.block(0,0,3,1) = omega.JlInv()*data.block(0,3,3,1);
     
     return u;    
-}
-
-//---------------------------------------------------------------------
-
-double se3::Norm() {
-    return data_.norm();
 }
 
 //---------------------------------------------------------------------
@@ -137,12 +70,6 @@ Eigen::Matrix<double,6,6> se3::Jl() {
 
 //---------------------------------------------------------------------
 
-se3 se3::Jl(const se3& u) {
-    return se3(this->Jl()*u.data_);
-}
-
-//---------------------------------------------------------------------
-
 Eigen::Matrix<double,6,6> se3::JlInv() {
 
     so3 omega(th_);
@@ -154,12 +81,6 @@ Eigen::Matrix<double,6,6> se3::JlInv() {
     m.block(3,3,3,3) =  m.block(0,0,3,3);
 
     return m;
-}
-
-//---------------------------------------------------------------------
-
-se3 se3::JlInv(const se3& u) {
-    return se3(this->JlInv()*u.data_);
 }
 
 //---------------------------------------------------------------------
@@ -177,11 +98,6 @@ Eigen::Matrix<double,6,6> se3::Jr() {
     return m;
 }
 
-//---------------------------------------------------------------------
-
-se3 se3::Jr(const se3& u) {
-    return se3(this->Jr()*u.data_);
-}
 
 //---------------------------------------------------------------------
  
@@ -197,57 +113,6 @@ Eigen::Matrix<double,6,6> se3::JrInv() {
 
     return m;
 
-    return m;
-}
-
-//---------------------------------------------------------------------
-
-se3 se3::JrInv(const se3& u) {
-    return se3(this->JrInv()*u.data_);
-}
-
-//---------------------------------------------------------------------
-
-se3 se3::operator + (const se3& u) {
-    return se3(data_ + u.data_);
-}
-
-//---------------------------------------------------------------------
-
-se3 se3::operator - (const se3& u) {
-    return se3(data_ - u.data_);
-}
-
-//---------------------------------------------------------------------
-
-void se3::operator = (const se3& u) {
-    data_ = u.data_;
-}
-
-//---------------------------------------------------------------------
-
-se3 se3::operator * (const double scalar) {
-    return se3(scalar*data_);
-}
-
-//---------------------------------------------------------------------
-
-void se3::Print() {
-    std::cout << "se3: " << std::endl << data_ << std::endl;
-}
-
-//---------------------------------------------------------------------
-
-se3  se3::Identity() {
-    return se3();
-}
-
-//---------------------------------------------------------------------
-
-Eigen::Matrix3d se3::SSM(const Eigen::Matrix<double,3,1>& x) {
-
-    Eigen::Matrix3d m;
-    m << 0, -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), 0;
     return m;
 }
 

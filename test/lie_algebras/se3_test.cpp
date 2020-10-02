@@ -113,9 +113,9 @@ A.setIdentity();
 
 for (long int i = 1; i < 1000; ++i) {
 
-    E = E+A/factorial;
-    A = A*u4.Wedge();
-    factorial = factorial*i;
+    E +=A/factorial;
+    A *=u4.Wedge();
+    factorial *=i;
 }
 ASSERT_LE((u4.Exp()-E).norm(), kse3_threshold_ ) << "Error with exp function";
 
