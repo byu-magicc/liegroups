@@ -29,29 +29,34 @@ add_subdirectory(${GTEST_DIR}/googletest-src ${GTEST_DIR}/googletest-build EXCLU
 
 
 # Lie Algebra Tests
-add_executable(so2_test
-lie_algebras/so2_test
-../src/lie_algebras/so2.cpp)
-target_link_libraries(so2_test gtest_main)
 
-add_executable(se2_test
-lie_algebras/se2_test
-../src/lie_algebras/se2.cpp)
+add_executable(rn_test
+lie_algebras/rn_test)
+target_link_libraries(rn_test gtest_main)
 
-target_link_libraries(se2_test gtest_main)
+# add_executable(so2_test
+# lie_algebras/so2_test
+# ../src/lie_algebras/so2.cpp)
+# target_link_libraries(so2_test gtest_main)
 
-add_executable(so3_test
-lie_algebras/so3_test
-../src/lie_algebras/so3.cpp)
+# add_executable(se2_test
+# lie_algebras/se2_test
+# ../src/lie_algebras/se2.cpp)
 
-target_link_libraries(so3_test gtest_main)
+# target_link_libraries(se2_test gtest_main)
 
-add_executable(se3_test
-lie_algebras/se3_test
-../src/lie_algebras/se3.cpp
-../src/lie_algebras/so3.cpp)
+# add_executable(so3_test
+# lie_algebras/so3_test
+# ../src/lie_algebras/so3.cpp)
 
-target_link_libraries(se3_test gtest_main)
+# target_link_libraries(so3_test gtest_main)
+
+# add_executable(se3_test
+# lie_algebras/se3_test
+# ../src/lie_algebras/se3.cpp
+# ../src/lie_algebras/so3.cpp)
+
+# target_link_libraries(se3_test gtest_main)
 
 
 # add_executable(SO2_test
