@@ -24,7 +24,7 @@ SE2::SE2(const Eigen::Matrix3d & data, bool verify) : t_(data_.data()+6), R_(dat
 
 bool SE2::isElement(const Eigen::Matrix3d& data) {
     
-    bool d = (data.block(0,0,2,2).transpose()*data.block(0,0,2,2)-Eigen::Matrix3d::Identity()).norm();
+    bool d = (data.block(0,0,2,2).transpose()*data.block(0,0,2,2)-Eigen::Matrix2d::Identity()).norm();
     
     return d <= kSE2_threshold_ && data(2,0) == 0 && data(2,1)==0 && data(2,2)==1;
 }

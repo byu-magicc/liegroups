@@ -72,8 +72,15 @@ target_link_libraries(SO3_test gtest_main)
 
 add_executable(SE2_test
  lie_groups/SE2_test.cpp 
-#  ../src/lie_groups/SE2.cpp
+ ../src/lie_groups/SE2.cpp
  ../src/lie_algebras/se2.cpp)
 target_link_libraries(SE2_test gtest_main)
+
+add_executable(SE3_test
+ lie_groups/SE3_test.cpp 
+#  ../src/lie_groups/SE3.cpp
+ ../src/lie_algebras/se3.cpp
+ ../src/lie_algebras/so3.cpp)
+target_link_libraries(SE3_test gtest_main)
 
 add_custom_target(gtests_SO2 SO2_test)

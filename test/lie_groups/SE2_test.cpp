@@ -41,27 +41,21 @@ while  ((data2.transpose()*data2 - Identity).norm() <= kSE2_threshold_ ) {
 
 
 SE2 g1;
-g1.data_ << 1,2,3,4,5,6,7,8,9;
+SE2 g2(data1,true);
+SE2 g3(data2,true);
+SE2 g4(g2);
+SE2 g5(data2);
 
-std::cerr << g1.data_ << std::endl;
-std::cerr << g1.R_ << std::endl;
-std::cerr << g1.t_ << std::endl;
-
-// SE2 g2(data1,true);
-// SE2 g3(data2,true);
-// SE2 g4(g2);
-// SE2 g5(data2);
-
-// ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
-// ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
-// ASSERT_EQ(g3.data_,Identity) << "Copy constructor constructor error";
-// ASSERT_EQ(g4.data_,data1) << "Assignment constructor error: Invalid element not excepted. Should set element to identity.";
-// ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
+ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
+ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
+ASSERT_EQ(g3.data_,Identity) << "Copy constructor constructor error";
+ASSERT_EQ(g4.data_,data1) << "Assignment constructor error: Invalid element not excepted. Should set element to identity.";
+ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
 
 
 }
 
-/*
+
 ////////////////////////////////////////////////////////////////////////
 
 // Test the Inverse, Adjoint, Identity, Log, and operators
@@ -73,21 +67,28 @@ Eigen::Matrix<double,3,1> th;
 th << 0.1,0.2,0.3;
 Eigen::Matrix3d g = GenElem(th);
 
+se2 u1(Eigen::Matrix<double,3,1>::Random());
+
 SE2 g1(GenRandElem());
 SE2 g2(GenRandElem());
 SE2 g3(g);
 SE2 g4 = g1;
-// SE2 g5 = g1*g2;
+SE2 g5 = g1*g2;
 
-ASSERT_LE( ((g1.Inverse()).data_ - g1.data_.inverse()).norm(), kSE2_threshold_) << " Error with the inverse operation ";
+ASSERT_LE( ((g1.Inverse()).data_ - (g1.data_).inverse() ).norm(), kSE2_threshold_) << " Error with the inverse operation ";
+
 ASSERT_EQ( SE2::Identity().data_, Identity  ) << "Error with identity function ";
-ASSERT_EQ( g2.Adjoint(),  g2.data_) << "Error with the Adjoint operation";
 
-ASSERT_DOUBLE_EQ(th(0), g3.Log()(0)) << "Error with the log function";
+se2 u2(g2.Adjoint()*u1.data_);
+se2 u3(g2.data_*u1.Wedge()*(g2.Inverse()).data_,true);
+
+ASSERT_LE( (u2.data_-u3.data_).norm(), kSE2_threshold_) << "Error with the Adjoint operation";
+
+ASSERT_LE( (se2::Exp(g3.Log())-g3.data_).norm(), kSE2_threshold_ ) << "Error with the log function";
 
 ASSERT_EQ(g4.data_, g1.data_) << "Error with assignmet operator";
 
-// ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
+ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
 
 }
 
@@ -135,5 +136,5 @@ ASSERT_LE( (g4.OMinus(data3)- th2).norm(), kSE2_threshold_) << "Error with the O
 ASSERT_LE( (g4.BoxMinus(g5).data_- th2).norm(), kSE2_threshold_) << "Error with the OPlus function";
 
 }
-*/
+
 }

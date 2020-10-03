@@ -41,10 +41,16 @@ SO2(const Eigen::Matrix2d & data, bool verify);
 */
 SO2(const Eigen::Matrix2d & data) :data_(data){}
 
-/**
+/*
  * Returns the inverse of the element
  */ 
-SO2 Inverse(){  return SO2(data_.transpose());}
+SO2 Inverse(){ return SO2::Inverse(this->data_);}
+
+/*
+ * Returns the inverse of the data of an element
+ */ 
+static Eigen::Matrix2d Inverse(const Eigen::Matrix2d& data){  return data.transpose();}
+
 
 /**
  * Returns the identity element
@@ -158,7 +164,7 @@ void BoxPlusEq(const so2& u)
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
 static Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matrix2d& g2_data)
-{return so2::Log(g1_data*g2_data);}
+{return so2::Log(SO2::Inverse(g1_data)*g2_data);}
 
 
 /**

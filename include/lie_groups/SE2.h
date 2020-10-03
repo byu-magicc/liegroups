@@ -41,17 +41,19 @@ SE2(const Eigen::Matrix3d & data, bool verify);
 * Initializes group element to the data of the one given. 
 * @param[in] data  The data pertaining to an element of \f$SE(2)\f$
 */
-SE2(const Eigen::Matrix3d & data) :data_(data): t_(data_.data()+6), R_(data_.block(0,0,2,2)),{}
+SE2(const Eigen::Matrix3d & data) :data_(data), t_(data_.data()+6), R_(data_.block(0,0,2,2)){}
 
-/**
+/*
  * Returns the inverse of the element
  */ 
-SE2 Inverse(){  
-    Eigen::Matrix3d m;
-    m.block(0,0,2,2) = R_.transpose();
-    m.block(0,2,2,1) = -m.block(0,0,2,2)*t_;
-    m.block(2,0,3,1) << 0,0,1;
-    return SE2(data_.transpose());}
+SE2 Inverse(){ return SE2::Inverse(this->data_);}
+
+
+/*
+ * Returns the inverse of the data of an element
+ */ 
+static Eigen::Matrix3d Inverse(const Eigen::Matrix3d& data){  
+    return data.inverse();}
 
 /**
  * Returns the identity element
@@ -62,7 +64,7 @@ static SE2 Identity(){return SE2();}
  * Returns the matrix adjoint map.
  * For this Lie group it is the identity map.
  */ 
-Eigen::Matrix3d SE2::Adjoint(){
+Eigen::Matrix3d Adjoint(){
     Eigen::Matrix3d m = data_;
     m.block(0,2,2,1) << t_(1), -t_(0);
     return m;
@@ -169,7 +171,7 @@ void BoxPlusEq(const se2& u)
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
 static Eigen::Matrix<double,3,1> OMinus(const Eigen::Matrix3d& g1_data,const Eigen::Matrix3d& g2_data)
-{return se2::Log(g1_data.transpose()*g2_data);}
+{return se2::Log(SE2::Inverse(g1_data)*g2_data);}
 
 
 /**

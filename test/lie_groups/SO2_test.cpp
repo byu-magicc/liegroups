@@ -73,7 +73,7 @@ SO2 g1(GenRandElem());
 SO2 g2(GenRandElem());
 SO2 g3(g);
 SO2 g4 = g1;
-// SO2 g5 = g1*g2;
+SO2 g5 = g1*g2;
 
 ASSERT_LE( ((g1.Inverse()).data_ - g1.data_.inverse()).norm(), kSO2_threshold_) << " Error with the inverse operation ";
 ASSERT_EQ( SO2::Identity().data_, Identity  ) << "Error with identity function ";
@@ -83,7 +83,7 @@ ASSERT_DOUBLE_EQ(th(0), g3.Log()(0)) << "Error with the log function";
 
 ASSERT_EQ(g4.data_, g1.data_) << "Error with assignmet operator";
 
-// ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
+ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
 
 }
 
