@@ -104,3 +104,18 @@ add_executable(SE3_test
 target_link_libraries(SE3_test gtest_main)
 add_test(NAME AllTestsInSE3_test COMMAND SE3_test)
 
+# State test
+
+add_executable(STATE_test
+state_test.cpp
+../src/lie_algebras/so2.cpp
+../src/lie_algebras/so3.cpp
+../src/lie_algebras/se2.cpp
+../src/lie_algebras/se3.cpp
+../src/lie_groups/SO2.cpp
+../src/lie_groups/SO3.cpp
+../src/lie_groups/SE2.cpp
+../src/lie_groups/SE3.cpp
+)
+target_link_libraries(STATE_test gtest_main)
+
