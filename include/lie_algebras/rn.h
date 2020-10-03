@@ -18,19 +18,19 @@ Eigen::Matrix<double,N,1> data_;
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-rn() {  data_.setZero(); }
+rn() : data_(Eigen::Matrix<double,N,1>::Zero()) {}
 
 
 /**
  * Copy constructor.
  */ 
-rn(const rn & u) { data_ = u.data_; }
+rn(const rn & u) : data_(u.data_) {}
 
 /**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of \f$\mathbb{R}^2\f$
 */
-rn(const Eigen::Matrix<double,N,1> data) { data_ = data; }
+rn(const Eigen::Matrix<double,N,1> data) : data_(data) {}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -38,7 +38,7 @@ rn(const Eigen::Matrix<double,N,1> data) { data_ = data; }
 * @param[in] u The data of an element of \f$ \mathbb{R}^n\f$
 * @param verify If true, the constructor will verify that the element given is an element of the Lie algebra.
 */
-rn(const Eigen::Matrix<double,N,1> & data, bool verify) {data_ = data;}
+rn(const Eigen::Matrix<double,N,1> & data, bool verify) : data_(data){}
 
 
 /**
@@ -91,7 +91,15 @@ static Eigen::Matrix<double,N,1> Vee(const Eigen::Matrix<double,N,1>& data){retu
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$
  * @return The data associated to the group element.
  */
-Eigen::Matrix<double,N,1> Exp(){return data_;}
+Eigen::Matrix<double,N,1> Exp(){return Exp(data_);}
+
+
+/**
+ * Computes the exponential of the data of an element of the Lie algebra.
+ * The exponential map is the identity map for \f$ \mathbb{R}^n\f$ * 
+ * @return The data associated to the group element.
+ */
+Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){return data;}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.

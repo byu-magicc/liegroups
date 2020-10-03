@@ -31,39 +31,52 @@ Identity.setIdentity();
 // Valid element
 Eigen::Matrix4d data1 =GenRandElem();
 
-// // Invalid element
-// Eigen::Matrix4d data2;
-// data2.setRandom();
-// while  ((data2.transpose()*data2 - Identity).norm() <= kSE3_threshold_ ) {
-//     data2.setRandom();
-// }
+// Invalid element
+Eigen::Matrix4d data2;
+Eigen::Ref<Eigen::Matrix3d> R(data2.block(0,0,3,3));
+data2.setRandom();
+while  ( ((R.transpose()*R- Identity.block(0,0,3,3)).norm() <= kSE3_threshold_ ) && data2(3,0)==0 && data2(3,1)==0 && data2(3,2)==0 && data2(3,3)==1) {
+    data2.setRandom();
+}
+
 
 
 SE3 g1;
-SE3 g2;
-SE3 g3;
-for (unsigned long int i=0; i<10000;i++)
-{
- g3 = g1.Inverse();   
+SE3 g2(data1,true);
+SE3 g3(data2,true);
+SE3 g4(g2);
+SE3 g5(data2);
+
+ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
+ASSERT_EQ(g1.data_.block(0,3,3,1),g1.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g1.data_.block(0,0,3,3),g1.R_) << "Angular velocity map not set properly.";
+
+
+
+ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
+ASSERT_EQ(g2.data_.block(0,3,3,1),g2.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g2.data_.block(0,0,3,3),g2.R_) << "Angular velocity map not set properly.";
+
+
+
+ASSERT_EQ(g3.data_,Identity) << "Copy constructor constructor error";
+ASSERT_EQ(g3.data_.block(0,3,3,1),g3.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g3.data_.block(0,0,3,3),g3.R_) << "Angular velocity map not set properly.";
+
+ASSERT_EQ(g4.data_,data1) << "Assignment constructor error: Invalid element not excepted. Should set element to identity.";
+ASSERT_EQ(g4.data_.block(0,3,3,1),g4.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g4.data_.block(0,0,3,3),g4.R_) << "Angular velocity map not set properly.";
+
+
+ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
+ASSERT_EQ(g5.data_.block(0,3,3,1),g5.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g5.data_.block(0,0,3,3),g5.R_) << "Angular velocity map not set properly.";
+
+
+
 }
 
 
-// SE3 g1;
-// SE3 g2(data1,true);
-// SE3 g3(data2,true);
-// SE3 g4(g2);
-// SE3 g5(data2);
-
-// ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
-// ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
-// ASSERT_EQ(g3.data_,Identity) << "Copy constructor constructor error";
-// ASSERT_EQ(g4.data_,data1) << "Assignment constructor error: Invalid element not excepted. Should set element to identity.";
-// ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
-
-
-}
-
-/*
 ////////////////////////////////////////////////////////////////////////
 
 // Test the Inverse, Adjoint, Identity, Log, and operators
@@ -72,7 +85,7 @@ TEST(SE3TEST, IAILO) {
 Eigen::Matrix4d Identity;
 Identity.setIdentity();
 Eigen::Matrix<double,6,1> th;
-th << 0.1,0.2,0.3;
+th << -1, 2, 3, 0.1, 0.2, 0.3;
 Eigen::Matrix4d g = GenElem(th);
 
 se3 u1(Eigen::Matrix<double,6,1>::Random());
@@ -100,6 +113,7 @@ ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
 
 }
 
+
 ////////////////////////////////////////////////////////////////////////
 
 // Tests the box plus and box minus functions
@@ -107,8 +121,8 @@ TEST(SE3Test, BoxPlus) {
 
 Eigen::Matrix<double,6,1> th1;
 Eigen::Matrix<double,6,1> th2;
-th1 << 0.1,0.2,0.3;
-th2 << 0.2,0.2,0.1;
+th1 << 1,2,3, 0.1,0.2,0.3;
+th2 << 4,5,6, 0.2,0.2,0.1;
 Eigen::Matrix4d Th1 = se3::Wedge(th1);
 Eigen::Matrix4d Th2 = se3::Wedge(th2);
 
@@ -144,5 +158,5 @@ ASSERT_LE( (g4.OMinus(data3)- th2).norm(), kSE3_threshold_) << "Error with the O
 ASSERT_LE( (g4.BoxMinus(g5).data_- th2).norm(), kSE3_threshold_) << "Error with the OPlus function";
 
 }
-*/
+
 }

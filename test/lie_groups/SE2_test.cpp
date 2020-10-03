@@ -33,8 +33,9 @@ Eigen::Matrix3d data1 =GenRandElem();
 
 // Invalid element
 Eigen::Matrix3d data2;
+Eigen::Ref<Eigen::Matrix2d> R(data2.block(0,0,2,2));
 data2.setRandom();
-while  ((data2.transpose()*data2 - Identity).norm() <= kSE2_threshold_ ) {
+while  ( ((R.transpose()*R- Identity.block(0,0,2,2)).norm() <= kSE2_threshold_ ) && data2(2,0)==0 && data2(2,1)==0 && data2(2,2)==1) {
     data2.setRandom();
 }
 
@@ -47,10 +48,29 @@ SE2 g4(g2);
 SE2 g5(data2);
 
 ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
+ASSERT_EQ(g1.data_.block(0,2,2,1),g1.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g1.data_.block(0,0,2,2),g1.R_) << "Angular velocity map not set properly.";
+
+
+
 ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
+ASSERT_EQ(g2.data_.block(0,2,2,1),g2.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g2.data_.block(0,0,2,2),g2.R_) << "Angular velocity map not set properly.";
+
+
+
 ASSERT_EQ(g3.data_,Identity) << "Copy constructor constructor error";
+ASSERT_EQ(g3.data_.block(0,2,2,1),g3.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g3.data_.block(0,0,2,2),g3.R_) << "Angular velocity map not set properly.";
+
 ASSERT_EQ(g4.data_,data1) << "Assignment constructor error: Invalid element not excepted. Should set element to identity.";
+ASSERT_EQ(g4.data_.block(0,2,2,1),g4.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g4.data_.block(0,0,2,2),g4.R_) << "Angular velocity map not set properly.";
+
+
 ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
+ASSERT_EQ(g5.data_.block(0,2,2,1),g5.t_) << "Translational velocity map not set properly.";
+ASSERT_EQ(g5.data_.block(0,0,2,2),g5.R_) << "Angular velocity map not set properly.";
 
 
 }
