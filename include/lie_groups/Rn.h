@@ -16,6 +16,11 @@ public:
 
 Eigen::Matrix<double,N,1> data_;
 
+static const unsigned int dim_ = N;
+static const unsigned int size1_ = N;
+static const unsigned int size2_ = 1;
+
+
 /**
  * Default constructor. Initializes group element to identity.
  */

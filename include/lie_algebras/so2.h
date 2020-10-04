@@ -15,6 +15,9 @@ public:
 
 Eigen::Matrix<double,1,1> data_;
 
+static const unsigned int dim_ = 1;
+static const unsigned int size1_ = 1;
+static const unsigned int size2_ = 1;
 /**
  * Default constructor. Initializes algebra element to identity.
  */

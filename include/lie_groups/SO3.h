@@ -14,6 +14,10 @@ class SO3 {
 public:
 
 Eigen::Matrix3d data_;
+static const unsigned int dim_ = 3;
+static const unsigned int size1_ = 3;
+static const unsigned int size2_ = 3;
+
 
 /**
  * Default constructor. Initializes group element to identity.

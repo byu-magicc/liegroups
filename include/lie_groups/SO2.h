@@ -2,6 +2,8 @@
 #define _LIEGROUPS_INCLUDE_LIEGROUPS_SO2_
 
 #include <Eigen/Dense>
+#include <utility>
+#include <string>
 #include <iostream>
 #include <lie_algebras/so2.h>
 
@@ -14,6 +16,11 @@ class SO2 {
 public:
 
 Eigen::Matrix2d data_;
+
+static const unsigned int dim_ = 1;
+static const unsigned int size1_ = 2;
+static const unsigned int size2_ = 2;
+// std::pair <std::string,double> product2;
 
 /**
  * Default constructor. Initializes group element to identity.

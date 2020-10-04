@@ -16,6 +16,10 @@ public:
 Eigen::Matrix<double,4,4> data_;
 Eigen::Map<Eigen::Matrix<double,3,1>> t_;  /** < The position */
 Eigen::Ref<Eigen::Matrix3d> R_; /** < The rotation */
+static const unsigned int dim_ = 6;
+static const unsigned int size1_ = 4;
+static const unsigned int size2_ = 4;
+
 
 /**
  * Default constructor. Initializes group element to identity.
