@@ -34,6 +34,21 @@ SO2() : data_(Eigen::Matrix<double,2,2>::Identity()){}
 SO2(const SO2 & g) : data_(g.data_) {}
 
 /**
+ * Copy assignment
+ */ 
+void operator = (const SO2& g){ this->data_ = g.data_; }
+
+/**
+ * Move constructor.
+ */ 
+SO2(const SO2 && g) : data_(g.data_) {}
+
+/**
+ * Move assignment
+ */ 
+void operator = (const SO2&& g){ this->data_ = g.data_; }
+
+/**
 * Initializes group element to the one given. If verify is true
 * it will check that the input is an element of \f$SO(2)\f$
 * @param[in] data The data pertaining to an element of \f$SO(2)\f$
@@ -80,13 +95,6 @@ Eigen::Matrix<double,1,1> Log();
  * the bilinear operation.
  */ 
 SO2 operator * (const SO2& g){ return SO2(data_ *g.data_);}
-
-
-/**
- * Assignment Operator. Deep copy of the input parameter
- * @param g The element to be copied.
- */ 
-void operator = (const SO2& g){ this->data_ = g.data_; }
 
 /**
  * Performs the OPlus operation 

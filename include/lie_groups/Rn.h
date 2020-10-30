@@ -33,6 +33,21 @@ Rn() : data_(Eigen::Matrix<double,N,1>::Zero()) {}
 Rn(const Rn & g) : data_(g.data_) {}
 
 /**
+ * Copy assignment
+ */ 
+void operator = (const Rn& g){ this->data_ = g.data_; }
+
+/**
+ * Move constructor.
+ */ 
+Rn(const Rn && g) : data_(g.data_) {}
+
+/**
+ * Move assignment
+ */ 
+void operator = (const Rn&& g){ this->data_ = g.data_; }
+
+/**
 * Initializes group element to the one given. If verify is true
 * it will check that the input is an element of \f$\mathbb{R}^n\f$
 * @param[in] data The data pertaining to an element of \f$\mathbb{R}^n\f$
@@ -79,13 +94,6 @@ Eigen::Matrix<double,N,1> Log(){return data_;}
  * the bilinear operation.
  */ 
 Rn operator * (const Rn& g){ return Rn(data_  + g.data_);}
-
-
-/**
- * Assignment Operator. Deep copy of the input parameter
- * @param g The element to be copied.
- */ 
-void operator = (const Rn& g){ this->data_ = g.data_; }
 
 /**
  * Performs the OPlus operation 

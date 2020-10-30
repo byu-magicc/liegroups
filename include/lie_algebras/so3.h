@@ -29,6 +29,21 @@ so3() : data_(Eigen::Matrix<double,3,1>::Zero()){}
 so3(const so3 & u) : data_(u.data_) {}
 
 /**
+ * Copy assignment.
+ */
+void operator = (const so3& u){data_ = u.data_;}
+
+/**
+ * Move constructor.
+ */ 
+so3(const so3 && u) : data_(u.data_) {}
+
+/**
+ * Move assignment.
+ */
+void operator = (const so3&& u){data_ = u.data_;}
+
+/**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$so(3)\f$
 */
@@ -182,12 +197,6 @@ so3 operator + (const so3& u){return so3(data_ + u.data_);}
  * @param u An element of the Lie algebra.
  */ 
 so3 operator - (const so3& u){return so3(data_ - u.data_);}
-
-/**
- * Creates a deep copy of the element
- * @param u An element of the Lie algebra.
- */
-void operator = (const so3& u){data_ = u.data_;}
 
 /**
  * Performs Scalar multiplication and returns the result.

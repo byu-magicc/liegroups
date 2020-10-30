@@ -25,8 +25,8 @@ class State {
 
 public:
 
-G g_;
-U u_;
+G g_;   /** < The pose of the object.*/
+U u_;   /** < The twist (velocity) of the object.*/
 
 /**
  * Default constructor. Initializes group element to identity.
@@ -36,7 +36,32 @@ State()=default;
 /**
  * Copy constructor.
  */ 
+State(const State& s) : g_(s.g_), u_(s.u_) {};
+
+/**
+ * Copy assignment.
+ */ 
+void operator = (const State& s){g_ = s.g_; u_ = s.u_};
+
+/**
+ * Copy constructor.
+ */ 
+State(const State&& s) : g_(s.g_), u_(s.u_) {};
+
+/**
+ * Move assignment.
+ */ 
+void operator = (const State&& s){g_ = s.g_; u_ = s.u_};
+
+/**
+ * Copy constructor using group and algebra elements.
+ */ 
 State(const G& g, const U& u) : g_(g), u_(u) {};
+
+/**
+ * Move constructor using group and algebra elements.
+ */ 
+State(const G&& g, const U&& u) : g_(g), u_(u) {};
 
 /**
 * Initializes state using the data provied. 

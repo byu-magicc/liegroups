@@ -31,6 +31,21 @@ SO3() : data_(Eigen::Matrix3d::Identity()){}
 SO3(const SO3 & g) : data_(g.data_) {}
 
 /**
+ * copy assignment
+ */ 
+void operator = (const SO3& g){ this->data_ = g.data_; }
+
+/**
+ * Move constructor.
+ */ 
+SO3(const SO3 && g) : data_(g.data_) {}
+
+/**
+ * Move assignment
+ */ 
+void operator = (const SO3&& g){ this->data_ = g.data_; }
+
+/**
 * Initializes group element to the one given. If verify is true
 * it will check that the input is an element of \f$SO(3)\f$
 * @param[in] data The data pertaining to an element of \f$SO(3)\f$
@@ -76,13 +91,6 @@ Eigen::Matrix<double,3,1> Log();
  * the bilinear operation.
  */ 
 SO3 operator * (const SO3& g){ return SO3(data_ *g.data_);}
-
-
-/**
- * Assignment Operator. Deep copy of the input parameter
- * @param g The element to be copied.
- */ 
-void operator = (const SO3& g){ this->data_ = g.data_; }
 
 /**
  * Performs the OPlus operation 

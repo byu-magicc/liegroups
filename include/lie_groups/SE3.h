@@ -33,6 +33,21 @@ SE3() : t_(data_.data()+12), R_(data_.block(0,0,3,3)), data_(Eigen::Matrix<doubl
 SE3(const SE3 & g) : t_(data_.data()+12), R_(data_.block(0,0,3,3)), data_(g.data_) {}
 
 /**
+ * Copy assignment
+ */ 
+void operator = (const SE3& g){ this->data_ = g.data_; }
+
+/**
+ * Move constructor.
+ */ 
+SE3(const SE3 && g) : t_(data_.data()+12), R_(data_.block(0,0,3,3)), data_(g.data_) {}
+
+/**
+ * Move assignment
+ */ 
+void operator = (const SE3&& g){ this->data_ = g.data_; }
+
+/**
 * Initializes group element to the one given. If verify is true
 * it will check that the input is an element of \f$SE(3)\f$
 * @param[in] data The data pertaining to an element of \f$SE(3)\f$
@@ -88,12 +103,6 @@ Eigen::Matrix<double,6,1> Log() {return se3::Log(this->data_);}
  * the bilinear operation.
  */ 
 SE3 operator * (const SE3& g){ return SE3(data_ *g.data_);}
-
-/**
- * Assignment Operator. Deep copy of the input parameter
- * @param g The element to be copied.
- */ 
-void operator = (const SE3& g){ this->data_ = g.data_; }
 
 /**
  * Performs the OPlus operation 

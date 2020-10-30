@@ -18,17 +18,32 @@ static const unsigned int dim_ = N;
 static const unsigned int size1_ = N;
 static const unsigned int size2_ = 1;
 
+// The rule of 5!!
 
 /**
  * Default constructor. Initializes algebra element to identity.
  */
 rn() : data_(Eigen::Matrix<double,N,1>::Zero()) {}
 
-
 /**
  * Copy constructor.
  */ 
 rn(const rn & u) : data_(u.data_) {}
+
+/**
+ * Copy assignment.
+ */
+void operator = (const rn& u){data_ = u.data_;}
+
+/**
+ * Move constructor.
+ */ 
+rn(const rn && u) : data_(u.data_) {}
+
+/**
+ * Move assignment.
+ */
+void operator = (const rn&& u){data_ = u.data_;}
 
 /**
 * Initializes algebra element to the one given. 
@@ -190,12 +205,6 @@ rn operator + (const rn& u){return rn(data_ + u.data_);}
  * @param u An element of the Lie algebra.
  */ 
 rn operator - (const rn& u){return rn(data_ - u.data_);}
-
-/**
- * Creates a deep copy of the element
- * @param u An element of the Lie algebra.
- */
-void operator = (const rn& u){data_ = u.data_;}
 
 /**
  * Performs Scalar multiplication and returns the result.

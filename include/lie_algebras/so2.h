@@ -30,6 +30,21 @@ so2() : data_(Eigen::Matrix<double,1,1>::Zero()){}
 so2(const so2 & u) : data_(u.data_){}
 
 /**
+ * Copy assignment.
+ */
+void operator = (const so2& u){data_ = u.data_;}
+
+/**
+ * Move constructor.
+ */ 
+so2(const so2 && u) : data_(u.data_){}
+
+/**
+ * Move assignment.
+ */
+void operator = (const so2&& u){data_ = u.data_;}
+
+/**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$so(2)\f$
 */

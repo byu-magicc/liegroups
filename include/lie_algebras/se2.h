@@ -33,6 +33,23 @@ se2(): p_(data_.data()), th_(data_.data()+2), data_(Eigen::Matrix<double,3,1>::Z
 se2(const se2 & u) : p_(data_.data()), th_(data_.data()+2), data_(u.data_){}
 
 /**
+ * Copy assignment
+ */
+void operator = (const se2& u){data_ = u.data_;}
+
+/**
+ * Move constructor.
+ */ 
+se2(const se2 && u) : p_(data_.data()), th_(data_.data()+2), data_(u.data_){}
+
+/**
+ * Move assignment.
+ */
+void operator = (const se2&& u){data_ = u.data_;}
+
+
+
+/**
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$se(2)\f$
 */
@@ -193,12 +210,6 @@ se2 operator + (const se2& u){return se2(data_ + u.data_);}
  * @param u An element of the Lie algebra.
  */ 
 se2 operator - (const se2& u){return se2(data_ - u.data_);}
-
-/**
- * Creates a deep copy of the element
- * @param u An element of the Lie algebra.
- */
-void operator = (const se2& u){data_ = u.data_;}
 
 /**
  * Performs Scalar multiplication and returns the result.
