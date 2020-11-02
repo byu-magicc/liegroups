@@ -212,12 +212,6 @@ so2 operator + (const so2& u){return so2(data_ + u.data_);}
 so2 operator - (const so2& u){return so2(data_ - u.data_);}
 
 /**
- * Creates a deep copy of the element
- * @param u An element of the Lie algebra.
- */
-void operator = (const so2& u){data_ = u.data_;}
-
-/**
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
