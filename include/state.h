@@ -41,7 +41,7 @@ State(const State& s) : g_(s.g_), u_(s.u_) {};
 /**
  * Copy assignment.
  */ 
-void operator = (const State& s){g_ = s.g_; u_ = s.u_};
+void operator = (const State& s){g_ = s.g_; u_ = s.u_;};
 
 /**
  * Copy constructor.
@@ -51,7 +51,7 @@ State(const State&& s) : g_(s.g_), u_(s.u_) {};
 /**
  * Move assignment.
  */ 
-void operator = (const State&& s){g_ = s.g_; u_ = s.u_};
+void operator = (const State&& s){g_ = s.g_; u_ = s.u_;};
 
 /**
  * Copy constructor using group and algebra elements.
@@ -69,7 +69,7 @@ State(const G&& g, const U&& u) : g_(g), u_(u) {};
 * @param u_data The data pertaining to a element of the Cartesian space isomorphic Lie algebra
 * are elements of the group and Lie algebra.
 */
-State(const Eigen::Matrix<double,G::size1_,G::size2_> & g_data, const Eigen::Matrix<double,U::size1_,U::size2_> & u_data, bool verify) : g(g_data,verify), u(u_data,verify) {}
+State(const Eigen::Matrix<double,G::size1_,G::size2_> & g_data, const Eigen::Matrix<double,U::size1_,U::size2_> & u_data, bool verify) : g_(g_data,verify), u_(u_data,verify) {}
 
 
 /**
@@ -80,7 +80,7 @@ State(const Eigen::Matrix<double,G::size1_,G::size2_> & g_data, const Eigen::Mat
 * @param verify If true, the constructor will verify that the provided data 
 * are elements of the group and Lie algebra.
 */
-State(const Eigen::Matrix<double,G::size1_,G::size2_> & g_data, const Eigen::Matrix<double,U::size1_,U::size1_> & u_data, bool verify) : g(g_data,verify), u(u_data,verify) {}
+State(const Eigen::Matrix<double,G::size1_,G::size2_> & g_data, const Eigen::Matrix<double,U::size1_,U::size1_> & u_data, bool verify) : g_(g_data,verify), u_(u_data,verify) {}
 
 /*
  * Returns the inverse of the element
