@@ -101,6 +101,11 @@ Eigen::Matrix<double,G::dim_,G::dim_> Adjoint(){return g_.Adjoint();}
 
 };
 
+typedef State<Rn<2>,rn<2>> R2_r2;
+typedef State<Rn<3>,rn<3>> R3_r3;
+typedef State<SE2,se2> SE2_se2;
+typedef State<SE3,se3> SE3_se3;
+
 }
 
 #endif //_LIEGROUPS_INCLUDE_LIEGROUPS_STATE
