@@ -1,5 +1,5 @@
 #ifndef _LIEGROUPS_INCLUDE_LIEGROUPS_STATE_
-#define _LIEGROUPS_INCLUDE_LIEGROUPS_STATE
+#define _LIEGROUPS_INCLUDE_LIEGROUPS_STATE_
 
 #include <Eigen/Dense>
 #include <iostream>
