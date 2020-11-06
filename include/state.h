@@ -28,6 +28,9 @@ public:
 G g_;   /** < The pose of the object.*/
 U u_;   /** < The twist (velocity) of the object.*/
 
+typedef G g_type_; /** < The group type .*/
+typedef U u_type_; /** < The algebra type .*/
+
 /**
  * Default constructor. Initializes group element to identity.
  */
@@ -103,6 +106,8 @@ Eigen::Matrix<double,G::dim_,G::dim_> Adjoint(){return g_.Adjoint();}
 
 typedef State<Rn<2>,rn<2>> R2_r2;
 typedef State<Rn<3>,rn<3>> R3_r3;
+typedef State<SO2,so2> SO2_so2;
+typedef State<SO3,so3> SO3_so3;
 typedef State<SE2,se2> SE2_se2;
 typedef State<SE3,se3> SE3_se3;
 
