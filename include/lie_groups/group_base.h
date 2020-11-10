@@ -34,7 +34,7 @@ Mat_C Log() {return Algebra::Log(static_cast<Group*>(this)->data_);}
 /**
  * Creates a random element
  */ 
-Mat_G Random() {return Algebra::Exp(Mat_A::Random());}
+static Mat_G Random() {return Algebra::Exp(Mat_C::Random());}
 
 /**
  * Performs the OPlus operation 

@@ -31,9 +31,9 @@ U u_;   /** < The twist (velocity) of the object.*/
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
 typedef Eigen::Matrix<double,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
-typedef Eigen::Matrix<double,U::size1_, U::size1_> Mat_C;     /**< The Cartesian space data type. */
+typedef Eigen::Matrix<double,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
 typedef Mat_G Mat_A;                                          /**< The Lie algebra data type. */
-typedef Eigen::Matrix<double,2*G::size1_, 2*G::size2_> Mat_S; /**< The State data type. */
+typedef Eigen::Matrix<double,2*G::dim_, G::dim_> Mat_Adj; /**< The Adjoint data type. */
 typedef Eigen::Matrix<double,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
 /**
@@ -52,7 +52,7 @@ State(const State& s) : g_(s.g_), u_(s.u_) {};
 void operator = (const State& s){g_ = s.g_; u_ = s.u_;};
 
 /**
- * Copy constructor.
+ * Move constructor.
  */ 
 State(const State&& s) : g_(s.g_), u_(s.u_) {};
 
@@ -77,7 +77,7 @@ State(const G&& g, const U&& u) : g_(g), u_(u) {};
 * @param u_data The data pertaining to a element of the Cartesian space isomorphic Lie algebra
 * are elements of the group and Lie algebra.
 */
-State(bool verify, const Mat_G & g_data, const Mat_C & u_data) : g_(g_data,verify), u_(u_data,verify) {}
+State(bool verify, const Mat_G & g_data, const Mat_C & u_data) : g_(g_data,verify), u_(u_data) {}
 
 
 /**
@@ -88,29 +88,42 @@ State(bool verify, const Mat_G & g_data, const Mat_C & u_data) : g_(g_data,verif
 * @param verify If true, the constructor will verify that the provided data 
 * are elements of the group and Lie algebra.
 */
-State(const Mat_G & g_data, const Mat_C & u_data, bool verify) : g_(g_data,verify), u_(u_data,verify) {}
+State(const Mat_G & g_data, const Mat_A & u_data, bool verify) : g_(g_data,verify), u_(u_data,verify) {}
 
 /*
  * Returns the inverse of the element
  */ 
-State Inverse(){ return State(g_.Inverse(),u_.Inverse());}
-
+State Inverse(){ return State(g_.Inverse(),U(-u_.data_));}
 /**
  * Returns the identity element
  */ 
 static State Identity(){return State();}
 
 /**
+ * Left group action multiplication. (this*s)
+ */ 
+State operator * (const State& s){
+  return State(this->g_*s.g_,this->u_+s.u_);
+}
+
+/**
+ * Return a random state element
+ */
+static State Random() {
+  return State(false,G::Random(),Mat_C::Random());
+} 
+
+/**
  * Returns the state adjoint
  */ 
-Mat_S Adjoint(){
-  Mat_S&& tmp;
-  tmp.block(0,0,G::size1_,G::size2_) = g_.Adjoint();
-  tmp.block(G::size1_,G::size2_,G::size1_,G::size2_) = u_.Adjoint();
+Mat_Adj Adjoint(){
+  Mat_Adj&& tmp = Mat_Adj();
+  tmp.block(0,0,G::dim_,G::dim_) = g_.Adjoint();
+  tmp.block(G::dim_,0,G::dim_,G::dim_) = u_.Adjoint();
   return tmp;}
 
 /**
- * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_2-S_1\f$
+ * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_1-S_2\f$
  * @param g1_data The group data of  \f$ g_1 \f$
  * @param g2_data The group data of \f$ g_2 \f$
  * @param u1_data The Cartesian data of \f$ u_1 \f$
@@ -118,19 +131,29 @@ Mat_S Adjoint(){
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
 static Mat_SC OMinus(const Mat_G& g1_data,const Mat_G& g2_data,const Mat_C & u1_data,const Mat_C & u2_data)
-{ Mat_SC&& tmp;
-  tmp.block(0,0,G::dim_,1) = G::Ominus(g1_data,g2_data);
-  tmp.block(G::dim_,0,U::dim_,1) = u2_data - u1_data;
+{ Mat_SC&& tmp = Mat_SC();
+  tmp.block(0,0,G::dim_,1) = G::OMinus(g1_data,g2_data);
+  tmp.block(G::dim_,0,U::dim_,1) = u1_data - u2_data;
     return tmp;}
 
 /**
- * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_2-S_1\f$
+ * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_1-S_2\f$
  * @param s1 The state  \f$ s_1 \f$
  * @param s2 The state  \f$ s_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
 static Mat_SC OMinus(const State<G>& s1, const State<G>&s2)
 { return OMinus(s1.g_.data_,s2.g_.data_, s1.u_.data_,s2.u_.data_);}
+
+
+/**
+ * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_2-S_1\f$ with this being S_1
+ * @param s2 The state  \f$ s_2 \f$
+ * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
+ */ 
+Mat_SC OMinus(const State<G>& s2){
+  return OMinus(*this,s2);
+}
 
 
 // /**
