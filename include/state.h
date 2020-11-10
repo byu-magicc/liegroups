@@ -117,7 +117,7 @@ static State Random() {
  * Returns the state adjoint
  */ 
 Mat_Adj Adjoint(){
-  Mat_Adj&& tmp = Mat_Adj();
+  Mat_Adj tmp;
   tmp.block(0,0,G::dim_,G::dim_) = g_.Adjoint();
   tmp.block(G::dim_,0,G::dim_,G::dim_) = u_.Adjoint();
   return tmp;}
@@ -131,7 +131,7 @@ Mat_Adj Adjoint(){
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
 static Mat_SC OMinus(const Mat_G& g1_data,const Mat_G& g2_data,const Mat_C & u1_data,const Mat_C & u2_data)
-{ Mat_SC&& tmp = Mat_SC();
+{ Mat_SC tmp;
   tmp.block(0,0,G::dim_,1) = G::OMinus(g1_data,g2_data);
   tmp.block(G::dim_,0,U::dim_,1) = u1_data - u2_data;
     return tmp;}
