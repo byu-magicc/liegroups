@@ -6,21 +6,25 @@
 #include <string>
 #include <iostream>
 #include <lie_algebras/so2.h>
+#include "lie_groups/group_base.h"
 
 namespace lie_groups {
 
 constexpr double kSO2_threshold_ = 1e-7;
 
-class SO2 {
+class SO2 : public GroupBase<SO2,so2, Eigen::Matrix2d, Eigen::Matrix<double,1,1>>{
 
 public:
 
 Eigen::Matrix2d data_;
 
-static const unsigned int dim_ = 1;
-static const unsigned int size1_ = 2;
-static const unsigned int size2_ = 2;
-// std::pair <std::string,double> product2;
+static constexpr unsigned int dim_ = 1;
+static constexpr unsigned int size1_ = 2;
+static constexpr unsigned int size2_ = 2;
+typedef so2 algebra;
+typedef GroupBase<SO2,so2, Eigen::Matrix2d, Eigen::Matrix<double,1,1>> Base;
+using Base::BoxPlus;
+using Base::BoxMinus;
 
 /**
  * Default constructor. Initializes group element to identity.
@@ -86,74 +90,27 @@ static SO2 Identity(){return SO2();}
 Eigen::Matrix<double,1,1> Adjoint(){return Eigen::Matrix<double,1,1>::Identity();}
 
 /**
- * Computes the log of the element.
- */ 
-Eigen::Matrix<double,1,1> Log();
-
-/**
  * Performs the left group action on itself. i.e. this is on the left of
  * the bilinear operation.
  */ 
 SO2 operator * (const SO2& g){ return SO2(data_ *g.data_);}
 
 /**
- * Performs the OPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
+ * Performs the group operation between the data of two elements
  */ 
-static Eigen::Matrix2d OPlus(const Eigen::Matrix2d& g_data, const Eigen::Matrix<double,1,1>& u_data)
-{return g_data*so2::Exp(u_data);}
-
-/**
- * Performs the OPlus operation 
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix2d OPlus(const Eigen::Matrix<double,1,1>& u_data)
-{return OPlus(this->data_,u_data);}
-
-/**
- * Performs the OPlus operation and assigns the result to the group element
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void OPlusEq(const Eigen::Matrix<double,1,1>& u_data)
-{data_ = this->OPlus(u_data);}
-
-/**
- * Performs the BoxPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-static Eigen::Matrix2d BoxPlus(const Eigen::Matrix2d& g_data, const Eigen::Matrix2d& u_data)
-{return OPlus(g_data,so2::Vee(u_data));}
-
-/**
- * Performs the BoxPlus operation 
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix2d BoxPlus(const Eigen::Matrix2d& u_data)
-{return this->OPlus(so2::Vee(u_data));}
-
-/**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const Eigen::Matrix2d& u_data)
-{data_ = this->BoxPlus(u_data);}
+static Eigen::Matrix2d Mult(const Eigen::Matrix2d& data1, const Eigen::Matrix2d& data2 ){
+    return data1*data2;
+}
 
 /**
  * Performs the BoxPlus operation 
  * @param g An element of the group
  * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
+ * @return The result of the BoxPlus operation.typename
  */ 
 static SO2 BoxPlus(const SO2& g, const so2& u)
 {return SO2(OPlus(g.data_,u.data_));}
+
 
 /**
  * Performs the BoxPlus operation 
@@ -161,59 +118,14 @@ static SO2 BoxPlus(const SO2& g, const so2& u)
  * @return The result of the BoxPlus operation.
  */ 
 SO2 BoxPlus(const so2& u)
-{return SO2::BoxPlus(*this,u);}
+{return BoxPlus(*this,u);}
 
 /**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const so2& u)
-{data_ = (this->BoxPlus(u)).data_;}
-
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-static Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matrix2d& g2_data)
-{return so2::Log(SO2::Inverse(g1_data)*g2_data);}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-Eigen::Matrix<double,1,1> OMinus(const Eigen::Matrix2d& g_data)
-{return SO2::OMinus(data_,g_data);}
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-static Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g1_data,const Eigen::Matrix2d& g2_data)
-{return so2::Wedge(SO2::OMinus(g1_data, g2_data));}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-Eigen::Matrix2d BoxMinus(const Eigen::Matrix2d& g_data)
-{return BoxMinus(this->data_,g_data);}
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
+ * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_2^{-1}*g_1) \f$
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-so2 BoxMinus(const SO2& g){return so2(so2::Vee(this->BoxMinus(g.data_)));}
+so2 BoxMinus(const SO2& g){ return so2( so2::Vee(BoxMinus(g.data_)));}
 
 /**
  * Prints the content of the data

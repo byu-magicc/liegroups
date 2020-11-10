@@ -22,14 +22,6 @@ SO2::SO2(const Eigen::Matrix2d & data, bool verify) {
 
 //----------------------------------------------------------
 
-Eigen::Matrix<double,1,1> SO2::Log() {
-    Eigen::Matrix<double,1,1> m;
-    m << atan2(data_(1,0),data_(0,0));
-    return m;
-}
-
-//----------------------------------------------------------
-
 bool SO2::isElement(const Eigen::Matrix2d& data) {
     return (data.transpose()*data - Eigen::Matrix2d::Identity()).norm() < kSO2_threshold_;
 }

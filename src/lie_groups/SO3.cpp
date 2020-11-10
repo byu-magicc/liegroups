@@ -20,24 +20,6 @@ SO3::SO3(const Eigen::Matrix3d & data, bool verify) {
     }
 }
 
-//----------------------------------------------------------
-
-Eigen::Matrix<double,3,1> SO3::Log() {
-    Eigen::Matrix<double,3,1> u;
-
-    double t = data_.trace();
-    if ( fabs(t-3.0) <= kso3_threshold_) { // Rotation matrix is close to identity
-    
-        u.setZero();
-
-    } else { // Use Rodriguez formula 
-
-        double th = acos( (t-1)/2);
-        u = so3::Vee(th*(data_-data_.transpose())/(2*sin(th)));
-    }
-
-    return u;
-}
 
 //----------------------------------------------------------
 

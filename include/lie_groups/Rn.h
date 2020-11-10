@@ -4,27 +4,36 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <lie_algebras/rn.h>
+#include "lie_groups/group_base.h"
 
 namespace lie_groups {
 
 constexpr double kRn_threshold_ = 1e-7;
 
 template <int N>
-class Rn {
+class Rn : public GroupBase<Rn<N>, rn<N>, Eigen::Matrix<double,N,1>,Eigen::Matrix<double,N,1>>{
 
 public:
 
 Eigen::Matrix<double,N,1> data_;
 
-static const unsigned int dim_ = N;
-static const unsigned int size1_ = N;
-static const unsigned int size2_ = 1;
+static constexpr unsigned int dim_ = N;
+static constexpr unsigned int size1_ = N;
+static constexpr unsigned int size2_ = 1;
+typedef GroupBase<Rn<N>, rn<N>, Eigen::Matrix<double,N,1>,Eigen::Matrix<double,N,1>> Base; 
+typedef rn<N> algebra;
+typedef Eigen::Matrix<double,N,1> Mat_G;
+typedef Eigen::Matrix<double,N,1> Mat_A;
+typedef Eigen::Matrix<double,N,1> Mat_C;
+using Base::BoxPlus;
+using Base::BoxMinus;
+
 
 
 /**
  * Default constructor. Initializes group element to identity.
  */
-Rn() : data_(Eigen::Matrix<double,N,1>::Zero()) {}
+Rn() : data_(Mat_G::Zero()) {}
 
 
 /**
@@ -54,13 +63,13 @@ void operator = (const Rn&& g){ this->data_ = g.data_; }
 * @param verify If true, the constructor will verify that the provided 
 * element is a member of \f$\mathbb{R}^n\f$
 */
-Rn(const Eigen::Matrix<double,N,1> & data, bool verify) : data_(data) {}
+Rn(const Mat_G& data, bool verify) : data_(data) {}
 
 /**
 * Initializes group element to the data of the one given. 
 * @param[in] data  The data pertaining to an element of \f$\mathbb{R}^n\f$
 */
-Rn(const Eigen::Matrix<double,N,1> & data) :data_(data){}
+Rn(const Mat_G& data) :data_(data){}
 
 /*
  * Returns the inverse of the element
@@ -70,7 +79,7 @@ Rn Inverse(){ return Rn(-this->data_);}
 /*
  * Returns the inverse of the data of an element
  */ 
-static Eigen::Matrix<double,N,1> Inverse(const Eigen::Matrix<double,N,1>& data){  return -data;}
+static Mat_G Inverse(const Mat_G& data){  return -data;}
 
 
 /**
@@ -87,7 +96,7 @@ Eigen::Matrix<double,N,N> Adjoint(){return Eigen::Matrix<double,N,N>::Identity()
 /**
  * Computes the log of the element.
  */ 
-Eigen::Matrix<double,N,1> Log(){return data_;}
+Mat_C Log(){return data_;}
 
 /**
  * Performs the left group action on itself. i.e. this is on the left of
@@ -96,135 +105,41 @@ Eigen::Matrix<double,N,1> Log(){return data_;}
 Rn operator * (const Rn& g){ return Rn(data_  + g.data_);}
 
 /**
- * Performs the OPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
+ * Performs the group operation between the data of two elements
  */ 
-static Eigen::Matrix<double,N,1> OPlus(const Eigen::Matrix<double,N,1>& g_data, const Eigen::Matrix<double,N,1>& u_data)
-{return g_data + u_data;}
-
-/**
- * Performs the OPlus operation 
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix<double,N,1> OPlus(const Eigen::Matrix<double,N,1>& u_data)
-{return OPlus(this->data_,u_data);}
-
-/**
- * Performs the OPlus operation and assigns the result to the group element
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void OPlusEq(const Eigen::Matrix<double,N,1>& u_data)
-{data_ = this->OPlus(u_data);}
-
-/**
- * Performs the BoxPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-static Eigen::Matrix<double,N,1> BoxPlus(const Eigen::Matrix<double,N,1>& g_data, const Eigen::Matrix<double,N,1>& u_data)
-{return OPlus(g_data,u_data);}
-
-/**
- * Performs the BoxPlus operation 
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix<double,N,1> BoxPlus(const Eigen::Matrix<double,N,1>& u_data)
-{return this->OPlus(u_data);}
-
-/**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const Eigen::Matrix<double,N,1>& u_data)
-{data_ = this->BoxPlus(u_data);}
+static Mat_G Mult(const Mat_G& data1, const Mat_G& data2 ){
+    return data1 + data2;
+}
 
 /**
  * Performs the BoxPlus operation 
  * @param g An element of the group
  * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
+ * @return The result of the BoxPlus operation.typename
  */ 
-static Rn BoxPlus(const Rn& g, const rn<N>& u)
-{return Rn(OPlus(g.data_,u.data_));}
+static Rn<N>  BoxPlus(const Rn<N> & g, const rn<N>& u)
+{return Rn<N> (OPlus(g.data_,u.data_));}
+
 
 /**
  * Performs the BoxPlus operation 
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-Rn BoxPlus(const rn<N>& u)
-{return Rn::BoxPlus(*this,u);}
+Rn<N> BoxPlus(const rn<N>& u)
+{return BoxPlus(*this,u);}
 
 /**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const rn<N>& u)
-{data_ = (this->BoxPlus(u)).data_;}
-
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-static Eigen::Matrix<double,N,1> OMinus(const Eigen::Matrix<double,N,1>& g1_data,const Eigen::Matrix<double,N,1>& g2_data)
-{return g2_data - g1_data;}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-Eigen::Matrix<double,N,1> OMinus(const Eigen::Matrix<double,N,1>& g_data)
-{return Rn::OMinus(data_,g_data);}
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-static Eigen::Matrix<double,N,1> BoxMinus(const Eigen::Matrix<double,N,1>& g1_data,const Eigen::Matrix<double,N,1>& g2_data)
-{return Rn::OMinus(g1_data, g2_data);}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-Eigen::Matrix<double,N,1> BoxMinus(const Eigen::Matrix<double,N,1>& g_data)
-{return BoxMinus(this->data_,g_data);}
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
+ * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_2^-1*g_1) \f$
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-rn<N> BoxMinus(const Rn& g){return rn<N>(this->BoxMinus(g.data_));}
-
-/**
- * Prints the content of the data
- */ 
-void Print() {
-    std::cout << data_ << std::endl; 
-}
+rn<N> BoxMinus(const Rn<N>& g){ return rn<N>( rn<N>::Vee(BoxMinus(g.data_)));}
 
 /**
  * Verifies that the data of an element properly corresponds to the set. 
  */ 
-static bool isElement(const Eigen::Matrix<double,N,1>& data) {return true;}
+static bool isElement(const Mat_G& data) {return true;}
 
 };
 

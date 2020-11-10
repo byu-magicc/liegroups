@@ -4,82 +4,140 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include "lie_algebras/se2.h"
 
 namespace lie_groups {
 
-class GroupBase {
+template<typename Group, typename Algebra, typename Mat_G, typename Mat_C>
+class GroupBase{
+
+private:
+GroupBase()=default;
+~GroupBase()=default;
+friend Group;
 
 public:
 
+typedef Mat_G Mat_A;                                               // Lie algebra matrix
 
-    Eigen::MatrixXd g_; 
+/**
+ * Computes the log of the element.
+ */ 
+Mat_C Log() {return Algebra::Log(static_cast<Group*>(this)->data_);}
+// Mat_C Log() {return se2::Log(static_cast<Group*>(this)->data_);}
 
-    /**
-    * This operator performs the left group action on the element passed in.
-    * @param g The group element that the left action is being applied to.
-    * @return The result of the left group action.
-    */
-    virtual GroupBase operator * (const GroupBase& g)=0;
 
-    /**
-     * Computes the matrix adjoint representation.
-     * @return The matrix adjoint representation.
-     */
-    virtual Eigen::MatrixXd Adjoint()=0;
+// static Mat_G Mult(const Mat_G& data1, const Mat_G& data2 ){
+//     return Group::Mult(data1,data2);
+// }
 
-    /**
-    * Computes and returns the identity element.
-    */
-    virtual Eigen::MatrixXd Identity()=0;
+/**
+ * Creates a random element
+ */ 
+Mat_G Random() {return Algebra::Exp(Mat_A::Random());}
 
-    /**
-    * Computes and returns the inverse element.
-    */
-    virtual Eigen::MatrixXd Inverse()=0; 
+/**
+ * Performs the OPlus operation 
+ * @param g_data The data belonging to the group element.
+ * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+static Mat_G OPlus(const Mat_G& g_data, const Mat_C& u_data)
+{return Group::Mult(g_data,Algebra::Exp(u_data));}
 
-    /**
-     * Applies the log map to the element.
-     * @return The result of the log function.
-     */ 
-    virtual Eigen::MatrixXd Log()=0;
 
-    // /**
-    //  * Performs the left box-plus operation 
-    //  * \f$ g\exp{u} \f$.
-    //  * @param u The data of an element of the Lie Algebra
-    //  * @return The rusult of the operation.
-    //  */ 
-    // virtual Eigen::MatrixXd LBoxPlus(const Eigen::MatrixXd& u);
+/**
+ * Performs the OPlus operation 
+ * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+Mat_G OPlus(const Mat_C& u_data)
+{return OPlus(static_cast<Group*>(this)->data_ ,u_data);}
 
-    // /**
-    //  * Performs the right box-plus operation 
-    //  * \f$ \exp{u}g \f$.
-    //  * @param u The data of an element of the Lie Algebra
-    //  * @return The rusult of the operation.
-    //  */ 
-    // virtual Eigen::MatrixXd RBoxPlus(const Eigen::MatrixXd& u);
+/**
+ * Performs the OPlus operation and assigns the result to the group element
+ * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+void OPlusEq(const Mat_C& u_data)
+{static_cast<Group*>(this)->data_ = this->OPlus(u_data);}
 
-    // /**
-    //  * Performs the left O-plus operation 
-    //  * \f$ g\exp{u^{\wedge}} \f$.
-    //  * @param u The data of an element of the Cartesian space
-    //  * @return The rusult of the operation.
-    //  */ 
-    // virtual Eigen::MatrixXd LOPlus(const Eigen::MatrixXd& u);
+/**
+ * Performs the BoxPlus operation 
+ * @param g_data The data belonging to the group element.
+ * @param u_data The data belonging to an element of the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+static Mat_G BoxPlus(const Mat_G& g_data, const Mat_A& u_data)
+{return OPlus(g_data,Algebra::Vee(u_data));}
 
-    // /**
-    //  * Performs the right O-plus operation 
-    //  * \f$ \exp{u^{\wedge}}g \f$.
-    //  * @param u A element of the Cartesian space
-    //  * @return The rusult of the operation.
-    //  */ 
-    // virtual Eigen::MatrixXd ROPlus(const Eigen::MatrixXd& u);
+/**
+ * Performs the BoxPlus operation 
+ * @param u_data The data belonging to an element of the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+Mat_G BoxPlus(const Mat_A& u_data)
+{return this->OPlus(Algebra::Vee(u_data));}
 
-    
+/**
+ * Performs the BoxPlus operation and assigns the result to the group element
+ * @param u_data The data belonging to an element of the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+void BoxPlusEq(const Mat_A& u_data)
+{static_cast<Group*>(this)->data_ = this->BoxPlus(u_data);}
 
-    virtual void Print()=0;
+/**
+ * Performs the BoxPlus operation and assigns the result to the group element
+ * @param u An element of the Lie algebra.
+ * @return The result of the BoxPlus operation.
+ */ 
+void BoxPlusEq(const Algebra& u)
+{static_cast<Group*>(this)->data_ = (this->OPlus(u.data_));}
 
-private:
+
+/**
+ * Performs the O-minus operation \f$ \log(g_2^-1*g_1) \f$
+ * @param g_data1 The data of  \f$ g_1 \f$
+ * @param g_data2 The data of \f$ g_2 \f$
+ * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
+ */ 
+static Mat_C OMinus(const Mat_G& g1_data,const Mat_G& g2_data)
+{return Algebra::Log(Group::Mult(Group::Inverse(g2_data),g1_data));}
+
+
+/**
+ * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_2^-1*g_1) \f$
+ * @param g_data The data of  \f$ g_1 \f$
+ * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
+ */ 
+Mat_C OMinus(const Mat_G& g_data)
+{return OMinus(static_cast<Group*>(this)->data_,g_data);}
+
+/**
+ * Performs the O-minus operation \f$ \log(g_2^-1*g_1) \f$
+ * @param g_data1 The data of  \f$ g_1 \f$
+ * @param g_data2 The data of \f$ g_2 \f$
+ * @return The data of an element of the Lie algebra
+ */ 
+static Mat_A BoxMinus(const Mat_G& g1_data,const Mat_G& g2_data)
+{return Algebra::Wedge(OMinus(g1_data, g2_data));}
+
+/**
+ * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_2^-1*g_1) \f$
+ * @param g_data The data of  \f$ g_1 \f$
+ * @return The data of an element of the Lie algebra
+ */ 
+Mat_A BoxMinus(const Mat_G& g_data)
+{return BoxMinus(static_cast<Group*>(this)->data_,g_data);}
+
+
+/**
+ * Prints the content of the data
+ */ 
+void Print() {
+    std::cout << static_cast<Group*>(this)->data_ << std::endl; 
+}
 
 
 };

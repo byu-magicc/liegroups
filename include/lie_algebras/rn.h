@@ -14,9 +14,9 @@ class rn  {
 public:
 
 Eigen::Matrix<double,N,1> data_;
-static const unsigned int dim_ = N;
-static const unsigned int size1_ = N;
-static const unsigned int size2_ = 1;
+static constexpr unsigned int dim_ = N;
+static constexpr unsigned int size1_ = N;
+static constexpr unsigned int size2_ = 1;
 
 // The rule of 5!!
 
@@ -118,7 +118,7 @@ Eigen::Matrix<double,N,1> Exp(){return Exp(data_);}
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$ * 
  * @return The data associated to the group element.
  */
-Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){return data;}
+static Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){return data;}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.

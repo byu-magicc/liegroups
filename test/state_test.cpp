@@ -8,27 +8,23 @@
 
 namespace lie_groups {
 
-using namespace std::chrono;
 
-TEST(STATETEST, Constructors) {
+using MyTypes = ::testing::Types<R2_r2,R3_r3,SO2_so2,SO3_so3,SE2_se2,SE3_se3>;
 
-// State<SO2,so2> x;
+template <typename T>
+class ContructorTest : public testing::Test {
+public:
+typedef T type;
+};
 
-high_resolution_clock::time_point t1 = high_resolution_clock::now();
+TYPED_TEST_SUITE(ContructorTest, MyTypes);
+TYPED_TEST(ContructorTest, Constructors) {
 
-for (unsigned long int i(100000); i!=0; --i)
-    SO2 x;
 
-high_resolution_clock::time_point t2 = high_resolution_clock::now();
-
-duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
-
-std::cout << "It took me " << time_span.count() << " seconds.";
-std::cout << std::endl;
-
-// std::cerr << x.Adjoint() << std::endl;
-
-// State<SE2,se2> y;
+// Test default constructor
+TypeParam state;
+std::cout << state.g_.data_ << std::endl << std::endl;
+// ASSERT_EQ(state.g_.data_, TypeParam::g_type_::Identity());
 
 
 

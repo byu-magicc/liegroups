@@ -153,9 +153,9 @@ ASSERT_EQ(g2.data_, data1*data2) << "Error with the BoxPlus function";
 
 ASSERT_EQ(g3.data_, data1*data2) << "Error with the BoxPlus function";
 
-ASSERT_LE( (g4.OMinus(data3)- th2).norm(), kSE3_threshold_) << "Error with the OPlus function";
+ASSERT_LE( (g5.OMinus(data1)- th2).norm(), kSE3_threshold_) << "Error with the OPlus function";
 
-ASSERT_LE( (g4.BoxMinus(g5).data_- th2).norm(), kSE3_threshold_) << "Error with the OPlus function";
+ASSERT_LE( (g5.BoxMinus(g4).data_- th2).norm(), kSE3_threshold_) << "Error with the OPlus function";
 
 }
 

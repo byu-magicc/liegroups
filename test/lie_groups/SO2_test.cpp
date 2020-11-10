@@ -110,7 +110,7 @@ g1.OPlusEq(th2);
 SO2 g2(data1);
 SO2 g3(data1);
 g3.BoxPlusEq(so2(th2));
-SO2 g4(data2);
+SO2 g4(data1);
 SO2 g5(data3);
 
 ASSERT_EQ(g1.data_, data1*data2) << "Error with an OPlus function";
@@ -128,9 +128,9 @@ ASSERT_EQ(g3.data_, data1*data2) << "Error with the BoxPlus function";
 
 // std::cerr << g4.OMinus(data3)<< std::endl;
 // std::cerr << th1<< std::endl;
-ASSERT_LE( (g4.OMinus(data3)- th1).norm(), kSO2_threshold_) << "Error with the OPlus function";
+ASSERT_LE( (g5.OMinus(data1)- th2).norm(), kSO2_threshold_) << "Error with the OPlus function";
 
-ASSERT_LE( (g4.BoxMinus(g5).data_- th1).norm(), kSO2_threshold_) << "Error with the OPlus function";
+ASSERT_LE( (g5.BoxMinus(g4).data_- th2).norm(), kSO2_threshold_) << "Error with the OPlus function";
 
 }
 

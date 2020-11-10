@@ -13,9 +13,9 @@ class so3  {
 public:
 
 Eigen::Matrix<double,3,1> data_; /** < The vector is translational velocity followed by angular velocity*/
-static const unsigned int dim_ = 3;
-static const unsigned int size1_ = 3;
-static const unsigned int size2_ = 1;
+static constexpr unsigned int dim_ = 3;
+static constexpr unsigned int size1_ = 3;
+static constexpr unsigned int size2_ = 1;
 
 
 /**

@@ -4,21 +4,26 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <lie_algebras/se3.h>
+#include "lie_groups/group_base.h"
 
 namespace lie_groups {
 
 constexpr double kSE3_threshold_ = 1e-7;
 
-class SE3 {
+class SE3 : public GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> {
 
 public:
 
 Eigen::Matrix<double,4,4> data_;
 Eigen::Map<Eigen::Matrix<double,3,1>> t_;  /** < The position */
 Eigen::Ref<Eigen::Matrix3d> R_; /** < The rotation */
-static const unsigned int dim_ = 6;
-static const unsigned int size1_ = 4;
-static const unsigned int size2_ = 4;
+static constexpr unsigned int dim_ = 6;
+static constexpr unsigned int size1_ = 4;
+static constexpr unsigned int size2_ = 4;
+typedef se3 algebra;
+typedef GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> Base; 
+using Base::BoxPlus;
+using Base::BoxMinus;
 
 
 /**
@@ -94,74 +99,26 @@ Eigen::Matrix<double,6,6> Adjoint(){
 }
 
 /**
- * Computes the log of the element.
- */ 
-Eigen::Matrix<double,6,1> Log() {return se3::Log(this->data_);}
+ * Performs the left group action 
+ */
+SE3 operator * (const SE3& g){ return SE3(data_ *g.data_) ;}
 
 /**
- * Performs the left group action on itself. i.e. this is on the left of
- * the bilinear operation.
+ * Performs the group operation between the data of two elements
  */ 
-SE3 operator * (const SE3& g){ return SE3(data_ *g.data_);}
-
-/**
- * Performs the OPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-static Eigen::Matrix<double,4,4> OPlus(const Eigen::Matrix<double,4,4>& g_data, const Eigen::Matrix<double,6,1>& u_data)
-{return g_data*se3::Exp(u_data);}
-
-/**
- * Performs the OPlus operation 
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix<double,4,4> OPlus(const Eigen::Matrix<double,6,1>& u_data)
-{return OPlus(this->data_,u_data);}
-
-/**
- * Performs the OPlus operation and assigns the result to the group element
- * @param u_data The data belonging to the Cartesian space that is isomorphic to the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void OPlusEq(const Eigen::Matrix<double,6,1>& u_data)
-{data_ = this->OPlus(u_data);}
-
-/**
- * Performs the BoxPlus operation 
- * @param g_data The data belonging to the group element.
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-static Eigen::Matrix<double,4,4> BoxPlus(const Eigen::Matrix<double,4,4>& g_data, const Eigen::Matrix<double,4,4>& u_data)
-{return OPlus(g_data,se3::Vee(u_data));}
-
-/**
- * Performs the BoxPlus operation 
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-Eigen::Matrix<double,4,4> BoxPlus(const Eigen::Matrix<double,4,4>& u_data)
-{return this->OPlus(se3::Vee(u_data));}
-
-/**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u_data The data belonging to an element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const Eigen::Matrix<double,4,4>& u_data)
-{data_ = this->BoxPlus(u_data);}
+static Eigen::Matrix4d Mult(const Eigen::Matrix4d& data1, const Eigen::Matrix4d& data2 ){
+    return data1*data2;
+}
 
 /**
  * Performs the BoxPlus operation 
  * @param g An element of the group
  * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
+ * @return The result of the BoxPlus operation.typename
  */ 
 static SE3 BoxPlus(const SE3& g, const se3& u)
 {return SE3(OPlus(g.data_,u.data_));}
+
 
 /**
  * Performs the BoxPlus operation 
@@ -169,59 +126,16 @@ static SE3 BoxPlus(const SE3& g, const se3& u)
  * @return The result of the BoxPlus operation.
  */ 
 SE3 BoxPlus(const se3& u)
-{return SE3::BoxPlus(*this,u);}
+{return BoxPlus(*this,u);}
 
 /**
- * Performs the BoxPlus operation and assigns the result to the group element
- * @param u An element of the Lie algebra.
- * @return The result of the BoxPlus operation.
- */ 
-void BoxPlusEq(const se3& u)
-{data_ = (this->BoxPlus(u)).data_;}
-
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-static Eigen::Matrix<double,6,1> OMinus(const Eigen::Matrix<double,4,4>& g1_data,const Eigen::Matrix<double,4,4>& g2_data)
-{return se3::Log(SE3::Inverse(g1_data)*g2_data);}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
- */ 
-Eigen::Matrix<double,6,1> OMinus(const Eigen::Matrix<double,4,4>& g_data)
-{return SE3::OMinus(data_,g_data);}
-
-/**
- * Performs the O-minus operation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data1 The data of  \f$ g_1 \f$
- * @param g_data2 The data of \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-static Eigen::Matrix<double,4,4> BoxMinus(const Eigen::Matrix<double,4,4>& g1_data,const Eigen::Matrix<double,4,4>& g2_data)
-{return se3::Wedge(SE3::OMinus(g1_data, g2_data));}
-
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
- * @param g_data The data of  \f$ g_2 \f$
- * @return The data of an element of the Lie algebra
- */ 
-Eigen::Matrix<double,4,4> BoxMinus(const Eigen::Matrix<double,4,4>& g_data)
-{return BoxMinus(this->data_,g_data);}
-
-/**
- * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$
+ * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_2^-1*g_1) \f$
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-se3 BoxMinus(const SE3& g){return se3(se3::Vee(this->BoxMinus(g.data_)));}
+se3 BoxMinus(const SE3& g){ return se3( se3::Vee(BoxMinus(g.data_)));}
+
+
 
 /**
  * Prints the content of the data
