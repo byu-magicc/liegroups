@@ -28,6 +28,8 @@ typedef typename G::algebra U;
 G g_;   /** < The pose of the object.*/
 U u_;   /** < The twist (velocity) of the object.*/
 
+static constexpr unsigned int dim_ = G::dim_ + U::dim_;
+
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
 typedef Eigen::Matrix<double,G::size1_, G::size2_> Mat_G;     /**< The group data type. */

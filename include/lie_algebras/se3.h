@@ -19,6 +19,8 @@ Eigen::Matrix<double,6,1> data_; /** < The vector is translational velocity foll
 Eigen::Map<Eigen::Matrix<double,3,1>> p_;  /** < The translational velocity */
 Eigen::Map<Eigen::Matrix<double,3,1>> th_; /** < The angular velocity */
 static constexpr unsigned int dim_ = 6;
+static constexpr unsigned int dim_t_vel_=3; /** < The dimension of the translational velocity */
+static constexpr unsigned int dim_a_vel_=3; /** < The dimension of the angular velocity */
 static constexpr unsigned int size1_ = 6;
 static constexpr unsigned int size2_ = 1;
 

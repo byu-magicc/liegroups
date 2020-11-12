@@ -4,6 +4,7 @@
 #include <Eigen/Dense>
 #include <iostream>
 #include <lie_algebras/se3.h>
+#include <lie_algebras/so3.h>
 #include "lie_groups/group_base.h"
 
 namespace lie_groups {
@@ -18,9 +19,12 @@ Eigen::Matrix<double,4,4> data_;
 Eigen::Map<Eigen::Matrix<double,3,1>> t_;  /** < The position */
 Eigen::Ref<Eigen::Matrix3d> R_; /** < The rotation */
 static constexpr unsigned int dim_ = 6;
+static constexpr unsigned int dim_pos_ = 3; /** < The dimension of the position */
+static constexpr unsigned int dim_rot_ = 3; /** < The dimension of the rotation */
 static constexpr unsigned int size1_ = 4;
 static constexpr unsigned int size2_ = 4;
 typedef se3 algebra;
+typedef so3 rot_algebra;
 typedef GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> Base; 
 using Base::BoxPlus;
 using Base::BoxMinus;
