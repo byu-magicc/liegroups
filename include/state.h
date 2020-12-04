@@ -154,7 +154,7 @@ static Mat_SC OMinus(const State<G>& s1, const State<G>&s2)
  * @param s2 The state  \f$ s_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
-Mat_SC OMinus(const State<G>& s2){
+Mat_SC OMinus(const State<G>& s2) const {
   return OMinus(*this,s2);
 }
 
