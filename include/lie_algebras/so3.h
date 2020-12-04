@@ -202,7 +202,7 @@ so3 operator - (const so3& u){return so3(data_ - u.data_);}
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-so3 operator * (const double scalar){return so3(scalar*data_);}
+so3 operator * (const double scalar) const {return so3(scalar*data_);}
 
 /**
  * Prints the data of the element.

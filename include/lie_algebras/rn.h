@@ -126,7 +126,7 @@ static Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){ret
  * @param data The data associated with an element of \f$ SO(2) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<double,N,1> Log(const Eigen::Matrix<double,N,1>& data){return data;}
+static Eigen::Matrix<double,N,1> Log(const Eigen::Matrix<double,N,1>& data) {return data;}
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
@@ -210,7 +210,7 @@ rn operator - (const rn& u){return rn(data_ - u.data_);}
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-rn operator * (const double scalar){return rn(data_*scalar);}
+rn operator * (const double scalar) const {return rn(data_*scalar);}
 
 /**
  * Prints the data of the element.

@@ -9,7 +9,6 @@ set(CMAKE_BUILD_TYPE RELEASE)
 
 find_package(Eigen3)
 
-
 include_directories(include
 ${EIGEN3_INCLUDE_DIR})
 

@@ -219,7 +219,7 @@ se2 operator - (const se2& u){return se2(data_ - u.data_);}
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-se2 operator * (const double scalar){return se2(scalar*data_);}
+se2 operator * (const double scalar) const {return se2(scalar*data_);}
 
 /**
  * Prints the data of the element.

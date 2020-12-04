@@ -24,6 +24,7 @@ static constexpr unsigned int dim_rot_ = 3; /** < The dimension of the rotation 
 static constexpr unsigned int size1_ = 4;
 static constexpr unsigned int size2_ = 4;
 typedef se3 algebra;
+typedef NonAbelian GroupType;
 typedef so3 rot_algebra;
 typedef GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> Base; 
 using Base::BoxPlus;
@@ -74,7 +75,7 @@ SE3(const Eigen::Matrix<double,4,4> & data) :data_(data), t_(data_.data()+12), R
 /*
  * Returns the inverse of the element
  */ 
-SE3 Inverse(){ return SE3::Inverse(this->data_);}
+SE3 Inverse() const { return SE3::Inverse(this->data_);}
 
 
 /*
@@ -129,7 +130,7 @@ static SE3 BoxPlus(const SE3& g, const se3& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SE3 BoxPlus(const se3& u)
+SE3 BoxPlus(const se3& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -137,7 +138,7 @@ SE3 BoxPlus(const se3& u)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-se3 BoxMinus(const SE3& g){ return se3( se3::Vee(BoxMinus(g.data_)));}
+se3 BoxMinus(const SE3& g) const { return se3( se3::Vee(BoxMinus(g.data_)));}
 
 
 

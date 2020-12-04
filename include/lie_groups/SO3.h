@@ -20,6 +20,7 @@ static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 3;
 typedef GroupBase<SO3,so3, Eigen::Matrix3d, Eigen::Matrix<double,3,1>> Base;
 typedef so3 algebra;
+typedef NonAbelian GroupType;
 using Base::BoxPlus;
 using Base::BoxMinus;
 
@@ -67,7 +68,7 @@ SO3(const Eigen::Matrix3d & data) :data_(data){}
 /*
  * Returns the inverse of the element
  */ 
-SO3 Inverse(){ return SO3::Inverse(this->data_);}
+SO3 Inverse() const { return SO3::Inverse(this->data_);}
 
 /*
  * Returns the inverse of the data of an element
@@ -113,7 +114,7 @@ static SO3 BoxPlus(const SO3& g, const so3& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SO3 BoxPlus(const so3& u)
+SO3 BoxPlus(const so3& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -121,7 +122,7 @@ SO3 BoxPlus(const so3& u)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-so3 BoxMinus(const SO3& g){ return so3( so3::Vee(BoxMinus(g.data_)));}
+so3 BoxMinus(const SO3& g) const { return so3( so3::Vee(BoxMinus(g.data_)));}
 
 
 /**

@@ -22,6 +22,7 @@ static constexpr unsigned int dim_ = 1;
 static constexpr unsigned int size1_ = 2;
 static constexpr unsigned int size2_ = 2;
 typedef so2 algebra;
+typedef Abelian GroupType;
 typedef GroupBase<SO2,so2, Eigen::Matrix2d, Eigen::Matrix<double,1,1>> Base;
 using Base::BoxPlus;
 using Base::BoxMinus;
@@ -70,7 +71,7 @@ SO2(const Eigen::Matrix2d & data) :data_(data){}
 /*
  * Returns the inverse of the element
  */ 
-SO2 Inverse(){ return SO2::Inverse(this->data_);}
+SO2 Inverse() const { return SO2::Inverse(this->data_);}
 
 /*
  * Returns the inverse of the data of an element
@@ -117,7 +118,7 @@ static SO2 BoxPlus(const SO2& g, const so2& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SO2 BoxPlus(const so2& u)
+SO2 BoxPlus(const so2& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -125,7 +126,7 @@ SO2 BoxPlus(const so2& u)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-so2 BoxMinus(const SO2& g){ return so2( so2::Vee(BoxMinus(g.data_)));}
+so2 BoxMinus(const SO2& g) const { return so2( so2::Vee(BoxMinus(g.data_)));}
 
 /**
  * Prints the content of the data

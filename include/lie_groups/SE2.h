@@ -28,6 +28,8 @@ static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 3;
 typedef GroupBase<SE2,se2, Eigen::Matrix3d, Eigen::Matrix<double,3,1>> Base; 
 typedef se2 algebra;
+typedef NonAbelian GroupType;
+
 typedef so2 rot_algebra;
 using Base::BoxPlus;
 using Base::BoxMinus;
@@ -77,7 +79,7 @@ SE2(const Eigen::Matrix3d & data) :data_(data), t_(data_.data()+6), R_(data_.blo
 /*
  * Returns the inverse of the element
  */ 
-SE2 Inverse(){ return SE2::Inverse(this->data_);}
+SE2 Inverse() const { return SE2::Inverse(this->data_);}
 
 
 /*
@@ -129,7 +131,7 @@ static SE2 BoxPlus(const SE2& g, const se2& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SE2 BoxPlus(const se2& u)
+SE2 BoxPlus(const se2& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -137,7 +139,7 @@ SE2 BoxPlus(const se2& u)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-se2 BoxMinus(const SE2& g){ return se2( se2::Vee(BoxMinus(g.data_)));}
+se2 BoxMinus(const SE2& g) const { return se2( se2::Vee(BoxMinus(g.data_)));}
 
 
 /**

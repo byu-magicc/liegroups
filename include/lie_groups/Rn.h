@@ -22,6 +22,7 @@ static constexpr unsigned int size1_ = N;
 static constexpr unsigned int size2_ = 1;
 typedef GroupBase<Rn<N>, rn<N>, Eigen::Matrix<double,N,1>,Eigen::Matrix<double,N,1>> Base; 
 typedef rn<N> algebra;
+typedef Abelian GroupType;
 typedef Eigen::Matrix<double,N,1> Mat_G;
 typedef Eigen::Matrix<double,N,1> Mat_A;
 typedef Eigen::Matrix<double,N,1> Mat_C;
@@ -74,7 +75,7 @@ Rn(const Mat_G& data) :data_(data){}
 /*
  * Returns the inverse of the element
  */ 
-Rn Inverse(){ return Rn(-this->data_);}
+Rn Inverse() const { return Rn(-this->data_);}
 
 /*
  * Returns the inverse of the data of an element
@@ -96,7 +97,7 @@ Eigen::Matrix<double,N,N> Adjoint(){return Eigen::Matrix<double,N,N>::Identity()
 /**
  * Computes the log of the element.
  */ 
-Mat_C Log(){return data_;}
+Mat_C Log() const {return data_;}
 
 /**
  * Performs the left group action on itself. i.e. this is on the left of
@@ -126,7 +127,7 @@ static Rn<N>  BoxPlus(const Rn<N> & g, const rn<N>& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-Rn<N> BoxPlus(const rn<N>& u)
+Rn<N> BoxPlus(const rn<N>& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -134,7 +135,7 @@ Rn<N> BoxPlus(const rn<N>& u)
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-rn<N> BoxMinus(const Rn<N>& g){ return rn<N>( rn<N>::Vee(BoxMinus(g.data_)));}
+rn<N> BoxMinus(const Rn<N>& g) const { return rn<N>( rn<N>::Vee(BoxMinus(g.data_)));}
 
 /**
  * Verifies that the data of an element properly corresponds to the set. 

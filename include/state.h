@@ -35,6 +35,7 @@ typedef U u_type_; /** < The algebra type .*/
 typedef Eigen::Matrix<double,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
 typedef Eigen::Matrix<double,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
 typedef Mat_G Mat_A;                                          /**< The Lie algebra data type. */
+typedef typename G::GroupType StateType;
 typedef Eigen::Matrix<double,2*G::dim_, G::dim_> Mat_Adj; /**< The Adjoint data type. */
 typedef Eigen::Matrix<double,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
@@ -157,6 +158,36 @@ Mat_SC OMinus(const State<G>& s2){
   return OMinus(*this,s2);
 }
 
+
+/**
+ * Performs the O-Plus operation \f$ \text{state} \exp{\text{cartesian}}\f$ 
+ * @param state The state  
+ * @param cartesian An in the Cartesian space
+ * @return A state that is the result of the O-Plus operation
+ */ 
+static State OPlus(const State& state, Mat_SC cartesian) {
+  State tmp;
+  tmp.g_.data_ = state.g_.OPlus(cartesian.block(0,0,G::dim_,1));
+  tmp.u_.data_ = state.u_.data_ + cartesian.block(G::dim_,0,G::dim_,1);
+  return tmp;
+}
+
+/**
+ * Performs the O-Plus operation \f$ \text{this} \exp{\text{cartesian}}\f$ 
+ * @param cartesian An in the Cartesian space
+ * @return A state that is the result of the O-Plus operation
+ */ 
+State OPlus( Mat_SC cartesian) const{
+  return OPlus(*this,cartesian);
+}
+
+/**
+ * Performs the O-Plus operation \f$ \text{this} \exp{\text{cartesian}}\f$ and sets the state to the result.
+ * @param cartesian An in the Cartesian space
+ */ 
+void OPlusEQ( Mat_SC cartesian) {
+  *this = OPlus(*this,cartesian);
+}
 
 // /**
 //  * Performs the O-minus operation with this being \f$ g_1 \f$ in the equation \f$ \log(g_1^-1*g_2) \f$

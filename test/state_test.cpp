@@ -189,9 +189,17 @@ typename TypeParam::Mat_SC data2_correct;
 data2_correct.block(0,0,TypeParam::g_type_::dim_,1) = state2.g_.Log();
 data2_correct.block(TypeParam::g_type_::dim_,0,TypeParam::g_type_::dim_,1) = state2.u_.data_;
 
+ASSERT_LE( (data2-data2_correct).norm(), 1e-10 );
 
+TypeParam state4 = state1;
+state4.OPlusEQ(data2);
 
+ASSERT_LE( (state4.g_.data_ - state3.g_.data_).norm(), 1e-10);
+ASSERT_LE( (state4.u_.data_ - state3.u_.data_).norm(), 1e-10);
 
+state4 = state1.OPlus(data2);
+ASSERT_LE( (state4.g_.data_ - state3.g_.data_).norm(), 1e-10);
+ASSERT_LE( (state4.u_.data_ - state3.u_.data_).norm(), 1e-10);
 
 }
 
