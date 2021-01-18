@@ -18,7 +18,7 @@ struct NonAbelian{};
 
 
 
-template<typename Group, typename Algebra, typename Mat_G, typename Mat_C>
+template<typename Group, typename Algebra, typename Mat_G, typename Mat_C, typename tDataType = double>
 class GroupBase{
 
 private:

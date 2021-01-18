@@ -10,22 +10,22 @@ namespace lie_groups {
 
 constexpr double kRn_threshold_ = 1e-7;
 
-template <int N>
-class Rn : public GroupBase<Rn<N>, rn<N>, Eigen::Matrix<double,N,1>,Eigen::Matrix<double,N,1>>{
+template <int N, typename tDataType=double>
+class Rn : public GroupBase<Rn<N,tDataType>, rn<N,tDataType>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType>{
 
 public:
 
-Eigen::Matrix<double,N,1> data_;
+Eigen::Matrix<tDataType,N,1> data_;
 
 static constexpr unsigned int dim_ = N;
 static constexpr unsigned int size1_ = N;
 static constexpr unsigned int size2_ = 1;
-typedef GroupBase<Rn<N>, rn<N>, Eigen::Matrix<double,N,1>,Eigen::Matrix<double,N,1>> Base; 
-typedef rn<N> algebra;
+typedef GroupBase<Rn<N,tDataType>, rn<N,tDataType>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1> ,tDataType> Base; 
+typedef rn<N,tDataType> Algebra;
 typedef Abelian GroupType;
-typedef Eigen::Matrix<double,N,1> Mat_G;
-typedef Eigen::Matrix<double,N,1> Mat_A;
-typedef Eigen::Matrix<double,N,1> Mat_C;
+typedef Eigen::Matrix<tDataType,N,1> Mat_G;
+typedef Eigen::Matrix<tDataType,N,1> Mat_A;
+typedef Eigen::Matrix<tDataType,N,1> Mat_C;
 using Base::BoxPlus;
 using Base::BoxMinus;
 
@@ -92,7 +92,7 @@ static Rn Identity(){return Rn();}
  * Returns the matrix adjoint map.
  * For this Lie group it is the identity map.
  */ 
-Eigen::Matrix<double,N,N> Adjoint(){return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> Adjoint(){return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the log of the element.
@@ -118,8 +118,8 @@ static Mat_G Mult(const Mat_G& data1, const Mat_G& data2 ){
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.typename
  */ 
-static Rn<N>  BoxPlus(const Rn<N> & g, const rn<N>& u)
-{return Rn<N> (OPlus(g.data_,u.data_));}
+static Rn  BoxPlus(const Rn & g, const Algebra& u)
+{return Rn (OPlus(g.data_,u.data_));}
 
 
 /**
@@ -127,7 +127,7 @@ static Rn<N>  BoxPlus(const Rn<N> & g, const rn<N>& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-Rn<N> BoxPlus(const rn<N>& u) const
+Rn BoxPlus(const Algebra& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -135,7 +135,7 @@ Rn<N> BoxPlus(const rn<N>& u) const
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-rn<N> BoxMinus(const Rn<N>& g) const { return rn<N>( rn<N>::Vee(BoxMinus(g.data_)));}
+Algebra BoxMinus(const Rn& g) const { return Algebra( Algebra::Vee(BoxMinus(g.data_)));}
 
 /**
  * Verifies that the data of an element properly corresponds to the set. 
@@ -144,7 +144,7 @@ static bool isElement(const Mat_G& data) {return true;}
 
 };
 
-}
+} // namespace lie_groups
 
 
 #endif // _LIEGROUPS_INCLUDE_LIEGROUPS_RN_

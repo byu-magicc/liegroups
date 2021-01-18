@@ -10,7 +10,7 @@
 namespace lie_groups {
 
 constexpr double kSE3_threshold_ = 1e-7;
-
+template< typename tDataType = double>
 class SE3 : public GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> {
 
 public:
@@ -29,6 +29,8 @@ typedef so3 rot_algebra;
 typedef GroupBase<SE3,se3, Eigen::Matrix4d, Eigen::Matrix<double,6,1>> Base; 
 using Base::BoxPlus;
 using Base::BoxMinus;
+
+
 
 
 /**

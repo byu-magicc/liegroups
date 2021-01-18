@@ -20,10 +20,11 @@
 
 namespace lie_groups {
 
-template <class G> 
+template <template<typename > class tG, class tDataType = double> 
 class State {
 
 public:
+typedef tG<tDataType> G;
 typedef typename G::algebra U;
 G g_;   /** < The pose of the object.*/
 U u_;   /** < The twist (velocity) of the object.*/
@@ -32,12 +33,12 @@ static constexpr unsigned int dim_ = G::dim_ + U::dim_;
 
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
-typedef Eigen::Matrix<double,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
-typedef Eigen::Matrix<double,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
+typedef Eigen::Matrix<tDataType,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
+typedef Eigen::Matrix<tDataType,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
 typedef Mat_G Mat_A;                                          /**< The Lie algebra data type. */
 typedef typename G::GroupType StateType;
-typedef Eigen::Matrix<double,2*G::dim_, G::dim_> Mat_Adj; /**< The Adjoint data type. */
-typedef Eigen::Matrix<double,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
+typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj; /**< The Adjoint data type. */
+typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
 /**
  * Default constructor. Initializes group element to identity.

@@ -10,25 +10,29 @@ namespace lie_groups {
 
 constexpr double kse3_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-
+template< typename tDataType = double>
 class se3  {
 
 public:
 
-Eigen::Matrix<double,6,1> data_; /** < The vector is translational velocity followed by angular velocity*/
-Eigen::Map<Eigen::Matrix<double,3,1>> p_;  /** < The translational velocity */
-Eigen::Map<Eigen::Matrix<double,3,1>> th_; /** < The angular velocity */
+Eigen::Matrix<tDataType,6,1> data_; /** < The vector is translational velocity followed by angular velocity*/
+Eigen::Map<Eigen::Matrix<tDataType,3,1>> p_;  /** < The translational velocity */
+Eigen::Map<Eigen::Matrix<tDataType,3,1>> th_; /** < The angular velocity */
 static constexpr unsigned int dim_ = 6;
 static constexpr unsigned int dim_t_vel_=3; /** < The dimension of the translational velocity */
 static constexpr unsigned int dim_a_vel_=3; /** < The dimension of the angular velocity */
 static constexpr unsigned int size1_ = 6;
 static constexpr unsigned int size2_ = 1;
-
+typedef Eigen::Matrix<tDataType,3,1> Vec3d;
+typedef Eigen::Matrix<tDataType,6,1> Vec6d;
+typedef Eigen::Matrix<tDataType,3,3> Mat3d;
+typedef Eigen::Matrix<tDataType,4,4> Mat4d;
+typedef Eigen::Matrix<tDataType,6,6> Mat6d;
 
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-se3() : p_(data_.data()), th_(data_.data()+3), data_(Eigen::Matrix<double,6,1>::Zero()){}
+se3() : p_(data_.data()), th_(data_.data()+3), data_(Vec6d::Zero()){}
 
 
 /**
@@ -56,7 +60,7 @@ void operator = (const se3&& u){data_ = u.data_;}
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of Cartesian space of \f$se(3)\f$
 */
-se3(const Eigen::Matrix<double,6,1> data) : p_(data_.data()), th_(data_.data()+3), data_(data){}
+se3(const Vec6d data) : p_(data_.data()), th_(data_.data()+3), data_(data){}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -64,7 +68,7 @@ se3(const Eigen::Matrix<double,6,1> data) : p_(data_.data()), th_(data_.data()+3
 * @param[in] u The data of an element of \f$se(3)\f$
 * @param verify If true, the constructor will verify that the element given is an element of the Lie algebra.
 */
-se3(const Eigen::Matrix<double,4,4> & data, bool verify);
+se3(const Mat4d & data, bool verify);
 
 //---------------------------------------------------------------------
 
@@ -81,11 +85,11 @@ se3 Bracket(const se3& u){return se3(this->Adjoint()*u.data_);}
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity element.
  */ 
-Eigen::Matrix<double,6,6> Adjoint() {    
-    Eigen::Matrix<double,6,6> m = Eigen::Matrix<double,6,6>::Zero();
-    m.block(0,0,3,3) = se3::SSM(th_);
-    m.block(3,3,3,3) = se3::SSM(th_);
-    m.block(0,3,3,3) = se3::SSM(p_);
+Mat6d Adjoint() {    
+    Mat6d m = Mat6d::Zero();
+    m.block(0,0,3,3) = se3<tDataType>::SSM(th_);
+    m.block(3,3,3,3) = se3<tDataType>::SSM(th_);
+    m.block(0,3,3,3) = se3<tDataType>::SSM(p_);
 
     return m;}
 
@@ -93,16 +97,16 @@ Eigen::Matrix<double,6,6> Adjoint() {
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @return The result of the Wedge operation.
  */
-Eigen::Matrix4d Wedge(){return Wedge(data_);}
+Mat4d Wedge(){return Wedge(data_);}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
  * @return The result of the Wedge operation.
  */
-static Eigen::Matrix4d Wedge(const Eigen::Matrix<double,6,1>& data) {   
-    Eigen::Matrix4d m = Eigen::Matrix4d::Zero();
-    m.block(0,0,3,3) = se3::SSM(data.block(3,0,3,1));
+static Mat4d Wedge(const Vec6d& data) {   
+    Mat4d m = Mat4d::Zero();
+    m.block(0,0,3,3) = se3<tDataType>::SSM(data.block(3,0,3,1));
     m.block(0,3,3,1) = data.block(0,0,3,1);
     return m;}
 
@@ -110,15 +114,15 @@ static Eigen::Matrix4d Wedge(const Eigen::Matrix<double,6,1>& data) {
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @return The result of the Vee operation.
  */
-Eigen::Matrix<double,6,1> Vee(){return data_;}
+Vec6d Vee(){return data_;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
  * @param data The data of an element
  * @return The result of the Vee operation.
  */
-static Eigen::Matrix<double,6,1> Vee(const Eigen::Matrix4d& data){
-    Eigen::Matrix<double,6,1> m;
+static Vec6d Vee(const Mat4d& data){
+    Vec6d m;
     m.block(0,0,3,1) = data.block(0,3,3,1);
     m.block(3,0,3,1) << data(2,1), data(0,2), data(1,0);
     return m;
@@ -127,30 +131,30 @@ static Eigen::Matrix<double,6,1> Vee(const Eigen::Matrix4d& data){
 /**
  * Computes the exponential of the element of the Lie algebra.
  */
-Eigen::Matrix<double,4,4> Exp(){return se3::Exp(this->data_);}
+Mat4d Exp(){return se3<tDataType>::Exp(this->data_);}
 
 /**
  * Computes the exponential of the element of the Lie algebra.
  * @return The data associated to the group element.
  */
-static Eigen::Matrix<double,4,4> Exp(const Eigen::Matrix<double,6,1>& data);
+static Mat4d Exp(const Vec6d& data);
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
  * @param data The data associated with an element of \f$ SE(3) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<double,6,1> Log(const Eigen::Matrix<double,4,4>& data);
+static Vec6d Log(const Mat4d& data);
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
  */ 
-double Norm(){return data_.norm();}
+tDataType Norm(){return data_.norm();}
 
 /**
  * Computes and returns the matrix of the Left Jacobian.
  */ 
-Eigen::Matrix<double,6,6> Jl();
+Mat6d Jl();
 
 /**
  * Computes the left Jacobian using the element of *this and applies it to the
@@ -165,7 +169,7 @@ se3 Jl(const se3& u){return se3(this->Jl()*u.data_);}
 /**
  * Computes and returns the matrix of the Left Jacobian inverse.
  */ 
-Eigen::Matrix<double,6,6> JlInv();
+Mat6d JlInv();
 
 /**
  * Computes the left Jacobian inverse using the element of *this and applies it to the
@@ -179,7 +183,7 @@ se3 JlInv(const se3& u){return se3(this->JlInv()*u.data_);}
 /**
  * Computes and returns the matrix of the Right Jacobian
  */ 
-Eigen::Matrix<double,6,6> Jr();
+Mat6d Jr();
 
 /**
  * Computes the right Jacobian using the element of *this and applies it to the
@@ -193,7 +197,7 @@ se3 Jr(const se3& u){return se3(this->Jr()*u.data_);}
 /**
  * Computes and returns the matrix of the right Jacobian inverse.
  */ 
-Eigen::Matrix<double,6,6> JrInv();
+Mat6d JrInv();
 
 /**
  * Computes the right Jacobian inverse using the element of *this and applies it to the
@@ -220,7 +224,7 @@ se3 operator - (const se3& u){return se3(data_ - u.data_);}
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-se3 operator * (const double scalar) const {return se3(scalar*data_);}
+se3 operator * (const tDataType scalar) const {return se3(scalar*data_);}
 
 /**
  * Prints the data of the element.
@@ -237,8 +241,8 @@ static se3 Identity(){return se3();}
  * parameter.
  * @param x 
  */ 
-static Eigen::Matrix3d SSM(const Eigen::Matrix<double,3,1>& x){
-    Eigen::Matrix3d m;
+static Mat3d SSM(const Vec3d& x){
+    Mat3d m;
     m << 0, -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), 0;
     return m;
 }
@@ -247,17 +251,214 @@ static Eigen::Matrix3d SSM(const Eigen::Matrix<double,3,1>& x){
  * Verifies that the parameter data belongs to 
  * an element of \f$se(3)\f$
  */ 
-static bool isElement(const Eigen::Matrix<double,4,4>& data);
+static bool isElement(const Mat4d& data);
 
 
 private:
 
 // The following are used to compute the Jacobians
-static Eigen::Matrix3d Bl(const Eigen::Matrix<double, 6,1>& u);
-static Eigen::Matrix3d Br(const Eigen::Matrix<double, 6,1>& u);
+static Mat3d Bl(const Vec6d& u);
+static Mat3d Br(const Vec6d& u);
 
 
 };
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                    Definitions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+se3<tDataType>::se3(const Mat4d& data, bool verify) : p_(data_.data()), th_(data_.data()+3) {
+
+    if(verify)
+    {
+        
+        if (se3<tDataType>::isElement(data)) {
+            data_ = se3<tDataType>::Vee(data);
+        }
+        else {
+            std::cerr << "se3<tDataType>::Constructor - Input data not valid. Setting to identity element" << std::endl;
+            data_ = Vec6d::Zero();
+        }
+    }
+    else {
+        data_ = se3<tDataType>::Vee(data);
+    }
+
+}
+
+
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,4,4> se3<tDataType>::Exp(const Vec6d& data) {
+    Mat4d m;
+    so3<tDataType> omega(data.block(3,0,3,1));
+    m.block(0,0,3,3) = omega.Exp();
+    m.block(0,3,3,1) = omega.Jl()*data.block(0,0,3,1);
+    m.block(3,0,1,4) << 0,0,0,1;
+    return m;  
+}
+
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,6,1> se3<tDataType>::Log(const Mat4d& data) {
+    
+    Vec6d u;
+    so3<tDataType>  omega(so3<tDataType>::Log(data.block(0,0,3,3)));
+    u.block(3,0,3,1) = omega.Vee();
+    u.block(0,0,3,1) = omega.JlInv()*data.block(0,3,3,1);
+    
+    return u;    
+}
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jl() {
+
+    so3<tDataType> omega(th_);
+
+    Eigen::Matrix<tDataType,6,6> m;
+    m.block(0,0,3,3) = omega.Jl();
+    m.block(0,3,3,3) = Bl(data_);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
+
+    return m;
+}
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,6,6> se3<tDataType>::JlInv() {
+
+    so3<tDataType> omega(th_);
+
+    Eigen::Matrix<tDataType,6,6> m;
+    m.block(0,0,3,3) = omega.JlInv();
+    m.block(0,3,3,3) = -m.block(0,0,3,3)*Bl(data_)*m.block(0,0,3,3);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
+
+    return m;
+}
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jr() {
+
+    so3<tDataType> omega(th_);
+
+    Eigen::Matrix<tDataType,6,6> m;
+    m.block(0,0,3,3) = omega.Jr();
+    m.block(0,3,3,3) = Br(data_);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
+
+    return m;
+}
+
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,6,6> se3<tDataType>::JrInv() {
+    
+    so3<tDataType> omega(th_);
+
+    Eigen::Matrix<tDataType,6,6> m;
+    m.block(0,0,3,3) = omega.JrInv();
+    m.block(0,3,3,3) = -m.block(0,0,3,3)*Br(data_)*m.block(0,0,3,3);
+    m.block(3,0,3,3).setZero();
+    m.block(3,3,3,3) =  m.block(0,0,3,3);
+
+    return m;
+
+    return m;
+}
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+bool se3<tDataType>::isElement(const Mat4d& data) {
+
+    bool is_element = true;
+     
+    if ( !so3<tDataType>::isElement(data.block(0,0,3,3))) {
+        is_element = false;
+    }
+    else if (data.block(3,0,1,4) != Eigen::Matrix<tDataType,1,4>::Zero()) {
+        is_element = false;
+    }
+
+    return is_element;
+}
+
+
+/////////////////////////////////////////////////
+//                  Private Functions
+/////////////////////////////////////////////////
+template< typename tDataType>
+Eigen::Matrix<tDataType,3,3> se3<tDataType>::Bl(const Eigen::Matrix<tDataType, 6,1>& u) {
+
+Eigen::Matrix<tDataType,3,3> m;
+Eigen::Map<const Eigen::Matrix<tDataType,3,1>> p(u.data());
+Eigen::Map<const Eigen::Matrix<tDataType,3,1>> w(u.data()+3);
+
+tDataType th = w.norm();
+
+
+if (th <= kse3_threshold_) { // Close to the identity element;
+    m.setIdentity();
+} else {
+    tDataType th2 = pow(th,2);
+    tDataType th3 = pow(th,3);
+    tDataType th4 = pow(th,4);
+    tDataType a = (cos(th)-1)/th2;
+    tDataType b = (th - sin(th))/th3;
+    tDataType c = -sin(th)/th3 + 2*(1-cos(th))/th4;
+    tDataType d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    Eigen::Matrix<tDataType,3,3> q;
+    q = w.dot(p)*(-c*SSM(w) + d*SSM(w)*SSM(w));
+
+    m = -a*SSM(p) + b*(SSM(w)*SSM(p) + SSM(p)*SSM(w)) + q;
+}
+
+return m;
+
+}
+
+//---------------------------------------------------------------------
+template< typename tDataType>
+Eigen::Matrix<tDataType,3,3> se3<tDataType>::Br(const Eigen::Matrix<tDataType, 6,1>& u) {
+
+Eigen::Matrix<tDataType,3,3> m;
+Eigen::Map<const Eigen::Matrix<tDataType,3,1>> p(u.data());
+Eigen::Map<const Eigen::Matrix<tDataType,3,1>> w(u.data()+3);
+
+tDataType th = w.norm();
+
+
+if (th <= kse3_threshold_) { // Close to the identity element;
+    m.setIdentity();
+} else {
+    tDataType th2 = pow(th,2);
+    tDataType th3 = pow(th,3);
+    tDataType th4 = pow(th,4);
+    tDataType a = (cos(th)-1)/th2;
+    tDataType b = (th - sin(th))/th3;
+    tDataType c = -sin(th)/th3 + 2*(1-cos(th))/th4;
+    tDataType d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    Eigen::Matrix<tDataType,3,3> q;
+    q = w.dot(p)*(c*SSM(w) + d*SSM(w)*SSM(w));
+    m = a*SSM(p) + b*(SSM(w)*SSM(p) + SSM(p)*SSM(w)) + q;
+}
+
+return m;
+
+
+}
+
 
 }
 

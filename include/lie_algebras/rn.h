@@ -8,12 +8,12 @@ namespace lie_groups {
 
 constexpr double krn_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template <int N>
+template <int N, typename tDataType = double>
 class rn  {
 
 public:
 
-Eigen::Matrix<double,N,1> data_;
+Eigen::Matrix<tDataType,N,1> data_;
 static constexpr unsigned int dim_ = N;
 static constexpr unsigned int size1_ = N;
 static constexpr unsigned int size2_ = 1;
@@ -23,7 +23,7 @@ static constexpr unsigned int size2_ = 1;
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-rn() : data_(Eigen::Matrix<double,N,1>::Zero()) {}
+rn() : data_(Eigen::Matrix<tDataType,N,1>::Zero()) {}
 
 /**
  * Copy constructor.
@@ -49,7 +49,7 @@ void operator = (const rn&& u){data_ = u.data_;}
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of \f$\mathbb{R}^2\f$
 */
-rn(const Eigen::Matrix<double,N,1> data) : data_(data) {}
+rn(const Eigen::Matrix<tDataType,N,1> data) : data_(data) {}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -57,7 +57,7 @@ rn(const Eigen::Matrix<double,N,1> data) : data_(data) {}
 * @param[in] u The data of an element of \f$ \mathbb{R}^n\f$
 * @param verify If true, the constructor will verify that the element given is an element of the Lie algebra.
 */
-rn(const Eigen::Matrix<double,N,1> & data, bool verify) : data_(data){}
+rn(const Eigen::Matrix<tDataType,N,1> & data, bool verify) : data_(data){}
 
 
 /**
@@ -73,21 +73,21 @@ rn Bracket(const rn& u) {return rn();}
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity map for \f$ \mathbb{R}^n\f$
  */ 
-Eigen::Matrix<double,N,N> Adjoint() {return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> Adjoint() {return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * This will just the data.
  * @return The result of the Wedge operation.
  */
-Eigen::Matrix<double,N,1> Wedge(){return data_;}
+Eigen::Matrix<tDataType,N,1> Wedge(){return data_;}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
  * @return The result of the Wedge operation.
  */
-static Eigen::Matrix<double,N,1> Wedge(const Eigen::Matrix<double,N,1>& data){return data;}
+static Eigen::Matrix<tDataType,N,1> Wedge(const Eigen::Matrix<tDataType,N,1>& data){return data;}
 
 
 /**
@@ -95,7 +95,7 @@ static Eigen::Matrix<double,N,1> Wedge(const Eigen::Matrix<double,N,1>& data){re
  * This will just return itself
  * @return The result of the Vee operation.
  */
-Eigen::Matrix<double,N,1> Vee(){return data_;}
+Eigen::Matrix<tDataType,N,1> Vee(){return data_;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
@@ -103,14 +103,14 @@ Eigen::Matrix<double,N,1> Vee(){return data_;}
  * @param data The data of an element
  * @return The result of the Vee operation.
  */
-static Eigen::Matrix<double,N,1> Vee(const Eigen::Matrix<double,N,1>& data){return data;}
+static Eigen::Matrix<tDataType,N,1> Vee(const Eigen::Matrix<tDataType,N,1>& data){return data;}
 
 /**
  * Computes the exponential of the element of the Lie algebra.
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$
  * @return The data associated to the group element.
  */
-Eigen::Matrix<double,N,1> Exp(){return Exp(data_);}
+Eigen::Matrix<tDataType,N,1> Exp(){return Exp(data_);}
 
 
 /**
@@ -118,7 +118,7 @@ Eigen::Matrix<double,N,1> Exp(){return Exp(data_);}
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$ * 
  * @return The data associated to the group element.
  */
-static Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){return data;}
+static Eigen::Matrix<tDataType,N,1> Exp(const Eigen::Matrix<tDataType,N,1>& data ){return data;}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
@@ -126,18 +126,18 @@ static Eigen::Matrix<double,N,1> Exp(const Eigen::Matrix<double,N,1>& data ){ret
  * @param data The data associated with an element of \f$ SO(2) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<double,N,1> Log(const Eigen::Matrix<double,N,1>& data) {return data;}
+static Eigen::Matrix<tDataType,N,1> Log(const Eigen::Matrix<tDataType,N,1>& data) {return data;}
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
  */ 
-double Norm(){return data_.norm();}
+tDataType Norm(){return data_.norm();}
 
 /**
  * Computes and returns the matrix of the Left Jacobian.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<double,N,N> Jl(){return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> Jl(){return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the left Jacobian using the element of *this and applies it to the
@@ -153,7 +153,7 @@ rn Jl(const rn& u){return u;}
  * Computes and returns the matrix of the Left Jacobian inverse.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$$.
  */ 
-Eigen::Matrix<double,N,N> JlInv(){return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> JlInv(){return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the left Jacobian inverse using the element of *this and applies it to the
@@ -168,7 +168,7 @@ rn JlInv(const rn& u){return u;}
  * Computes and returns the matrix of the Right Jacobian
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<double,N,N> Jr(){return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> Jr(){return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the right Jacobian using the element of *this and applies it to the
@@ -183,7 +183,7 @@ rn Jr(const rn& u){return u;}
  * Computes and returns the matrix of the right Jacobian inverse.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<double,N,N> JrInv(){return Eigen::Matrix<double,N,N>::Identity();}
+Eigen::Matrix<tDataType,N,N> JrInv(){return Eigen::Matrix<tDataType,N,N>::Identity();}
 
 /**
  * Computes the right Jacobian inverse using the element of *this and applies it to the
@@ -210,7 +210,7 @@ rn operator - (const rn& u){return rn(data_ - u.data_);}
  * Performs Scalar multiplication and returns the result.
  * @param scalar The scalar that will scale the element of the Lie algebra
  */ 
-rn operator * (const double scalar) const {return rn(data_*scalar);}
+rn operator * (const tDataType scalar) const {return rn(data_*scalar);}
 
 /**
  * Prints the data of the element.
@@ -226,7 +226,7 @@ static rn Identity(){return rn<N>();}
  * Verifies that the parameter data belongs to 
  * an element of \f$ \mathbb{R}^n\f$
  */ 
-static bool isElement(const Eigen::Matrix<double,N,1>& data){return true;}
+static bool isElement(const Eigen::Matrix<tDataType,N,1>& data){return true;}
 
 
 
