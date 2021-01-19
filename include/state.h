@@ -20,25 +20,25 @@
 
 namespace lie_groups {
 
-template <template<typename > class tG, class tDataType = double> 
+template <template<typename , int > class tG, typename tDataType = double,int tN =2> 
 class State {
 
 public:
-typedef tG<tDataType> G;
-typedef typename G::algebra U;
-G g_;   /** < The pose of the object.*/
-U u_;   /** < The twist (velocity) of the object.*/
-
-static constexpr unsigned int dim_ = G::dim_ + U::dim_;
-
+typedef tG<tDataType,tN> G;
+typedef typename G::Algebra U;
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
 typedef Eigen::Matrix<tDataType,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
 typedef Eigen::Matrix<tDataType,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
-typedef Mat_G Mat_A;                                          /**< The Lie algebra data type. */
+typedef Mat_G Mat_A;                                             /**< The Lie algebra data type. */
 typedef typename G::GroupType StateType;
-typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj; /**< The Adjoint data type. */
+typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj;     /**< The Adjoint data type. */
 typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
+
+static constexpr unsigned int dim_ = G::dim_ + U::dim_;
+
+G g_;   /** < The pose of the object.*/
+U u_;   /** < The twist (velocity) of the object.*/
 
 /**
  * Default constructor. Initializes group element to identity.
@@ -146,7 +146,7 @@ static Mat_SC OMinus(const Mat_G& g1_data,const Mat_G& g2_data,const Mat_C & u1_
  * @param s2 The state  \f$ s_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
-static Mat_SC OMinus(const State<G>& s1, const State<G>&s2)
+static Mat_SC OMinus(const State& s1, const State& s2)
 { return OMinus(s1.g_.data_,s2.g_.data_, s1.u_.data_,s2.u_.data_);}
 
 
@@ -155,7 +155,7 @@ static Mat_SC OMinus(const State<G>& s1, const State<G>&s2)
  * @param s2 The state  \f$ s_2 \f$
  * @return The data of an element of the Cartesian space isomorphic to the Lie algebra
  */ 
-Mat_SC OMinus(const State<G>& s2) const {
+Mat_SC OMinus(const State& s2) const {
   return OMinus(*this,s2);
 }
 
@@ -226,12 +226,12 @@ void OPlusEQ( Mat_SC cartesian) {
 
 };
 
-typedef State<Rn<2>> R2_r2;
-typedef State<Rn<3>> R3_r3;
-typedef State<SO2> SO2_so2;
-typedef State<SO3> SO3_so3;
-typedef State<SE2> SE2_se2;
-typedef State<SE3> SE3_se3;
+typedef State<Rn,double,2> R2_r2;
+typedef State<Rn,double,3> R3_r3;
+typedef State<SO2,double,1> SO2_so2;
+typedef State<SO3,double,3> SO3_so3;
+typedef State<SE2,double,3> SE2_se2;
+typedef State<SE3, double, 6> SE3_se3;
 
 }
 

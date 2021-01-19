@@ -8,7 +8,7 @@ namespace lie_groups {
 
 constexpr double krn_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template <int N, typename tDataType = double>
+template <typename tDataType=double, int N=2>
 class rn  {
 
 public:
@@ -220,7 +220,7 @@ void Print(){std::cout << data_ << std::endl;}
 /**
  * Returns the Identity element.
  */
-static rn Identity(){return rn<N>();}
+static rn Identity(){return rn();}
 
 /**
  * Verifies that the parameter data belongs to 

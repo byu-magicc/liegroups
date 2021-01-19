@@ -10,31 +10,29 @@ namespace lie_groups {
 
 constexpr double kRn_threshold_ = 1e-7;
 
-template <int N, typename tDataType=double>
-class Rn : public GroupBase<Rn<N,tDataType>, rn<N,tDataType>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType>{
+template <typename tDataType=double, int N=2>
+class Rn : public GroupBase<Rn<tDataType, N>, rn<tDataType,N>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType>{
 
 public:
 
-Eigen::Matrix<tDataType,N,1> data_;
+
 
 static constexpr unsigned int dim_ = N;
 static constexpr unsigned int size1_ = N;
 static constexpr unsigned int size2_ = 1;
-typedef GroupBase<Rn<N,tDataType>, rn<N,tDataType>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1> ,tDataType> Base; 
-typedef rn<N,tDataType> Algebra;
+typedef GroupBase<Rn<tDataType, N>, rn<tDataType,N>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType> Base; 
+typedef rn<tDataType,N> Algebra;
 typedef Abelian GroupType;
-typedef Eigen::Matrix<tDataType,N,1> Mat_G;
-typedef Eigen::Matrix<tDataType,N,1> Mat_A;
-typedef Eigen::Matrix<tDataType,N,1> Mat_C;
+typedef Eigen::Matrix<tDataType,N,1> MatNd;
 using Base::BoxPlus;
 using Base::BoxMinus;
 
-
+Eigen::Matrix<tDataType,N,1> data_;
 
 /**
  * Default constructor. Initializes group element to identity.
  */
-Rn() : data_(Mat_G::Zero()) {}
+Rn() : data_(MatNd::Zero()) {}
 
 
 /**
@@ -64,13 +62,13 @@ void operator = (const Rn&& g){ this->data_ = g.data_; }
 * @param verify If true, the constructor will verify that the provided 
 * element is a member of \f$\mathbb{R}^n\f$
 */
-Rn(const Mat_G& data, bool verify) : data_(data) {}
+Rn(const MatNd& data, bool verify) : data_(data) {}
 
 /**
 * Initializes group element to the data of the one given. 
 * @param[in] data  The data pertaining to an element of \f$\mathbb{R}^n\f$
 */
-Rn(const Mat_G& data) :data_(data){}
+Rn(const MatNd& data) :data_(data){}
 
 /*
  * Returns the inverse of the element
@@ -80,7 +78,7 @@ Rn Inverse() const { return Rn(-this->data_);}
 /*
  * Returns the inverse of the data of an element
  */ 
-static Mat_G Inverse(const Mat_G& data){  return -data;}
+static MatNd Inverse(const MatNd& data){  return -data;}
 
 
 /**
@@ -97,7 +95,7 @@ Eigen::Matrix<tDataType,N,N> Adjoint(){return Eigen::Matrix<tDataType,N,N>::Iden
 /**
  * Computes the log of the element.
  */ 
-Mat_C Log() const {return data_;}
+MatNd Log() const {return data_;}
 
 /**
  * Performs the left group action on itself. i.e. this is on the left of
@@ -108,7 +106,7 @@ Rn operator * (const Rn& g){ return Rn(data_  + g.data_);}
 /**
  * Performs the group operation between the data of two elements
  */ 
-static Mat_G Mult(const Mat_G& data1, const Mat_G& data2 ){
+static MatNd Mult(const MatNd& data1, const MatNd& data2 ){
     return data1 + data2;
 }
 
@@ -140,7 +138,7 @@ Algebra BoxMinus(const Rn& g) const { return Algebra( Algebra::Vee(BoxMinus(g.da
 /**
  * Verifies that the data of an element properly corresponds to the set. 
  */ 
-static bool isElement(const Mat_G& data) {return true;}
+static bool isElement(const MatNd& data) {return true;}
 
 };
 

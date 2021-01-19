@@ -67,51 +67,33 @@ lie_groups/Rn_test)
 target_link_libraries(Rn_test gtest_main)
 add_test(NAME AllTestsInsRn_test COMMAND Rn_test)
 
-# add_executable(SO2_test
-#  lie_groups/SO2_test.cpp 
-#  ../src/lie_groups/SO2.cpp
-#  ../src/lie_algebras/so2.cpp)
-# target_link_libraries(SO2_test gtest_main)
-# add_test(NAME AllTestsInSO2_test COMMAND SO2_test)
+add_executable(SO2_test
+ lie_groups/SO2_test.cpp )
+target_link_libraries(SO2_test gtest_main)
+add_test(NAME AllTestsInSO2_test COMMAND SO2_test)
 
 
-# add_executable(SO3_test
-#  lie_groups/SO3_test.cpp 
-#  ../src/lie_groups/SO3.cpp
-#  ../src/lie_algebras/so3.cpp)
-# target_link_libraries(SO3_test gtest_main)
-# add_test(NAME AllTestsInSO3_test COMMAND SO3_test)
+add_executable(SO3_test
+ lie_groups/SO3_test.cpp)
+target_link_libraries(SO3_test gtest_main)
+add_test(NAME AllTestsInSO3_test COMMAND SO3_test)
 
 
-# add_executable(SE2_test
-#  lie_groups/SE2_test.cpp 
-#  ../src/lie_groups/SE2.cpp
-#  ../src/lie_algebras/se2.cpp)
-# target_link_libraries(SE2_test gtest_main)
-# add_test(NAME AllTestsInSE2_test COMMAND SE2_test)
+add_executable(SE2_test
+ lie_groups/SE2_test.cpp)
+target_link_libraries(SE2_test gtest_main)
+add_test(NAME AllTestsInSE2_test COMMAND SE2_test)
 
 
-# add_executable(SE3_test
-#  lie_groups/SE3_test.cpp 
-#  ../src/lie_groups/SE3.cpp
-#  ../src/lie_algebras/se3.cpp
-#  ../src/lie_algebras/so3.cpp)
-# target_link_libraries(SE3_test gtest_main)
-# add_test(NAME AllTestsInSE3_test COMMAND SE3_test)
+add_executable(SE3_test
+ lie_groups/SE3_test.cpp)
+target_link_libraries(SE3_test gtest_main)
+add_test(NAME AllTestsInSE3_test COMMAND SE3_test)
 
 # State test
 
-# add_executable(State_test
-# state_test.cpp
-# ../src/lie_algebras/so2.cpp
-# ../src/lie_algebras/so3.cpp
-# ../src/lie_algebras/se2.cpp
-# ../src/lie_algebras/se3.cpp
-# ../src/lie_groups/SO2.cpp
-# ../src/lie_groups/SO3.cpp
-# ../src/lie_groups/SE2.cpp
-# ../src/lie_groups/SE3.cpp
-# )
-# target_link_libraries(State_test gtest_main)
-# add_test(NAME AllTestsInState_test COMMAND State_test)
+add_executable(State_test
+state_test.cpp)
+target_link_libraries(State_test gtest_main)
+add_test(NAME AllTestsInState_test COMMAND State_test)
 

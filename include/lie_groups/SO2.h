@@ -12,25 +12,30 @@ namespace lie_groups {
 
 constexpr double kSO2_threshold_ = 1e-7;
 
-class SO2 : public GroupBase<SO2,so2, Eigen::Matrix2d, Eigen::Matrix<double,1,1>>{
+template<typename tDataType=double, int tN = 1>
+class SO2 : public GroupBase<SO2<tDataType>,so2<tDataType>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>>{
 
 public:
 
-Eigen::Matrix2d data_;
+
+typedef Eigen::Matrix<tDataType,1,1> Mat1d;
+typedef Eigen::Matrix<tDataType,2,2> Mat2d;
 
 static constexpr unsigned int dim_ = 1;
 static constexpr unsigned int size1_ = 2;
 static constexpr unsigned int size2_ = 2;
-typedef so2 algebra;
+typedef so2<tDataType> Algebra;
 typedef Abelian GroupType;
-typedef GroupBase<SO2,so2, Eigen::Matrix2d, Eigen::Matrix<double,1,1>> Base;
+typedef GroupBase<SO2<tDataType>,so2<tDataType>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>> Base;
 using Base::BoxPlus;
 using Base::BoxMinus;
+
+Mat2d data_;
 
 /**
  * Default constructor. Initializes group element to identity.
  */
-SO2() : data_(Eigen::Matrix<double,2,2>::Identity()){}
+SO2() : data_(Mat2d::Identity()){}
 
 
 /**
@@ -60,23 +65,23 @@ void operator = (const SO2&& g){ this->data_ = g.data_; }
 * @param verify If true, the constructor will verify that the provided 
 * element is a member of \f$SO(2)\f$
 */
-SO2(const Eigen::Matrix2d & data, bool verify);
+SO2(const Mat2d & data, bool verify);
 
 /**
 * Initializes group element to the data of the one given. 
 * @param[in] data  The data pertaining to an element of \f$SO(2)\f$
 */
-SO2(const Eigen::Matrix2d & data) :data_(data){}
+SO2(const Mat2d & data) :data_(data){}
 
 /*
  * Returns the inverse of the element
  */ 
-SO2 Inverse() const { return SO2::Inverse(this->data_);}
+SO2 Inverse() const { return SO2<tDataType>::Inverse(this->data_);}
 
 /*
  * Returns the inverse of the data of an element
  */ 
-static Eigen::Matrix2d Inverse(const Eigen::Matrix2d& data){  return data.transpose();}
+static Mat2d Inverse(const Mat2d& data){  return data.transpose();}
 
 
 /**
@@ -88,7 +93,7 @@ static SO2 Identity(){return SO2();}
  * Returns the matrix adjoint map.
  * For this Lie group it is the identity map.
  */ 
-Eigen::Matrix<double,1,1> Adjoint(){return Eigen::Matrix<double,1,1>::Identity();}
+Mat1d Adjoint(){return Mat1d::Identity();}
 
 /**
  * Performs the left group action on itself. i.e. this is on the left of
@@ -99,7 +104,7 @@ SO2 operator * (const SO2& g){ return SO2(data_ *g.data_);}
 /**
  * Performs the group operation between the data of two elements
  */ 
-static Eigen::Matrix2d Mult(const Eigen::Matrix2d& data1, const Eigen::Matrix2d& data2 ){
+static Mat2d Mult(const Mat2d& data1, const Mat2d& data2 ){
     return data1*data2;
 }
 
@@ -109,7 +114,7 @@ static Eigen::Matrix2d Mult(const Eigen::Matrix2d& data1, const Eigen::Matrix2d&
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.typename
  */ 
-static SO2 BoxPlus(const SO2& g, const so2& u)
+static SO2 BoxPlus(const SO2& g, const Algebra& u)
 {return SO2(OPlus(g.data_,u.data_));}
 
 
@@ -118,7 +123,7 @@ static SO2 BoxPlus(const SO2& g, const so2& u)
  * @param u An element of the Lie algebra.
  * @return The result of the BoxPlus operation.
  */ 
-SO2 BoxPlus(const so2& u) const
+SO2 BoxPlus(const Algebra& u) const
 {return BoxPlus(*this,u);}
 
 /**
@@ -126,7 +131,7 @@ SO2 BoxPlus(const so2& u) const
  * @param g An element of the group
  * @return An element of the Lie algebra
  */ 
-so2 BoxMinus(const SO2& g) const { return so2( so2::Vee(BoxMinus(g.data_)));}
+so2<tDataType> BoxMinus(const SO2& g) const { return Algebra( Algebra::Vee(BoxMinus(g.data_)));}
 
 /**
  * Prints the content of the data
@@ -138,11 +143,37 @@ void Print() {
 /**
  * Verifies that the data of an element properly corresponds to the set. 
  */ 
-static bool isElement(const Eigen::Matrix2d& data);
+static bool isElement(const Mat2d& data);
 
 };
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                    Definitions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+template<typename tDataType, int tN>
+SO2<tDataType,tN>::SO2(const Eigen::Matrix<tDataType,2,2> & data, bool verify) {
+
+    // First verify that it is a proper group element.
+    if (verify ) {
+        if (SO2<tDataType>::isElement(data)) {
+            data_ = data;
+        } else {
+            std::cerr << "SO2<tDataType>::Constructor not valid input setting to identity" << std::endl;
+            data_.setIdentity();
+        }
+    } else {
+        data_ = data;
+    }
 }
+
+//----------------------------------------------------------
+template<typename tDataType, int tN>
+bool SO2<tDataType,tN>::isElement(const Eigen::Matrix<tDataType,2,2>& data) {
+    return (data.transpose()*data - Mat2d::Identity()).norm() < kSO2_threshold_;
+}
+
+
+} // namespace lie_groups
 
 
 #endif // _LIEGROUPS_INCLUDE_LIEGROUPS_SO2_

@@ -5,18 +5,18 @@
 
 namespace lie_groups {
 
-
-Eigen::Matrix3d GenRandElem() {
-    Eigen::Matrix<double,3,1> u;
+template<typename tDataType>
+Eigen::Matrix<tDataType,3,3> GenRandElem() {
+    Eigen::Matrix<tDataType,3,1> u;
     u.setRandom();
-    Eigen::Matrix3d m;
-    m = se2::Exp(u);
+    Eigen::Matrix<tDataType,3,3> m;
+    m = se2<tDataType>::Exp(u);
     return m;
 }
-
-Eigen::Matrix3d GenElem(Eigen::Matrix<double,3,1> th) {
-    Eigen::Matrix3d m;
-    m = se2::Exp(th);
+template<typename tDataType>
+Eigen::Matrix<tDataType,3,3> GenElem(Eigen::Matrix<tDataType,3,1> th) {
+    Eigen::Matrix<tDataType,3,3> m;
+    m = se2<tDataType>::Exp(th);
     return m;
 }
 
@@ -25,15 +25,19 @@ Eigen::Matrix3d GenElem(Eigen::Matrix<double,3,1> th) {
 // Test the constructors
 TEST(SE2TEST, Constructors) {
 
-Eigen::Matrix3d Identity;
+typedef float tDataType;
+typedef Eigen::Matrix<tDataType,2,2> Mat2d;
+typedef Eigen::Matrix<tDataType,3,3> Mat3d;
+
+Mat3d Identity;
 Identity.setIdentity();
 
 // Valid element
-Eigen::Matrix3d data1 =GenRandElem();
+Mat3d data1 =GenRandElem<tDataType>();
 
 // Invalid element
-Eigen::Matrix3d data2;
-Eigen::Ref<Eigen::Matrix2d> R(data2.block(0,0,2,2));
+Mat3d data2;
+Eigen::Ref<Mat2d> R(data2.block(0,0,2,2));
 data2.setRandom();
 while  ( ((R.transpose()*R- Identity.block(0,0,2,2)).norm() <= kSE2_threshold_ ) && data2(2,0)==0 && data2(2,1)==0 && data2(2,2)==1) {
     data2.setRandom();
@@ -41,11 +45,11 @@ while  ( ((R.transpose()*R- Identity.block(0,0,2,2)).norm() <= kSE2_threshold_ )
 
 
 
-SE2 g1;
-SE2 g2(data1,true);
-SE2 g3(data2,true);
-SE2 g4(g2);
-SE2 g5(data2);
+SE2<tDataType> g1;
+SE2<tDataType> g2(data1,true);
+SE2<tDataType> g3(data2,true);
+SE2<tDataType> g4(g2);
+SE2<tDataType> g5(data2);
 
 ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
 ASSERT_EQ(g1.data_.block(0,2,2,1),g1.t_) << "Translational velocity map not set properly.";
@@ -81,30 +85,34 @@ ASSERT_EQ(g5.data_.block(0,0,2,2),g5.R_) << "Angular velocity map not set proper
 // Test the Inverse, Adjoint, Identity, Log, and operators
 TEST(SE2TEST, IAILO) {
 
-Eigen::Matrix3d Identity;
+typedef float tDataType;
+typedef Eigen::Matrix<tDataType,2,2> Mat2d;
+typedef Eigen::Matrix<tDataType,3,3> Mat3d;
+
+Mat3d Identity;
 Identity.setIdentity();
-Eigen::Matrix<double,3,1> th;
+Eigen::Matrix<tDataType,3,1> th;
 th << 0.1,0.2,0.3;
-Eigen::Matrix3d g = GenElem(th);
+Mat3d g = GenElem<tDataType>(th);
 
-se2 u1(Eigen::Matrix<double,3,1>::Random());
+se2<tDataType> u1(Eigen::Matrix<tDataType,3,1>::Random());
 
-SE2 g1(GenRandElem());
-SE2 g2(GenRandElem());
-SE2 g3(g);
-SE2 g4 = g1;
-SE2 g5 = g1*g2;
+SE2<tDataType> g1(GenRandElem<tDataType>());
+SE2<tDataType> g2(GenRandElem<tDataType>());
+SE2<tDataType> g3(g);
+SE2<tDataType> g4 = g1;
+SE2<tDataType> g5 = g1*g2;
 
 ASSERT_LE( ((g1.Inverse()).data_ - (g1.data_).inverse() ).norm(), kSE2_threshold_) << " Error with the inverse operation ";
 
-ASSERT_EQ( SE2::Identity().data_, Identity  ) << "Error with identity function ";
+ASSERT_EQ( SE2<tDataType>::Identity().data_, Identity  ) << "Error with identity function ";
 
-se2 u2(g2.Adjoint()*u1.data_);
-se2 u3(g2.data_*u1.Wedge()*(g2.Inverse()).data_,true);
+se2<tDataType> u2(g2.Adjoint()*u1.data_);
+se2<tDataType> u3(g2.data_*u1.Wedge()*(g2.Inverse()).data_,true);
 
 ASSERT_LE( (u2.data_-u3.data_).norm(), kSE2_threshold_) << "Error with the Adjoint operation";
 
-ASSERT_LE( (se2::Exp(g3.Log())-g3.data_).norm(), kSE2_threshold_ ) << "Error with the log function";
+ASSERT_LE( (se2<tDataType>::Exp(g3.Log())-g3.data_).norm(), kSE2_threshold_ ) << "Error with the log function";
 
 ASSERT_EQ(g4.data_, g1.data_) << "Error with assignmet operator";
 
@@ -117,33 +125,40 @@ ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
 // Tests the box plus and box minus functions
 TEST(SE2Test, BoxPlus) {
 
-Eigen::Matrix<double,3,1> th1;
-Eigen::Matrix<double,3,1> th2;
+typedef float tDataType;
+typedef Eigen::Matrix<tDataType,2,2> Mat2d;
+typedef Eigen::Matrix<tDataType,3,3> Mat3d;
+
+Eigen::Matrix<tDataType,3,1> th1;
+Eigen::Matrix<tDataType,3,1> th2;
 th1 << 0.1,0.2,0.3;
 th2 << 0.2,0.2,0.1;
-Eigen::Matrix3d Th1 = se2::Wedge(th1);
-Eigen::Matrix3d Th2 = se2::Wedge(th2);
+Mat3d Th1 = se2<tDataType>::Wedge(th1);
+Mat3d Th2 = se2<tDataType>::Wedge(th2);
 
 
 
-Eigen::Matrix3d data1 = GenElem(th1);
-Eigen::Matrix3d data2 = GenElem(th2);
-Eigen::Matrix3d data3 = data1*data2;
+Mat3d data1 = GenElem<tDataType>(th1);
+Mat3d data2 = GenElem<tDataType>(th2);
+Mat3d data3 = data1*data2;
 
-SE2 g1(data1,true);
+SE2<tDataType> g1(data1,true);
+
+
+
 g1.OPlusEq(th2);
-SE2 g2(data1,true);
-SE2 g3(data1,true);
-g3.BoxPlusEq(se2(th2));
-SE2 g4(data1,true);
-SE2 g5(data3,true);
+SE2<tDataType> g2(data1,true);
+SE2<tDataType> g3(data1,true);
+g3.BoxPlusEq(se2<tDataType>(th2));
+SE2<tDataType> g4(data1,true);
+SE2<tDataType> g5(data3,true);
 
 ASSERT_EQ(g1.data_, data1*data2) << "Error with an OPlus function";
 
 // std::cerr << SE2::BoxPlus(data1,Th2)<< std::endl;
 // std::cerr << data1*data2<< std::endl;
 
-ASSERT_EQ(SE2::BoxPlus(data1,Th2), data1*data2) << "Error with the BoxPlus function";
+ASSERT_EQ(SE2<tDataType>::BoxPlus(data1,Th2), data1*data2) << "Error with the BoxPlus function";
 ASSERT_EQ(g2.BoxPlus(Th2), data1*data2) << "Error with the BoxPlus function";
 
 g2.BoxPlusEq(Th2);

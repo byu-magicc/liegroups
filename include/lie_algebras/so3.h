@@ -391,7 +391,7 @@ bool so3<tDataType>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
 
     bool is_element = true;
      
-    if ( (data.transpose()+data).norm() >= kso3_threshold_) {
+    if ( (data.transpose()+data).norm()/static_cast<tDataType>(2.0) >= kso3_threshold_) {
         is_element = false;
     }
 

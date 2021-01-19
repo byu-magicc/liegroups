@@ -5,18 +5,19 @@
 
 namespace lie_groups {
 
-
-Eigen::Matrix2d GenRandElem() {
-    Eigen::Matrix<double,1,1> u;
+template<typename tDataType>
+Eigen::Matrix<tDataType,2,2> GenRandElem() {
+    Eigen::Matrix<tDataType,1,1> u;
     u.setRandom();
-    Eigen::Matrix2d m;
-    m = so2::Exp(u);
+    Eigen::Matrix<tDataType,2,2> m;
+    m = so2<tDataType>::Exp(u);
     return m;
 }
 
-Eigen::Matrix2d GenElem(Eigen::Matrix<double,1,1> th) {
-    Eigen::Matrix2d m;
-    m = so2::Exp(th);
+template<typename tDataType>
+Eigen::Matrix<tDataType,2,2> GenElem(Eigen::Matrix<tDataType,1,1> th) {
+    Eigen::Matrix<tDataType,2,2> m;
+    m = so2<tDataType>::Exp(th);
     return m;
 }
 
@@ -25,14 +26,16 @@ Eigen::Matrix2d GenElem(Eigen::Matrix<double,1,1> th) {
 // Test the constructors
 TEST(SO2TEST, Constructors) {
 
-Eigen::Matrix2d Identity;
+typedef float tDataType;
+
+Eigen::Matrix<tDataType,2,2> Identity;
 Identity.setIdentity();
 
 // Valid element
-Eigen::Matrix2d data1 =GenRandElem();
+Eigen::Matrix<tDataType,2,2> data1 =GenRandElem<tDataType>();
 
 // Invalid element
-Eigen::Matrix2d data2;
+Eigen::Matrix<tDataType,2,2> data2;
 data2.setRandom();
 while  ((data2.transpose()*data2 - Identity).norm() <= kSO2_threshold_ ) {
     data2.setRandom();
@@ -40,11 +43,11 @@ while  ((data2.transpose()*data2 - Identity).norm() <= kSO2_threshold_ ) {
 
 
 
-SO2 g1;
-SO2 g2(data1,true);
-SO2 g3(data2,true);
-SO2 g4(g2);
-SO2 g5(data2);
+SO2<tDataType> g1;
+SO2<tDataType> g2(data1,true);
+SO2<tDataType> g3(data2,true);
+SO2<tDataType> g4(g2);
+SO2<tDataType> g5(data2);
 
 ASSERT_EQ(g1.data_,Identity) << "Default constructor not set to identity";
 ASSERT_EQ(g2.data_,data1) << "Assignment constructor error";
@@ -61,22 +64,24 @@ ASSERT_EQ(g5.data_,data2) << "Assignment constructor error";
 // Test the Inverse, Adjoint, Identity, Log, and operators
 TEST(SO2TEST, IAILO) {
 
-Eigen::Matrix2d Identity;
-Identity.setIdentity();
-Eigen::Matrix<double,1,1> I;
-I << 1;
-Eigen::Matrix<double,1,1> th;
-th << 0.1;
-Eigen::Matrix2d g = GenElem(th);
+typedef float tDataType;
 
-SO2 g1(GenRandElem());
-SO2 g2(GenRandElem());
-SO2 g3(g);
-SO2 g4 = g1;
-SO2 g5 = g1*g2;
+Eigen::Matrix<tDataType,2,2> Identity;
+Identity.setIdentity();
+Eigen::Matrix<tDataType,1,1> I;
+I << 1;
+Eigen::Matrix<tDataType,1,1> th;
+th << 0.1;
+Eigen::Matrix<tDataType,2,2> g = GenElem(th);
+
+SO2<tDataType> g1(GenRandElem<tDataType>());
+SO2<tDataType> g2(GenRandElem<tDataType>());
+SO2<tDataType> g3(g);
+SO2<tDataType> g4 = g1;
+SO2<tDataType> g5 = g1*g2;
 
 ASSERT_LE( ((g1.Inverse()).data_ - g1.data_.inverse()).norm(), kSO2_threshold_) << " Error with the inverse operation ";
-ASSERT_EQ( SO2::Identity().data_, Identity  ) << "Error with identity function ";
+ASSERT_EQ( SO2<tDataType>::Identity().data_, Identity  ) << "Error with identity function ";
 ASSERT_EQ( g2.Adjoint(),  I) << "Error with the Adjoint operation";
 
 ASSERT_DOUBLE_EQ(th(0), g3.Log()(0)) << "Error with the log function";
@@ -92,33 +97,35 @@ ASSERT_EQ(g5.data_, g1.data_*g2.data_) << "Error with the group operator";
 // Tests the box plus and box minus functions
 TEST(SO2Test, BoxPlus) {
 
-Eigen::Matrix<double,1,1> th1;
-Eigen::Matrix<double,1,1> th2;
+typedef float tDataType;
+
+Eigen::Matrix<tDataType,1,1> th1;
+Eigen::Matrix<tDataType,1,1> th2;
 th1 << 0.1;
 th2 << 0.2;
-Eigen::Matrix<double,2,2> Th1 = so2::Wedge(th1);
-Eigen::Matrix<double,2,2> Th2 = so2::Wedge(th2);
+Eigen::Matrix<tDataType,2,2> Th1 = so2<tDataType>::Wedge(th1);
+Eigen::Matrix<tDataType,2,2> Th2 = so2<tDataType>::Wedge(th2);
 
 
 
-Eigen::Matrix2d data1 = GenElem(th1);
-Eigen::Matrix2d data2 = GenElem(th2);
-Eigen::Matrix2d data3 = data1*data2;
+Eigen::Matrix<tDataType,2,2> data1 = GenElem<tDataType>(th1);
+Eigen::Matrix<tDataType,2,2> data2 = GenElem<tDataType>(th2);
+Eigen::Matrix<tDataType,2,2> data3 = data1*data2;
 
-SO2 g1(data1);
+SO2<tDataType> g1(data1);
 g1.OPlusEq(th2);
-SO2 g2(data1);
-SO2 g3(data1);
-g3.BoxPlusEq(so2(th2));
-SO2 g4(data1);
-SO2 g5(data3);
+SO2<tDataType> g2(data1);
+SO2<tDataType> g3(data1);
+g3.BoxPlusEq(so2<tDataType>(th2));
+SO2<tDataType> g4(data1);
+SO2<tDataType> g5(data3);
 
 ASSERT_EQ(g1.data_, data1*data2) << "Error with an OPlus function";
 
 // std::cerr << SO2::BoxPlus(data1,Th2)<< std::endl;
 // std::cerr << data1*data2<< std::endl;
 
-ASSERT_EQ(SO2::BoxPlus(data1,Th2), data1*data2) << "Error with the BoxPlus function";
+ASSERT_EQ(SO2<tDataType>::BoxPlus(data1,Th2), data1*data2) << "Error with the BoxPlus function";
 ASSERT_EQ(g2.BoxPlus(Th2), data1*data2) << "Error with the BoxPlus function";
 
 g2.BoxPlusEq(Th2);
