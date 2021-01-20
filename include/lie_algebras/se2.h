@@ -241,7 +241,7 @@ static se2 Identity(){return se2();}
  */ 
 static Mat2d SSM(tDataType x) {
     Mat2d m;
-    m << 0, -x, x, 0;
+    m << static_cast<tDataType>(0), -x, x, static_cast<tDataType>(0);
     return m;
 }
 

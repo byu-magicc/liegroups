@@ -298,7 +298,7 @@ Eigen::Matrix<tDataType,4,4> se3<tDataType>::Exp(const Vec6d& data) {
     so3<tDataType> omega(data.block(3,0,3,1));
     m.block(0,0,3,3) = omega.Exp();
     m.block(0,3,3,1) = omega.Jl()*data.block(0,0,3,1);
-    m.block(3,0,1,4) << 0,0,0,1;
+    m.block(3,0,1,4) << static_cast<tDataType>(0),static_cast<tDataType>(0),static_cast<tDataType>(0),static_cast<tDataType>(1);
     return m;  
 }
 

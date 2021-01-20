@@ -92,7 +92,7 @@ Mat3d Wedge() {return Wedge(data_);}
  * @return The result of the Wedge operation.
  */
 static Mat3d Wedge(const Vec3d& data) {    Mat3d m;
-    m << 0, -data(2), data(1), data(2), 0, -data(0), -data(1), data(0), 0;
+    m << static_cast<tDataType>(0), -data(2), data(1), data(2), static_cast<tDataType>(0), -data(0), -data(1), data(0), static_cast<tDataType>(0);
     return m;
 }
 
@@ -315,7 +315,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jl() {
     if (th < kso3_threshold_) { // See if the element is close to the identity element.
         m.setIdentity();
     } else {   
-        tDataType a = (1.0-cos(th))/pow(th,2);
+        tDataType a = (static_cast<tDataType>(1.0)-cos(th))/pow(th,2);
         tDataType b = (th-sin(th))/pow(th,3);
         m = Mat3d::Identity() + a*this->Wedge() + b*this->Wedge()*this->Wedge();
     }

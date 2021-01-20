@@ -95,7 +95,7 @@ Mat2d Wedge() {return Wedge(data_);}
  */
 static Mat2d Wedge(const Mat1d& data) {
     Mat2d m;
-    m << 0, -data(0), data(0), 0;
+    m << static_cast<tDataType>(0), -data(0), data(0), static_cast<tDataType>(0);
     return m; 
 }
 

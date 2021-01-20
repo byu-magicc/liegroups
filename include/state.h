@@ -24,8 +24,11 @@ template <template<typename , int > class tG, typename tDataType = double,int tN
 class State {
 
 public:
+typedef tDataType DataType;
 typedef tG<tDataType,tN> G;
 typedef typename G::Algebra U;
+typedef G Group;
+typedef U Algebra;
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
 typedef Eigen::Matrix<tDataType,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
