@@ -303,7 +303,7 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::Exp(const Eigen::Matrix<tDataType,3
     m.block(0,0,2,2) << cos(data(2)), - sin(data(2)), sin(data(2)), cos(data(2));
     m.block(0,2,2,1) = Wl(data(2))*data.block(0,0,2,1);
     m.block(2,0,1,2).setZero();
-    m(2,2) = 1;
+    m(2,2) = static_cast<tDataType>(1.0);
     return m;
 }
 
@@ -393,7 +393,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wl(const tDataType th) {
     Eigen::Matrix<tDataType,2,2> m;
 
     if (fabs(th) > kse2_threshold_) {
-        tDataType a = (1-cos(th))/th;
+        tDataType a = (1.0-cos(th))/th;
         tDataType b = sin(th)/th;
         m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
@@ -412,7 +412,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wr(const tDataType th) {
     Eigen::Matrix<tDataType,2,2> m;
 
     if (fabs(th) > kse2_threshold_) {
-        tDataType a = (cos(th)-1)/th;
+        tDataType a = (cos(th)-1.0)/th;
         tDataType b = sin(th)/th;
         m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
@@ -431,7 +431,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dl(const tDataType th) {
     Eigen::Matrix<tDataType,2,2> m;
 
     if (fabs(th) > kse2_threshold_) {
-        tDataType a = (cos(th)-1)/(th*th);
+        tDataType a = (cos(th)-1.0)/(th*th);
         tDataType b = (th-sin(th))/(th*th);
         m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
@@ -450,9 +450,9 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dr(const tDataType th) {
     Eigen::Matrix<tDataType,2,2> m;
 
     if (fabs(th) > kse2_threshold_) {
-        tDataType a = (1-cos(th))/(th*th);
+        tDataType a = (1.0-cos(th))/(th*th);
         tDataType b = (th-sin(th))/(th*th);
-        m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType>::SSM(1.0) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {

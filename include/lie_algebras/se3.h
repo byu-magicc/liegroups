@@ -243,7 +243,7 @@ static se3 Identity(){return se3();}
  */ 
 static Mat3d SSM(const Vec3d& x){
     Mat3d m;
-    m << 0, -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), 0;
+    m << static_cast<tDataType>(0.0), -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), static_cast<tDataType>(0.0);
     return m;
 }
 
@@ -414,10 +414,10 @@ if (th <= kse3_threshold_) { // Close to the identity element;
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);
     tDataType th4 = pow(th,4);
-    tDataType a = (cos(th)-1)/th2;
+    tDataType a = (cos(th)-1.0)/th2;
     tDataType b = (th - sin(th))/th3;
-    tDataType c = -sin(th)/th3 + 2*(1-cos(th))/th4;
-    tDataType d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    tDataType c = -sin(th)/th3 + 2.0*(1.0-cos(th))/th4;
+    tDataType d = -2.0/th4 + 3.0*sin(th)/pow(th,5) - cos(th)/th4;
     Eigen::Matrix<tDataType,3,3> q;
     q = w.dot(p)*(-c*SSM(w) + d*SSM(w)*SSM(w));
 
@@ -445,10 +445,10 @@ if (th <= kse3_threshold_) { // Close to the identity element;
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);
     tDataType th4 = pow(th,4);
-    tDataType a = (cos(th)-1)/th2;
+    tDataType a = (cos(th)-1.0)/th2;
     tDataType b = (th - sin(th))/th3;
-    tDataType c = -sin(th)/th3 + 2*(1-cos(th))/th4;
-    tDataType d = -2/th4 + 3*sin(th)/pow(th,5) - cos(th)/th4;
+    tDataType c = -sin(th)/th3 + 2.0*(1.0-cos(th))/th4;
+    tDataType d = -2.0/th4 + 3.0*sin(th)/pow(th,5) - cos(th)/th4;
     Eigen::Matrix<tDataType,3,3> q;
     q = w.dot(p)*(c*SSM(w) + d*SSM(w)*SSM(w));
     m = a*SSM(p) + b*(SSM(w)*SSM(p) + SSM(p)*SSM(w)) + q;

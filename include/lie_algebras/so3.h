@@ -291,14 +291,14 @@ Eigen::Matrix<tDataType,3,1> so3<tDataType>::Log(const Eigen::Matrix<tDataType,3
     Vec3d u;
 
     tDataType t = data.trace();
-    if ( fabs(t-3.0) <= kso3_threshold_) { // Rotation matrix is close to identity
+    if ( (t-3.0) <= kso3_threshold_ && (t-3.0) >= - kso3_threshold_) { // Rotation matrix is close to identity
     
         u.setZero();
 
     } else { // Use Rodriguez formula 
 
-        tDataType th = acos( (t-1)/2);
-        u = so3<tDataType>::Vee(th*(data-data.transpose())/(2*sin(th)));
+        tDataType th = acos( (t-1.0)/2.0);
+        u = so3<tDataType>::Vee(th*(data-data.transpose())/(2.0*sin(th)));
     }
 
     return u;    
@@ -333,10 +333,10 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::JlInv() {
 
     tDataType th = data_.norm();
 
-    if (th < kso3_threshold_ || sin(th/2) < kso3_threshold_) { // See if the element is close to the identity element.
+    if (th < kso3_threshold_ || sin(th/2.0) < kso3_threshold_) { // See if the element is close to the identity element.
         m.setIdentity();
     } else {   
-        tDataType a = -0.5;
+        tDataType a = static_cast<tDataType>(-0.5);
         tDataType cot = cos(th/2.0)/sin(th/2.0);
         tDataType b = -(th*cot-2.0)/(2.0*pow(th,2));
         m = Mat3d::Identity() + a*this->Wedge() + b*this->Wedge()*this->Wedge();
