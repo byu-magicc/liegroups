@@ -38,6 +38,10 @@ typedef typename G::GroupType StateType;
 typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj;     /**< The Adjoint data type. */
 typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
+template<typename T>
+using StateTemplate = State<tG, T, tN>;
+
+
 static constexpr unsigned int dim_ = G::dim_ + U::dim_;
 
 G g_;   /** < The pose of the object.*/
