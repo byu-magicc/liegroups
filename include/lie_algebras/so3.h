@@ -273,12 +273,15 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Exp(const Eigen::Matrix<tDataType,3
     Mat3d m;
     tDataType th = data.norm();
 
-    if (th < kso3_threshold_) { // See if the element is close to the identity element.
-        m.setIdentity();
+    if (th < static_cast<tDataType>(kso3_threshold_)) { // See if the element is close to the identity element.
+        // m.setIdentity();
+        m = Mat3d::Identity()+ Wedge(data);
     } else {  // Use Rodriguez formula 
         tDataType a = sin(th)/th;
-        tDataType b = (1.0-cos(th))/pow(th,2);
+        tDataType b = (static_cast<tDataType>(1.0)-cos(th))/pow(th,2);
         m = Mat3d::Identity() + a*Wedge(data) + b*Wedge(data)*Wedge(data);
+        // std::cout << "here 2" << std::endl;
+
     }
     return m;
 
@@ -312,8 +315,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jl() {
     
     tDataType th = data_.norm();
 
-    if (th < kso3_threshold_) { // See if the element is close to the identity element.
-        m.setIdentity();
+    if (th < static_cast<tDataType>(kso3_threshold_)) { // See if the element is close to the identity element.
+        m = Mat3d::Identity() + this->Wedge()/static_cast<tDataType>(2.0);
     } else {   
         tDataType a = (static_cast<tDataType>(1.0)-cos(th))/pow(th,2);
         tDataType b = (th-sin(th))/pow(th,3);
@@ -334,7 +337,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::JlInv() {
     tDataType th = data_.norm();
 
     if (th < kso3_threshold_ || sin(th/2.0) < kso3_threshold_) { // See if the element is close to the identity element.
-        m.setIdentity();
+        m = Mat3d::Identity() + this->Wedge()/static_cast<tDataType>(2.0);
     } else {   
         tDataType a = static_cast<tDataType>(-0.5);
         tDataType cot = cos(th/2.0)/sin(th/2.0);
@@ -354,7 +357,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jr() {
     tDataType th = data_.norm();
 
     if (th < kso3_threshold_) { // See if the element is close to the identity element.
-        m.setIdentity();
+        m = Mat3d::Identity() - this->Wedge()/static_cast<tDataType>(2.0);
     } else {   
         tDataType a = (cos(th)-1.0)/pow(th,2);
         tDataType b = (th-sin(th))/pow(th,3);
@@ -374,7 +377,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::JrInv() {
     tDataType th = data_.norm();
 
     if (th < kso3_threshold_ || sin(th/2) < kso3_threshold_) { // See if the element is close to the identity element.
-        m.setIdentity();
+        m = Mat3d::Identity() + this->Wedge()/static_cast<tDataType>(2.0);
     } else {   
         tDataType a = 0.5;
         tDataType cot = cos(th/2.0)/sin(th/2.0);

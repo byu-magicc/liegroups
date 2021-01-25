@@ -243,7 +243,7 @@ static se3 Identity(){return se3();}
  */ 
 static Mat3d SSM(const Vec3d& x){
     Mat3d m;
-    m << static_cast<tDataType>(0.0), -x(2), x(1), x(2), 0, -x(0), -x(1), x(0), static_cast<tDataType>(0.0);
+    m << static_cast<tDataType>(0.0), -x(2), x(1), x(2), static_cast<tDataType>(0.0), -x(0), -x(1), x(0), static_cast<tDataType>(0.0);
     return m;
 }
 
@@ -298,7 +298,7 @@ Eigen::Matrix<tDataType,4,4> se3<tDataType>::Exp(const Vec6d& data) {
     so3<tDataType> omega(data.block(3,0,3,1));
     m.block(0,0,3,3) = omega.Exp();
     m.block(0,3,3,1) = omega.Jl()*data.block(0,0,3,1);
-    m.block(3,0,1,4) << static_cast<tDataType>(0),static_cast<tDataType>(0),static_cast<tDataType>(0),static_cast<tDataType>(1);
+    m.block(3,0,1,4) << static_cast<tDataType>(0.0),static_cast<tDataType>(0.0),static_cast<tDataType>(0.0),static_cast<tDataType>(1.0);
     return m;  
 }
 
@@ -409,7 +409,7 @@ tDataType th = w.norm();
 
 
 if (th <= kse3_threshold_) { // Close to the identity element;
-    m.setIdentity();
+    m = Eigen::Matrix<tDataType,3,3>::Identity() + SSM(p)/static_cast<tDataType>(2.0);
 } else {
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);
@@ -440,7 +440,7 @@ tDataType th = w.norm();
 
 
 if (th <= kse3_threshold_) { // Close to the identity element;
-    m.setIdentity();
+    m = Eigen::Matrix<tDataType,3,3>::Identity() - SSM(p)/static_cast<tDataType>(2.0);
 } else {
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);
