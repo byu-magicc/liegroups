@@ -399,7 +399,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wl(const tDataType th) {
     }
     else
     {
-        m.setIdentity();
+        m = Eigen::Matrix<tDataType,2,2>::Identity() + se2<tDataType>::SSM(1)*th/2.0;
     }
     
 return m;
@@ -418,7 +418,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wr(const tDataType th) {
     }
     else
     {
-        m.setIdentity();
+        m = Eigen::Matrix<tDataType,2,2>::Identity() - se2<tDataType>::SSM(1)*th/2.0;
     }
     
 return m;
@@ -437,7 +437,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dl(const tDataType th) {
     }
     else
     {
-        m.setIdentity();
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 - se2<tDataType>::SSM(1)*th/2.0;
     }
 
     return m;
@@ -456,7 +456,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dr(const tDataType th) {
     }
     else
     {
-        m.setIdentity();
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 + se2<tDataType>::SSM(1)*th/2.0;
     }
 
     return m;
