@@ -392,14 +392,14 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wl(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
-    if (fabs(th) > kse2_threshold_) {
+    if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (1.0-cos(th))/th;
         tDataType b = sin(th)/th;
-        m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity() + se2<tDataType>::SSM(1)*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity() + se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
     
 return m;
@@ -411,14 +411,14 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wr(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
-    if (fabs(th) > kse2_threshold_) {
+    if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (cos(th)-1.0)/th;
         tDataType b = sin(th)/th;
-        m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity() - se2<tDataType>::SSM(1)*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity() - se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
     
 return m;
@@ -437,7 +437,7 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dl(const tDataType th) {
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 - se2<tDataType>::SSM(1)*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 - se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
 
     return m;
@@ -449,14 +449,14 @@ Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dr(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
-    if (fabs(th) > kse2_threshold_) {
+    if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (1.0-cos(th))/(th*th);
         tDataType b = (th-sin(th))/(th*th);
-        m = a*se2<tDataType>::SSM(1.0) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 + se2<tDataType>::SSM(1)*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 + se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
 
     return m;
