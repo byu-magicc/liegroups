@@ -24,6 +24,8 @@ template <template<typename , int > class tG, typename tDataType = double,int tN
 class State {
 
 public:
+static constexpr int N = tN;
+
 typedef tDataType DataType;
 typedef tG<tDataType,tN> G;
 typedef typename G::Algebra U;
@@ -41,6 +43,8 @@ typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State 
 template<typename T>
 using StateTemplate = State<tG, T, tN>;
 
+template< typename T, int N>
+using GroupTemplate = tG<T,N>;
 
 static constexpr unsigned int dim_ = G::dim_ + U::dim_;
 
