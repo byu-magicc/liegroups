@@ -4,7 +4,7 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#include "lie_algebras/se2.h"
+#include "lie_groups/lie_algebras/se2.h"
 
 
 

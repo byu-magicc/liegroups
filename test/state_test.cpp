@@ -1,10 +1,10 @@
-#include "state.h"
 #include "gtest/gtest.h"
 
 #include <Eigen/Dense>
 #include <ctime>
 #include <chrono>
 
+#include "lie_groups/state.h"
 
 namespace lie_groups {
 

@@ -1,6 +1,6 @@
 #include <Eigen/Dense>
 
-#include "lie_algebras/so3.h"
+#include "lie_groups/lie_algebras/so3.h"
 #include "gtest/gtest.h"
 
 namespace lie_groups {

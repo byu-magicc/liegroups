@@ -3,9 +3,10 @@
 
 #include <Eigen/Dense>
 #include <iostream>
-#include <lie_algebras/se3.h>
-#include <lie_algebras/so3.h>
-#include "lie_groups/group_base.h"
+
+#include "lie_groups/lie_algebras/se3.h"
+#include "lie_groups/lie_algebras/so3.h"
+#include "lie_groups/lie_groups/group_base.h"
 
 namespace lie_groups {
 

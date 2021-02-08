@@ -1,4 +1,4 @@
-#include "lie_groups/SO2.h"
+#include "lie_groups/lie_groups/SO2.h"
 #include "gtest/gtest.h"
 #include <Eigen/Dense>
 

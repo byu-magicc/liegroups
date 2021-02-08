@@ -1,4 +1,4 @@
-#include "lie_groups/Rn.h"
+#include "lie_groups/lie_groups/Rn.h"
 #include "gtest/gtest.h"
 #include <Eigen/Dense>
 

@@ -1,7 +1,7 @@
 #ifndef _LIEGROUPS_INCLUDE_LIEGROUPS_UTILITIES_
 #define _LIEGROUPS_INCLUDE_LIEGROUPS_UTILITIES_
 
-#include "state.h"
+#include "lie_groups/state.h"
 
 namespace lie_groups { namespace utilities
 {

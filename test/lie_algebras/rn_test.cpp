@@ -1,7 +1,8 @@
 #include <Eigen/Dense>
 
-#include "lie_algebras/rn.h"
 #include "gtest/gtest.h"
+
+#include "lie_groups/lie_algebras/rn.h"
 
 namespace lie_groups {
 

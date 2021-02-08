@@ -5,18 +5,18 @@
 #include <iostream>
 
 // Lie algebras
-#include "lie_algebras/rn.h"
-#include "lie_algebras/so2.h"
-#include "lie_algebras/so3.h"
-#include "lie_algebras/se2.h"
-#include "lie_algebras/se3.h"
+#include "lie_groups/lie_algebras/rn.h"
+#include "lie_groups/lie_algebras/so2.h"
+#include "lie_groups/lie_algebras/so3.h"
+#include "lie_groups/lie_algebras/se2.h"
+#include "lie_groups/lie_algebras/se3.h"
 
 // Lie groups
-#include "lie_groups/Rn.h"
-#include "lie_groups/SO2.h"
-#include "lie_groups/SO3.h"
-#include "lie_groups/SE2.h"
-#include "lie_groups/SE3.h"
+#include "lie_groups/lie_groups/Rn.h"
+#include "lie_groups/lie_groups/SO2.h"
+#include "lie_groups/lie_groups/SO3.h"
+#include "lie_groups/lie_groups/SE2.h"
+#include "lie_groups/lie_groups/SE3.h"
 
 namespace lie_groups {
 
