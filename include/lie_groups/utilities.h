@@ -13,12 +13,12 @@ struct GroupIsSEN {
 };
 
 template<> 
-inline struct GroupIsSEN<lie_groups::SE2> {
+struct GroupIsSEN<lie_groups::SE2> {
     static constexpr bool value = true;
 };
 
 template<> 
-inline struct GroupIsSEN<lie_groups::SE3> {
+struct GroupIsSEN<lie_groups::SE3> {
     static constexpr bool value = true;
 };
 
@@ -30,12 +30,12 @@ struct GroupIsSON {
 };
 
 template<> 
-inline struct GroupIsSON<lie_groups::SO2> {
+struct GroupIsSON<lie_groups::SO2> {
     static constexpr bool value = true;
 };
 
 template<> 
-inline struct GroupIsSON<lie_groups::SO3> {
+struct GroupIsSON<lie_groups::SO3> {
     static constexpr bool value = true;
 };
 
@@ -49,7 +49,7 @@ struct GroupIsRN {
 };
 
 template<> 
-inline struct GroupIsRN<lie_groups::Rn> {
+struct GroupIsRN<lie_groups::Rn> {
     static constexpr bool value = true;
 };
 
