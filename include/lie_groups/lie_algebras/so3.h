@@ -9,8 +9,11 @@ namespace lie_groups {
 constexpr double kso3_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
 
-template <typename tDataType=double>
+template <typename tDataType=double, int tNumDimensions=3, int tNumTangentSpaces=1>
 class so3  {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::so3 the number of tangent spaces must be 1.");
+static_assert(tNumDimensions == 3, "lie_groups::so3 the number of dimensions must be 3.");
 
 public:
 
@@ -242,8 +245,8 @@ static bool isElement(const Mat3d& data);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-template <typename tDataType>
-so3<tDataType>::so3(const Eigen::Matrix<tDataType,3,3>& data, bool verify) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+so3<tDataType,tNumDimensions,tNumTangentSpaces>::so3(const Eigen::Matrix<tDataType,3,3>& data, bool verify) {
 
     if(verify)
     {
@@ -268,8 +271,8 @@ so3<tDataType>::so3(const Eigen::Matrix<tDataType,3,3>& data, bool verify) {
 
 //--------------------------------------------------------------------------------------------------------
 
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,3> so3<tDataType>::Exp(const Eigen::Matrix<tDataType,3,1>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(const Eigen::Matrix<tDataType,3,1>& data) {
     Mat3d m;
     tDataType th = data.norm();
 
@@ -288,8 +291,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Exp(const Eigen::Matrix<tDataType,3
 }
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,1> so3<tDataType>::Log(const Eigen::Matrix<tDataType,3,3>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,1> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Log(const Eigen::Matrix<tDataType,3,3>& data) {
 
     Vec3d u;
 
@@ -308,8 +311,8 @@ Eigen::Matrix<tDataType,3,1> so3<tDataType>::Log(const Eigen::Matrix<tDataType,3
 }
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jl() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Jl() {
 
     Mat3d m;
     
@@ -328,8 +331,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jl() {
 
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,3> so3<tDataType>::JlInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::JlInv() {
 
 
     Mat3d m;
@@ -349,8 +352,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::JlInv() {
 }
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jr() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Jr() {
 
     Mat3d m;
     
@@ -369,8 +372,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::Jr() {
 
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-Eigen::Matrix<tDataType,3,3> so3<tDataType>::JrInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::JrInv() {
     
     Mat3d m;
 
@@ -389,8 +392,8 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType>::JrInv() {
 }
 
 //---------------------------------------------------------------------
-template <typename tDataType>
-bool so3<tDataType>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool so3<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
 
     bool is_element = true;
      

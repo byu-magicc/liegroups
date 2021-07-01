@@ -10,6 +10,7 @@ namespace lie_groups {
 
 
 using MyTypes = ::testing::Types<R2_r2,R3_r3,SO2_so2,SO3_so3,SE2_se2,SE3_se3>;
+// using MyTypes = ::testing::Types<R2_r2>;
 
 template <typename T>
 class ContructorTest : public testing::Test {

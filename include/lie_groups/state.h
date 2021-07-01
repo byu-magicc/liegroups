@@ -20,14 +20,16 @@
 
 namespace lie_groups {
 
-template <template<typename , int > class tG, typename tDataType = double,int tN =2> 
+template <template<typename , int, int > class tG, typename tDataType = double,int tGroupDim =2, int tNumTangentSpaces = 1> 
 class State {
 
 public:
-static constexpr int N = tN;
+static constexpr int N = tGroupDim;                              /**< The dimensions of the group. */
+static constexpr int NumTangentSpaces = tNumTangentSpaces;       /**< The number of tangent spaces to consider. For example, if the number is 1, then only velocity is considered. If the number is 2, then velocity and acceleration are considered. 
+                                                                      Not every group can support more than one tangent space; currently only RN can.*/
 
 typedef tDataType DataType;
-typedef tG<tDataType,tN> G;
+typedef tG<tDataType,tGroupDim,tNumTangentSpaces> G;
 typedef typename G::Algebra U;
 typedef G Group;
 typedef U Algebra;
@@ -41,10 +43,10 @@ typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj;     /**< The Adjoin
 typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
 template<typename T>
-using StateTemplate = State<tG, T, tN>;
+using StateTemplate = State<tG, T, tGroupDim, tNumTangentSpaces>;
 
-template< typename T, int N>
-using GroupTemplate = tG<T,N>;
+template< typename T1, int T2, int T3>
+using GroupTemplate = tG<T1,T2,T3>;
 
 static constexpr unsigned int dim_ = G::dim_ + U::dim_;
 
@@ -237,12 +239,12 @@ void OPlusEQ( Mat_SC cartesian) {
 
 };
 
-typedef State<Rn,double,2> R2_r2;
-typedef State<Rn,double,3> R3_r3;
-typedef State<SO2,double,1> SO2_so2;
-typedef State<SO3,double,3> SO3_so3;
-typedef State<SE2,double,3> SE2_se2;
-typedef State<SE3, double, 6> SE3_se3;
+typedef State<Rn,  double,2,1> R2_r2;
+typedef State<Rn,  double,3,1> R3_r3;
+typedef State<SO2, double,1,1> SO2_so2;
+typedef State<SO3, double,3,1> SO3_so3;
+typedef State<SE2, double,3,1> SE2_se2;
+typedef State<SE3, double,6,1> SE3_se3;
 
 }
 

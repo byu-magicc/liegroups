@@ -13,8 +13,11 @@ namespace lie_groups {
 
 constexpr double kSO2_threshold_ = 1e-7;
 
-template<typename tDataType=double, int tN = 1>
-class SO2 : public GroupBase<SO2<tDataType>,so2<tDataType>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>>{
+template <typename tDataType=double, int tNumDimensions=1, int tNumTangentSpaces=1>
+class SO2 : public GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>>{
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::SO2 the number of tangent spaces must be greater than 0.");
+
 
 public:
 
@@ -22,12 +25,12 @@ public:
 typedef Eigen::Matrix<tDataType,1,1> Mat1d;
 typedef Eigen::Matrix<tDataType,2,2> Mat2d;
 
-static constexpr unsigned int dim_ = 1;
+static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int size1_ = 2;
 static constexpr unsigned int size2_ = 2;
-typedef so2<tDataType> Algebra;
+typedef so2<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef Abelian GroupType;
-typedef GroupBase<SO2<tDataType>,so2<tDataType>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>> Base;
+typedef GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>> Base;
 using Base::BoxPlus;
 using Base::BoxMinus;
 
@@ -151,8 +154,8 @@ static bool isElement(const Mat2d& data);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                    Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename tDataType, int tN>
-SO2<tDataType,tN>::SO2(const Eigen::Matrix<tDataType,2,2> & data, bool verify) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+SO2<tDataType,tNumDimensions,tNumTangentSpaces>::SO2(const Eigen::Matrix<tDataType,2,2> & data, bool verify) {
 
     // First verify that it is a proper group element.
     if (verify ) {
@@ -168,8 +171,8 @@ SO2<tDataType,tN>::SO2(const Eigen::Matrix<tDataType,2,2> & data, bool verify) {
 }
 
 //----------------------------------------------------------
-template<typename tDataType, int tN>
-bool SO2<tDataType,tN>::isElement(const Eigen::Matrix<tDataType,2,2>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool SO2<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Eigen::Matrix<tDataType,2,2>& data) {
     return (data.transpose()*data - Mat2d::Identity()).norm() < kSO2_threshold_;
 }
 

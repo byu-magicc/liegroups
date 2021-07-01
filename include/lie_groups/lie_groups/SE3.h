@@ -11,8 +11,11 @@
 namespace lie_groups {
 
 constexpr double kSE3_threshold_ = 1e-6;
-template<typename tDataType=double, int tN=6>
-class SE3 : public GroupBase<SE3<tDataType>,se3<tDataType>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> {
+template <typename tDataType=double, int tNumDimensions=6, int tNumTangentSpaces=1>
+class SE3 : public GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::SE3 the number of tangent spaces must be 1.");
+
 
 public:
 
@@ -22,15 +25,15 @@ typedef Eigen::Matrix<tDataType,3,3> Mat3d;
 typedef Eigen::Matrix<tDataType,4,4> Mat4d;
 typedef Eigen::Matrix<tDataType,6,6> Mat6d;
 
-static constexpr unsigned int dim_ = 6;
+static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int dim_pos_ = 3; /** < The dimension of the position */
 static constexpr unsigned int dim_rot_ = 3; /** < The dimension of the rotation */
 static constexpr unsigned int size1_ = 4;
 static constexpr unsigned int size2_ = 4;
-typedef se3<tDataType> Algebra;
+typedef se3<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 typedef so3<tDataType> RotAlgebra;
-typedef GroupBase<SE3<tDataType>,se3<tDataType>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> Base; 
+typedef GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> Base; 
 using Base::BoxPlus;
 using Base::BoxMinus;
 
@@ -168,8 +171,8 @@ static bool isElement(const Mat4d& data);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                    Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename tDataType, int tN>
-SE3<tDataType, tN>::SE3(const Eigen::Matrix<tDataType,4,4> & data, bool verify) : t_(data_.data()+12), R_(data_.block(0,0,3,3)) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+SE3<tDataType,tNumDimensions,tNumTangentSpaces>::SE3(const Eigen::Matrix<tDataType,4,4> & data, bool verify) : t_(data_.data()+12), R_(data_.block(0,0,3,3)) {
 
     // First verify that it is a proper group element.
     if (verify ) {
@@ -185,8 +188,8 @@ SE3<tDataType, tN>::SE3(const Eigen::Matrix<tDataType,4,4> & data, bool verify) 
 }
 
 //-------------------------------------------------------------------
-template<typename tDataType, int tN>
-bool SE3<tDataType, tN>::isElement(const Eigen::Matrix<tDataType,4,4>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool SE3<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Eigen::Matrix<tDataType,4,4>& data) {
     
     double d = (data.block(0,0,3,3).transpose()*data.block(0,0,3,3)-Mat3d::Identity()).norm();
     

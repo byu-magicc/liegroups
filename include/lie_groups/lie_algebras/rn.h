@@ -8,22 +8,32 @@ namespace lie_groups {
 
 constexpr double krn_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template <typename tDataType=double, int N=2>
+template <typename tDataType=double, int tNumDimensions=2, int tNumTangentSpaces=1>
 class rn  {
 
 public:
 
-Eigen::Matrix<tDataType,N,1> data_;
-static constexpr unsigned int dim_ = N;
-static constexpr unsigned int size1_ = N;
+/*
+* If the tangent space is grater than 1, this theory isn't fully developed so be careful on how you use it. 
+*/
+static_assert(tNumTangentSpaces > 0, "lie_groups::rn the number of tangent spaces must be greater than 0.");
+
+
+static constexpr unsigned int dim_ = tNumDimensions;
+static constexpr unsigned int size1_ = tNumDimensions*tNumTangentSpaces;
 static constexpr unsigned int size2_ = 1;
+static constexpr unsigned int num_tangent_spaces_ =tNumTangentSpaces;
+static constexpr unsigned int total_num_dim_ = tNumTangentSpaces*tNumDimensions;
+typedef Eigen::Matrix<tDataType,total_num_dim_,1> MatData;
+typedef Eigen::Matrix<tDataType,total_num_dim_,total_num_dim_> MatNN;
+MatData data_;
 
 // The rule of 5!!
 
 /**
  * Default constructor. Initializes algebra element to identity.
  */
-rn() : data_(Eigen::Matrix<tDataType,N,1>::Zero()) {}
+rn() : data_(MatData::Zero()) {}
 
 /**
  * Copy constructor.
@@ -49,7 +59,7 @@ void operator = (const rn&& u){data_ = u.data_;}
 * Initializes algebra element to the one given. 
 * @param[in] data The data of an element of \f$\mathbb{R}^2\f$
 */
-rn(const Eigen::Matrix<tDataType,N,1> data) : data_(data) {}
+rn(const MatData data) : data_(data) {}
 
 /**
 * Initializes algebra element to the one given. If verify is set to true,
@@ -57,7 +67,7 @@ rn(const Eigen::Matrix<tDataType,N,1> data) : data_(data) {}
 * @param[in] u The data of an element of \f$ \mathbb{R}^n\f$
 * @param verify If true, the constructor will verify that the element given is an element of the Lie algebra.
 */
-rn(const Eigen::Matrix<tDataType,N,1> & data, bool verify) : data_(data){}
+rn(const MatData & data, bool verify) : data_(data){}
 
 
 /**
@@ -73,21 +83,21 @@ rn Bracket(const rn& u) {return rn();}
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity map for \f$ \mathbb{R}^n\f$
  */ 
-Eigen::Matrix<tDataType,N,N> Adjoint() {return Eigen::Matrix<tDataType,N,N>::Identity();}
+MatNN Adjoint() {return MatNN::Identity();}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * This will just the data.
  * @return The result of the Wedge operation.
  */
-Eigen::Matrix<tDataType,N,1> Wedge(){return data_;}
+MatData Wedge(){return data_;}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.
  * @param data The data of an element  of the Cartesian space isomorphic to the Lie algebra
  * @return The result of the Wedge operation.
  */
-static Eigen::Matrix<tDataType,N,1> Wedge(const Eigen::Matrix<tDataType,N,1>& data){return data;}
+static MatData Wedge(const MatData& data){return data;}
 
 
 /**
@@ -95,7 +105,7 @@ static Eigen::Matrix<tDataType,N,1> Wedge(const Eigen::Matrix<tDataType,N,1>& da
  * This will just return itself
  * @return The result of the Vee operation.
  */
-Eigen::Matrix<tDataType,N,1> Vee(){return data_;}
+MatData Vee(){return data_;}
 
 /**
  * Computes the Vee operation which maps an element of the Lie algebra to the Cartesian space.
@@ -103,14 +113,14 @@ Eigen::Matrix<tDataType,N,1> Vee(){return data_;}
  * @param data The data of an element
  * @return The result of the Vee operation.
  */
-static Eigen::Matrix<tDataType,N,1> Vee(const Eigen::Matrix<tDataType,N,1>& data){return data;}
+static MatData Vee(const MatData& data){return data;}
 
 /**
  * Computes the exponential of the element of the Lie algebra.
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$
  * @return The data associated to the group element.
  */
-Eigen::Matrix<tDataType,N,1> Exp(){return Exp(data_);}
+MatData Exp(){return Exp(data_);}
 
 
 /**
@@ -118,7 +128,7 @@ Eigen::Matrix<tDataType,N,1> Exp(){return Exp(data_);}
  * The exponential map is the identity map for \f$ \mathbb{R}^n\f$ * 
  * @return The data associated to the group element.
  */
-static Eigen::Matrix<tDataType,N,1> Exp(const Eigen::Matrix<tDataType,N,1>& data ){return data;}
+static MatData Exp(const MatData& data ){return data;}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
@@ -126,7 +136,7 @@ static Eigen::Matrix<tDataType,N,1> Exp(const Eigen::Matrix<tDataType,N,1>& data
  * @param data The data associated with an element of \f$ SO(2) \f$
  * @return The data of an element of the Cartesian space associated with the Lie algebra
  */
-static Eigen::Matrix<tDataType,N,1> Log(const Eigen::Matrix<tDataType,N,1>& data) {return data;}
+static MatData Log(const MatData& data) {return data;}
 
 /**
  * Computes and returns the Euclidean norm of the element of the Lie algebra
@@ -137,7 +147,7 @@ tDataType Norm(){return data_.norm();}
  * Computes and returns the matrix of the Left Jacobian.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<tDataType,N,N> Jl(){return Eigen::Matrix<tDataType,N,N>::Identity();}
+MatNN Jl(){return MatNN::Identity();}
 
 /**
  * Computes the left Jacobian using the element of *this and applies it to the
@@ -153,7 +163,7 @@ rn Jl(const rn& u){return u;}
  * Computes and returns the matrix of the Left Jacobian inverse.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$$.
  */ 
-Eigen::Matrix<tDataType,N,N> JlInv(){return Eigen::Matrix<tDataType,N,N>::Identity();}
+MatNN JlInv(){return MatNN::Identity();}
 
 /**
  * Computes the left Jacobian inverse using the element of *this and applies it to the
@@ -168,7 +178,7 @@ rn JlInv(const rn& u){return u;}
  * Computes and returns the matrix of the Right Jacobian
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<tDataType,N,N> Jr(){return Eigen::Matrix<tDataType,N,N>::Identity();}
+MatNN Jr(){return MatNN::Identity();}
 
 /**
  * Computes the right Jacobian using the element of *this and applies it to the
@@ -183,7 +193,7 @@ rn Jr(const rn& u){return u;}
  * Computes and returns the matrix of the right Jacobian inverse.
  * This will always return the identity map for \f$ \mathbb{R}^n\f$.
  */ 
-Eigen::Matrix<tDataType,N,N> JrInv(){return Eigen::Matrix<tDataType,N,N>::Identity();}
+MatNN JrInv(){return MatNN::Identity();}
 
 /**
  * Computes the right Jacobian inverse using the element of *this and applies it to the
@@ -226,7 +236,7 @@ static rn Identity(){return rn();}
  * Verifies that the parameter data belongs to 
  * an element of \f$ \mathbb{R}^n\f$
  */ 
-static bool isElement(const Eigen::Matrix<tDataType,N,1>& data){return true;}
+static bool isElement(const MatData& data){return true;}
 
 
 

@@ -10,18 +10,21 @@ namespace lie_groups {
 
 constexpr double kse3_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template< typename tDataType = double>
+template <typename tDataType=double, int tNumDimensions=6, int tNumTangentSpaces=1>
 class se3  {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::se3 the number of tangent spaces must be 1.");
+static_assert(tNumDimensions == 6, "lie_groups::se3 the number of dimensions must be 6.");
 
 public:
 
 Eigen::Matrix<tDataType,6,1> data_; /** < The vector is translational velocity followed by angular velocity*/
 Eigen::Map<Eigen::Matrix<tDataType,3,1>> p_;  /** < The translational velocity */
 Eigen::Map<Eigen::Matrix<tDataType,3,1>> th_; /** < The angular velocity */
-static constexpr unsigned int dim_ = 6;
+static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int dim_t_vel_=3; /** < The dimension of the translational velocity */
 static constexpr unsigned int dim_a_vel_=3; /** < The dimension of the angular velocity */
-static constexpr unsigned int size1_ = 6;
+static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
 typedef Eigen::Matrix<tDataType,3,1> Vec3d;
 typedef Eigen::Matrix<tDataType,6,1> Vec6d;
@@ -87,9 +90,9 @@ se3 Bracket(const se3& u){return se3(this->Adjoint()*u.data_);}
  */ 
 Mat6d Adjoint() {    
     Mat6d m = Mat6d::Zero();
-    m.block(0,0,3,3) = se3<tDataType>::SSM(th_);
-    m.block(3,3,3,3) = se3<tDataType>::SSM(th_);
-    m.block(0,3,3,3) = se3<tDataType>::SSM(p_);
+    m.block(0,0,3,3) = se3<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(th_);
+    m.block(3,3,3,3) = se3<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(th_);
+    m.block(0,3,3,3) = se3<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(p_);
 
     return m;}
 
@@ -106,7 +109,7 @@ Mat4d Wedge(){return Wedge(data_);}
  */
 static Mat4d Wedge(const Vec6d& data) {   
     Mat4d m = Mat4d::Zero();
-    m.block(0,0,3,3) = se3<tDataType>::SSM(data.block(3,0,3,1));
+    m.block(0,0,3,3) = se3<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(data.block(3,0,3,1));
     m.block(0,3,3,1) = data.block(0,0,3,1);
     return m;}
 
@@ -131,7 +134,7 @@ static Vec6d Vee(const Mat4d& data){
 /**
  * Computes the exponential of the element of the Lie algebra.
  */
-Mat4d Exp(){return se3<tDataType>::Exp(this->data_);}
+Mat4d Exp(){return se3<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(this->data_);}
 
 /**
  * Computes the exponential of the element of the Lie algebra.
@@ -269,22 +272,22 @@ static Mat3d Br(const Vec6d& u);
 
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-se3<tDataType>::se3(const Mat4d& data, bool verify) : p_(data_.data()), th_(data_.data()+3) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+se3<tDataType,tNumDimensions,tNumTangentSpaces>::se3(const Mat4d& data, bool verify) : p_(data_.data()), th_(data_.data()+3) {
 
     if(verify)
     {
         
-        if (se3<tDataType>::isElement(data)) {
-            data_ = se3<tDataType>::Vee(data);
+        if (se3<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(data)) {
+            data_ = se3<tDataType,tNumDimensions,tNumTangentSpaces>::Vee(data);
         }
         else {
-            std::cerr << "se3<tDataType>::Constructor - Input data not valid. Setting to identity element" << std::endl;
+            std::cerr << "se3::Constructor - Input data not valid. Setting to identity element" << std::endl;
             data_ = Vec6d::Zero();
         }
     }
     else {
-        data_ = se3<tDataType>::Vee(data);
+        data_ = se3<tDataType,tNumDimensions,tNumTangentSpaces>::Vee(data);
     }
 
 }
@@ -292,8 +295,8 @@ se3<tDataType>::se3(const Mat4d& data, bool verify) : p_(data_.data()), th_(data
 
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,4,4> se3<tDataType>::Exp(const Vec6d& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,4,4> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(const Vec6d& data) {
     Mat4d m;
     so3<tDataType> omega(data.block(3,0,3,1));
     m.block(0,0,3,3) = omega.Exp();
@@ -304,8 +307,8 @@ Eigen::Matrix<tDataType,4,4> se3<tDataType>::Exp(const Vec6d& data) {
 
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,6,1> se3<tDataType>::Log(const Mat4d& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,6,1> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Log(const Mat4d& data) {
     
     Vec6d u;
     so3<tDataType>  omega(so3<tDataType>::Log(data.block(0,0,3,3)));
@@ -316,8 +319,8 @@ Eigen::Matrix<tDataType,6,1> se3<tDataType>::Log(const Mat4d& data) {
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jl() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,6,6> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Jl() {
 
     so3<tDataType> omega(th_);
 
@@ -331,8 +334,8 @@ Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jl() {
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,6,6> se3<tDataType>::JlInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,6,6> se3<tDataType,tNumDimensions,tNumTangentSpaces>::JlInv() {
 
     so3<tDataType> omega(th_);
 
@@ -346,8 +349,8 @@ Eigen::Matrix<tDataType,6,6> se3<tDataType>::JlInv() {
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jr() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,6,6> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Jr() {
 
     so3<tDataType> omega(th_);
 
@@ -362,8 +365,8 @@ Eigen::Matrix<tDataType,6,6> se3<tDataType>::Jr() {
 
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,6,6> se3<tDataType>::JrInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,6,6> se3<tDataType,tNumDimensions,tNumTangentSpaces>::JrInv() {
     
     so3<tDataType> omega(th_);
 
@@ -379,8 +382,8 @@ Eigen::Matrix<tDataType,6,6> se3<tDataType>::JrInv() {
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-bool se3<tDataType>::isElement(const Mat4d& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool se3<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Mat4d& data) {
 
     bool is_element = true;
      
@@ -398,8 +401,8 @@ bool se3<tDataType>::isElement(const Mat4d& data) {
 /////////////////////////////////////////////////
 //                  Private Functions
 /////////////////////////////////////////////////
-template< typename tDataType>
-Eigen::Matrix<tDataType,3,3> se3<tDataType>::Bl(const Eigen::Matrix<tDataType, 6,1>& u) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Bl(const Eigen::Matrix<tDataType, 6,1>& u) {
 
 Eigen::Matrix<tDataType,3,3> m;
 Eigen::Map<const Eigen::Matrix<tDataType,3,1>> p(u.data());
@@ -429,8 +432,8 @@ return m;
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,3,3> se3<tDataType>::Br(const Eigen::Matrix<tDataType, 6,1>& u) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se3<tDataType,tNumDimensions,tNumTangentSpaces>::Br(const Eigen::Matrix<tDataType, 6,1>& u) {
 
 Eigen::Matrix<tDataType,3,3> m;
 Eigen::Map<const Eigen::Matrix<tDataType,3,1>> p(u.data());

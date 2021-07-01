@@ -8,13 +8,16 @@ namespace lie_groups {
 
 constexpr double kso2_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template< typename tDataType = double>
+template <typename tDataType=double, int tNumDimensions=1, int tNumTangentSpaces=1>
 class so2  {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::so2 the number of tangent spaces must be 1.");
+static_assert(tNumDimensions == 1, "lie_groups::so2 the number of dimensions must be 1.");
 
 public:
 
-static constexpr unsigned int dim_ = 1;
-static constexpr unsigned int size1_ = 1;
+static constexpr unsigned int dim_ = tNumDimensions;
+static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
 
 typedef Eigen::Matrix<tDataType,1,1> Mat1d;
@@ -129,7 +132,7 @@ static Mat2d Exp(const Mat1d &data);
  * Computes the exponential of the element of the Lie algebra.
  * @return The data associated to the group element.
  */
-Mat2d Exp(){ return so2<tDataType>::Exp(this->data_);}
+Mat2d Exp(){ return so2<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(this->data_);}
 
 /**
  * Computes the logaritm of the element of the Lie algebra.
@@ -249,15 +252,15 @@ static bool isElement(const Mat2d& data);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-so2<tDataType>::so2(const Eigen::Matrix<tDataType,2,2>& data, bool verify) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+so2<tDataType,tNumDimensions,tNumTangentSpaces>::so2(const Eigen::Matrix<tDataType,2,2>& data, bool verify) {
 
     if(verify)
     {
         if (isElement(data) )
             data_(0) = data(1,0);
         else {
-            std::cerr << "so2<tDataType>::Constructor - Input data not valid. Setting to identity element" << std::endl;
+            std::cerr << "so2::Constructor - Input data not valid. Setting to identity element" << std::endl;
             data_ = Mat1d::Zero();
         }
     }
@@ -268,24 +271,24 @@ so2<tDataType>::so2(const Eigen::Matrix<tDataType,2,2>& data, bool verify) {
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,2,2> so2<tDataType>::Exp(const Mat1d &data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,2,2> so2<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(const Mat1d &data) {
     Mat2d m;
     m << cos(data(0)), -sin(data(0)), sin(data(0)), cos(data(0));
     return m;
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,1,1> so2<tDataType>::Log(const Mat2d& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,1,1> so2<tDataType,tNumDimensions,tNumTangentSpaces>::Log(const Mat2d& data) {
     Mat1d m;
     m(0) = atan2(data(1,0),data(0,0));
     return m;
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-bool so2<tDataType>::isElement(const Mat2d& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool so2<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Mat2d& data) {
 
     if ( (data.transpose() + data).norm() >= kso2_threshold_) {
         return false;

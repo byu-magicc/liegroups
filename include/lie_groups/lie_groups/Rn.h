@@ -11,24 +11,27 @@ namespace lie_groups {
 
 constexpr double kRn_threshold_ = 1e-7;
 
-template <typename tDataType=double, int N=2>
-class Rn : public GroupBase<Rn<tDataType, N>, rn<tDataType,N>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType>{
+template <typename tDataType=double, int tNumDimensions=2, int tNumTangentSpaces=1>
+class Rn : public GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType>{
+
+static_assert(tNumTangentSpaces > 0, "lie_groups::Rn the number of tangent spaces must be greater than 0.");
+
 
 public:
 
 
-
-static constexpr unsigned int dim_ = N;
-static constexpr unsigned int size1_ = N;
+static constexpr unsigned int num_tangent_spaces_ = tNumTangentSpaces;
+static constexpr unsigned int dim_ = tNumDimensions;
+static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
-typedef GroupBase<Rn<tDataType, N>, rn<tDataType,N>, Eigen::Matrix<tDataType,N,1>,Eigen::Matrix<tDataType,N,1>, tDataType> Base; 
-typedef rn<tDataType,N> Algebra;
+typedef GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType> Base; 
+typedef rn<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef Abelian GroupType;
-typedef Eigen::Matrix<tDataType,N,1> MatNd;
+typedef Eigen::Matrix<tDataType,tNumDimensions,1> MatNd;
 using Base::BoxPlus;
 using Base::BoxMinus;
 
-Eigen::Matrix<tDataType,N,1> data_;
+Eigen::Matrix<tDataType,tNumDimensions,1> data_;
 
 /**
  * Default constructor. Initializes group element to identity.
@@ -91,7 +94,7 @@ static Rn Identity(){return Rn();}
  * Returns the matrix adjoint map.
  * For this Lie group it is the identity map.
  */ 
-Eigen::Matrix<tDataType,N,N> Adjoint(){return Eigen::Matrix<tDataType,N,N>::Identity();}
+Eigen::Matrix<tDataType,dim_,dim_> Adjoint(){return Eigen::Matrix<tDataType,dim_,dim_>::Identity();}
 
 /**
  * Computes the log of the element.

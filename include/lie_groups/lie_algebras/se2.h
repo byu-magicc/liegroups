@@ -8,8 +8,12 @@ namespace lie_groups {
 
 constexpr double kse2_threshold_=1e-7; /** < If two values are within this threshold, they are considered equal.*/
 
-template< typename tDataType = double>
+template <typename tDataType=double, int tNumDimensions=3, int tNumTangentSpaces=1>
 class se2  {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::se2 the number of tangent spaces must be 1.");
+static_assert(tNumDimensions == 3, "lie_groups::se2 the number of dimensions must be 3.");
+
 
 public:
 
@@ -21,10 +25,10 @@ typedef Eigen::Matrix<tDataType,3,1> Vec3d;
 typedef Eigen::Matrix<tDataType,3,3> Mat3d;
 typedef Eigen::Matrix<tDataType,2,2> Mat2d;
 
-static constexpr unsigned int dim_ = 3;
+static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int dim_t_vel_=2; /** < The dimension of the translational velocity */
 static constexpr unsigned int dim_a_vel_=1; /** < The dimension of the angular velocity */
-static constexpr unsigned int size1_ = 3;
+static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
 
 
@@ -271,19 +275,19 @@ Mat2d Dr(){return Dr(th_(0));}
 //                    Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //---------------------------------------------------------------------
-template< class tDataType>
-se2<tDataType>::se2(const Eigen::Matrix<tDataType,3,3>& data, bool verify) : p_(data_.data()), th_(data_.data()+2) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+se2<tDataType,tNumDimensions,tNumTangentSpaces>::se2(const Eigen::Matrix<tDataType,3,3>& data, bool verify) : p_(data_.data()), th_(data_.data()+2) {
 
     if(verify)
     {
         
-        if (se2<tDataType>::isElement(data)) {
+        if (se2<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(data)) {
             data_(0) = data(0,2);
             data_(1) = data(1,2);
             data_(2) = data(1,0);
         }
         else {
-            std::cerr << "se2<tDataType>::Constructor - Input data not valid. Setting to identity element" << std::endl;
+            std::cerr << "se2::Constructor - Input data not valid. Setting to identity element" << std::endl;
             data_ = Eigen::Matrix<tDataType,3,1>::Zero();
         }
     }
@@ -296,8 +300,8 @@ se2<tDataType>::se2(const Eigen::Matrix<tDataType,3,3>& data, bool verify) : p_(
 }
 
 //---------------------------------------------------------------------
-template< typename tDataType>
-Eigen::Matrix<tDataType,3,3> se2<tDataType>::Exp(const Eigen::Matrix<tDataType,3,1>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Exp(const Eigen::Matrix<tDataType,3,1>& data) {
     
     Eigen::Matrix<tDataType,3,3> m;
     m.block(0,0,2,2) << cos(data(2)), - sin(data(2)), sin(data(2)), cos(data(2));
@@ -308,8 +312,8 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::Exp(const Eigen::Matrix<tDataType,3
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,3,1> se2<tDataType>::Log(const Eigen::Matrix<tDataType,3,3>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,1> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Log(const Eigen::Matrix<tDataType,3,3>& data) {
     Eigen::Matrix<tDataType,3,1> u;
     u(2) = atan2(data(1,0),data(0,0)); // Compute the angle
     Eigen::Matrix<tDataType,2,2> wl = Wl(u(2));
@@ -318,8 +322,8 @@ Eigen::Matrix<tDataType,3,1> se2<tDataType>::Log(const Eigen::Matrix<tDataType,3
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,3,3> se2<tDataType>::Jl() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Jl() {
 
     Eigen::Matrix<tDataType,3,3> m;
     m.setIdentity();
@@ -330,8 +334,8 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::Jl() {
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,3,3> se2<tDataType>::JlInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se2<tDataType,tNumDimensions,tNumTangentSpaces>::JlInv() {
 
     Eigen::Matrix<tDataType,2,2> w_inv = (this->Wl()).inverse();
     Eigen::Matrix<tDataType,3,3> m;
@@ -343,8 +347,8 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::JlInv() {
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,3,3> se2<tDataType>::Jr() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Jr() {
 
     Eigen::Matrix<tDataType,3,3> m;
     m.setIdentity();
@@ -355,8 +359,8 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::Jr() {
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,3,3> se2<tDataType>::JrInv() {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,3,3> se2<tDataType,tNumDimensions,tNumTangentSpaces>::JrInv() {
     
     Eigen::Matrix<tDataType,2,2> w_inv = (this->Wr()).inverse();
     Eigen::Matrix<tDataType,3,3> m;
@@ -368,8 +372,8 @@ Eigen::Matrix<tDataType,3,3> se2<tDataType>::JrInv() {
 }
 
 //---------------------------------------------------------------------
-template< class tDataType>
-bool se2<tDataType>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool se2<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
 
     bool is_element = true;
      
@@ -387,76 +391,76 @@ bool se2<tDataType>::isElement(const Eigen::Matrix<tDataType,3,3>& data) {
 //--------------------------------------------------------
 //                  Private functions
 //--------------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wl(const tDataType th) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,2,2> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Wl(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
     if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (1.0-cos(th))/th;
         tDataType b = sin(th)/th;
-        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity() + se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity() + se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
     
 return m;
 }
 
 //---------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,2,2> se2<tDataType>::Wr(const tDataType th) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,2,2> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Wr(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
     if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (cos(th)-1.0)/th;
         tDataType b = sin(th)/th;
-        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity() - se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity() - se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
     
 return m;
 }
 
 //---------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dl(const tDataType th) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,2,2> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Dl(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
     if (fabs(th) > kse2_threshold_) {
         tDataType a = (cos(th)-1.0)/(th*th);
         tDataType b = (th-sin(th))/(th*th);
-        m = a*se2<tDataType>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(1) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 - se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 - se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
 
     return m;
 }
 
 //---------------------------------------------------
-template< class tDataType>
-Eigen::Matrix<tDataType,2,2> se2<tDataType>::Dr(const tDataType th) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+Eigen::Matrix<tDataType,2,2> se2<tDataType,tNumDimensions,tNumTangentSpaces>::Dr(const tDataType th) {
 
     Eigen::Matrix<tDataType,2,2> m;
 
     if (th > kse2_threshold_ || th < -kse2_threshold_) {
         tDataType a = (1.0-cos(th))/(th*th);
         tDataType b = (th-sin(th))/(th*th);
-        m = a*se2<tDataType>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
+        m = a*se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0)) + b*Eigen::Matrix<tDataType,2,2>::Identity();
     }
     else
     {
-        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 + se2<tDataType>::SSM(static_cast<tDataType>(1.0))*th/2.0;
+        m = Eigen::Matrix<tDataType,2,2>::Identity()*th/6.0 + se2<tDataType,tNumDimensions,tNumTangentSpaces>::SSM(static_cast<tDataType>(1.0))*th/2.0;
     }
 
     return m;

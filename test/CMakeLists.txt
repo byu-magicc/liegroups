@@ -32,63 +32,63 @@ include(CTest)
 
 # Lie Algebra Tests
 
-add_executable(rn_test
-lie_algebras/rn_test)
-target_link_libraries(rn_test gtest_main)
-add_test(NAME AllTestsInsrn_test COMMAND rn_test)
+# add_executable(rn_test
+# lie_algebras/rn_test)
+# target_link_libraries(rn_test gtest_main)
+# add_test(NAME AllTestsInsrn_test COMMAND rn_test)
 
 
-add_executable(so2_test
-lie_algebras/so2_test)
-target_link_libraries(so2_test gtest_main)
-add_test(NAME AllTestsInso2_test COMMAND so2_test)
+# add_executable(so2_test
+# lie_algebras/so2_test)
+# target_link_libraries(so2_test gtest_main)
+# add_test(NAME AllTestsInso2_test COMMAND so2_test)
 
-add_executable(se2_test
-lie_algebras/se2_test)
-target_link_libraries(se2_test gtest_main)
-add_test(NAME AllTestsInse2_test COMMAND se2_test)
+# add_executable(se2_test
+# lie_algebras/se2_test)
+# target_link_libraries(se2_test gtest_main)
+# add_test(NAME AllTestsInse2_test COMMAND se2_test)
 
-add_executable(so3_test
-lie_algebras/so3_test)
-target_link_libraries(so3_test gtest_main)
-add_test(NAME AllTestsInso3_test COMMAND so3_test)
+# add_executable(so3_test
+# lie_algebras/so3_test)
+# target_link_libraries(so3_test gtest_main)
+# add_test(NAME AllTestsInso3_test COMMAND so3_test)
 
-add_executable(se3_test
-lie_algebras/se3_test)
-target_link_libraries(se3_test gtest_main)
-add_test(NAME AllTestsInse3_test COMMAND se3_test)
+# add_executable(se3_test
+# lie_algebras/se3_test)
+# target_link_libraries(se3_test gtest_main)
+# add_test(NAME AllTestsInse3_test COMMAND se3_test)
 
 
 
 # Lie group tests
 
-add_executable(Rn_test
-lie_groups/Rn_test)
-target_link_libraries(Rn_test gtest_main)
-add_test(NAME AllTestsInsRn_test COMMAND Rn_test)
+# add_executable(Rn_test
+# lie_groups/Rn_test)
+# target_link_libraries(Rn_test gtest_main)
+# add_test(NAME AllTestsInsRn_test COMMAND Rn_test)
 
-add_executable(SO2_test
- lie_groups/SO2_test.cpp )
-target_link_libraries(SO2_test gtest_main)
-add_test(NAME AllTestsInSO2_test COMMAND SO2_test)
-
-
-add_executable(SO3_test
- lie_groups/SO3_test.cpp)
-target_link_libraries(SO3_test gtest_main)
-add_test(NAME AllTestsInSO3_test COMMAND SO3_test)
+# add_executable(SO2_test
+#  lie_groups/SO2_test.cpp )
+# target_link_libraries(SO2_test gtest_main)
+# add_test(NAME AllTestsInSO2_test COMMAND SO2_test)
 
 
-add_executable(SE2_test
- lie_groups/SE2_test.cpp)
-target_link_libraries(SE2_test gtest_main)
-add_test(NAME AllTestsInSE2_test COMMAND SE2_test)
+# add_executable(SO3_test
+#  lie_groups/SO3_test.cpp)
+# target_link_libraries(SO3_test gtest_main)
+# add_test(NAME AllTestsInSO3_test COMMAND SO3_test)
 
 
-add_executable(SE3_test
- lie_groups/SE3_test.cpp)
-target_link_libraries(SE3_test gtest_main)
-add_test(NAME AllTestsInSE3_test COMMAND SE3_test)
+# add_executable(SE2_test
+#  lie_groups/SE2_test.cpp)
+# target_link_libraries(SE2_test gtest_main)
+# add_test(NAME AllTestsInSE2_test COMMAND SE2_test)
+
+
+# add_executable(SE3_test
+#  lie_groups/SE3_test.cpp)
+# target_link_libraries(SE3_test gtest_main)
+# add_test(NAME AllTestsInSE3_test COMMAND SE3_test)
 
 # State test
 

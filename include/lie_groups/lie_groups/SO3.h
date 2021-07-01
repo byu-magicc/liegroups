@@ -11,19 +11,22 @@ namespace lie_groups {
 
 constexpr double kSO3_threshold_ = 1e-6;
 
-template<typename tDataType=double, int tN=3>
-class SO3 : public GroupBase<SO3<tDataType>,so3<tDataType>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> {
+template <typename tDataType=double, int tNumDimensions=3, int tNumTangentSpaces=1>
+class SO3 : public GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> {
+
+static_assert(tNumTangentSpaces == 1, "lie_groups::SO3 the number of tangent spaces must be 1.");
+
 
 public:
 
 typedef Eigen::Matrix<tDataType,3,1> Vec3d;
 typedef Eigen::Matrix<tDataType,3,3> Mat3d;
 
-static constexpr unsigned int dim_ = 3;
+static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 3;
-typedef GroupBase<SO3<tDataType>,so3<tDataType>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> Base;
-typedef so3<tDataType> Algebra;
+typedef GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> Base;
+typedef so3<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 using Base::BoxPlus;
 using Base::BoxMinus;
@@ -141,8 +144,8 @@ static bool isElement(const  Mat3d& data);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                    Definitions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-template<typename tDataType, int tN>
-SO3<tDataType,tN>::SO3(const  Eigen::Matrix<tDataType,3,3> & data, bool verify) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+SO3<tDataType,tNumDimensions,tNumTangentSpaces>::SO3(const  Eigen::Matrix<tDataType,3,3> & data, bool verify) {
 
     // First verify that it is a proper group element.
     if (verify ) {
@@ -159,8 +162,8 @@ SO3<tDataType,tN>::SO3(const  Eigen::Matrix<tDataType,3,3> & data, bool verify) 
 
 
 //----------------------------------------------------------
-template<typename tDataType, int tN>
-bool SO3<tDataType,tN>::isElement(const  Eigen::Matrix<tDataType,3,3>& data) {
+template <typename tDataType, int tNumDimensions, int tNumTangentSpaces>
+bool SO3<tDataType,tNumDimensions,tNumTangentSpaces>::isElement(const  Eigen::Matrix<tDataType,3,3>& data) {
     return (data.transpose()*data -  Mat3d::Identity()).norm() < kSO3_threshold_;
 }
 
