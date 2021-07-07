@@ -11,8 +11,13 @@ namespace lie_groups {
 
 constexpr double kRn_threshold_ = 1e-7;
 
+/**
+ * 
+ * Note. If the number of tangent spaces is greater than 1, than the group and algebra are not fully supported.
+ */ 
+
 template <typename tDataType=double, int tNumDimensions=2, int tNumTangentSpaces=1>
-class Rn : public GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType>{
+class Rn : public GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType>{
 
 static_assert(tNumTangentSpaces > 0, "lie_groups::Rn the number of tangent spaces must be greater than 0.");
 
@@ -24,7 +29,7 @@ static constexpr unsigned int num_tangent_spaces_ = tNumTangentSpaces;
 static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
-typedef GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType> Base; 
+typedef GroupBase<Rn<tDataType, tNumDimensions,tNumTangentSpaces>, rn<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,tNumDimensions,1>,Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, Eigen::Matrix<tDataType,tNumDimensions*tNumTangentSpaces,1>, tDataType> Base; 
 typedef rn<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef Abelian GroupType;
 typedef Eigen::Matrix<tDataType,tNumDimensions,1> MatNd;

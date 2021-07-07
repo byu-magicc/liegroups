@@ -30,6 +30,8 @@ static constexpr unsigned int dim_t_vel_=2; /** < The dimension of the translati
 static constexpr unsigned int dim_a_vel_=1; /** < The dimension of the angular velocity */
 static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
+static constexpr unsigned int total_num_dim_ = tNumTangentSpaces*tNumDimensions;
+
 
 
 /**

@@ -12,7 +12,7 @@ namespace lie_groups {
 
 constexpr double kSE3_threshold_ = 1e-6;
 template <typename tDataType=double, int tNumDimensions=6, int tNumTangentSpaces=1>
-class SE3 : public GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> {
+class SE3 : public GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> {
 
 static_assert(tNumTangentSpaces == 1, "lie_groups::SE3 the number of tangent spaces must be 1.");
 
@@ -33,7 +33,7 @@ static constexpr unsigned int size2_ = 4;
 typedef se3<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 typedef so3<tDataType> RotAlgebra;
-typedef GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> Base; 
+typedef GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> Base; 
 using Base::BoxPlus;
 using Base::BoxMinus;
 

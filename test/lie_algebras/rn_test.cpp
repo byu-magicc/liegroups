@@ -81,10 +81,14 @@ ASSERT_EQ(group::Vee(u4.Wedge()),u4.data_) << "Error with vee function";
 Eigen::Matrix<tDataType,TotalDimensions,1> v1 = Eigen::Matrix<tDataType,TotalDimensions,1>::Random();
 rn<tDataType,kN,NumTangentSpaces> u5(v1);
 
-ASSERT_EQ(u5.Exp(), v1) << "Error with exp function";
+rn<tDataType,kN,NumTangentSpaces> u5_1;
+u5_1.data_.setZero();
+u5_1.data_.block(0,0,kN,1) = u5.data_.block(0,0,kN,1);
+
+ASSERT_EQ(u5.Exp(), v1.block(0,0,kN,1)) << "Error with exp function";
 
 // Log test
-ASSERT_LT((rn<tDataType,kN,NumTangentSpaces>::Log(u5.Exp())-u5.data_).norm(),krn_threshold_) << "Error with log function";
+ASSERT_LT((rn<tDataType,kN,NumTangentSpaces>::Log(u5.Exp())-u5_1.data_).norm(),krn_threshold_) << "Error with log function";
 
 // Norm test
 Eigen::Matrix<tDataType,TotalDimensions,1> v2 = Eigen::Matrix<tDataType,TotalDimensions,1>::Random();

@@ -18,17 +18,23 @@ struct NonAbelian{};
 
 
 
-template<typename Group, typename Algebra, typename Mat_G, typename Mat_C, typename tDataType = double>
+template<typename _Group, typename _Algebra, typename _Mat_G, typename _Mat_A, typename _Mat_C, typename _DataType = double>
 class GroupBase{
 
 private:
 GroupBase()=default;
 ~GroupBase()=default;
-friend Group;
+friend _Group;
 
 public:
 
-typedef Mat_G Mat_A;                                               // Lie algebra matrix
+typedef _Group Group;
+typedef _Algebra Algebra;
+typedef _Mat_G Mat_G;
+typedef _Mat_A Mat_A;
+typedef _Mat_C Mat_C;
+typedef _DataType DataType;
+
 
 /**
  * Computes the log of the element.
@@ -44,7 +50,7 @@ Mat_C Log() const {return Algebra::Log(static_cast<const Group*>(this)->data_);}
 /**
  * Creates a random element
  */ 
-static Mat_G Random() {return Algebra::Exp(Mat_C::Random());}
+static Mat_G Random(const DataType scalar = static_cast<DataType>(1.0)) {return Algebra::Exp(Mat_C::Random()*scalar);}
 
 /**
  * Performs the OPlus operation 

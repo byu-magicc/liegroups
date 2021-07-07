@@ -19,6 +19,8 @@ public:
 static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
+static constexpr unsigned int total_num_dim_ = tNumTangentSpaces*tNumDimensions;
+
 
 typedef Eigen::Matrix<tDataType,1,1> Mat1d;
 typedef Eigen::Matrix<tDataType,2,2> Mat2d;
@@ -83,7 +85,7 @@ so2 Bracket(const so2& u) {return so2();}
  * Computes and returns the matrix adjoint representation of the Lie algebra.
  * This is always the Identity element.
  */ 
-Mat2d Adjoint() {return Mat2d::Identity();}
+Mat1d Adjoint() {return Mat1d::Zero();}
 
 /**
  * Computes the Wedge operation which maps an element of the Cartesian space to the Lie algebra.

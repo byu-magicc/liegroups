@@ -12,7 +12,7 @@ namespace lie_groups {
 constexpr double kSO3_threshold_ = 1e-6;
 
 template <typename tDataType=double, int tNumDimensions=3, int tNumTangentSpaces=1>
-class SO3 : public GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> {
+class SO3 : public GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> {
 
 static_assert(tNumTangentSpaces == 1, "lie_groups::SO3 the number of tangent spaces must be 1.");
 
@@ -25,7 +25,7 @@ typedef Eigen::Matrix<tDataType,3,3> Mat3d;
 static constexpr unsigned int dim_ = tNumDimensions;
 static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 3;
-typedef GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> Base;
+typedef GroupBase<SO3<tDataType,tNumDimensions,tNumTangentSpaces>,so3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>,tDataType> Base;
 typedef so3<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 using Base::BoxPlus;
