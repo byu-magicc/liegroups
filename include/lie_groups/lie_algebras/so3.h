@@ -24,6 +24,8 @@ typedef Eigen::Matrix<tDataType,3,3> Mat3d;
 static constexpr unsigned int dim_ = 3;
 static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 1;
+static constexpr unsigned int total_num_dim_ = tNumTangentSpaces*tNumDimensions;
+
 
 Vec3d data_; /** < The vector is translational velocity followed by angular velocity*/
 
@@ -79,7 +81,7 @@ so3 Bracket(const so3& u) {return so3(this->Adjoint()*u.data_);}
 
 /**
  * Computes and returns the matrix adjoint representation of the Lie algebra.
- * This is always the Identity element.
+ *
  */ 
 Mat3d Adjoint() {return this->Wedge();}
 

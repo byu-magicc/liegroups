@@ -60,7 +60,7 @@ so2<DataType> u3 = u1.Bracket(u2);
 ASSERT_EQ(u3.data_(0), 0) << "Error with bracket function";
 
 // Adjoint test
-ASSERT_EQ(u1.Adjoint(), Mat2d::Identity()) << "Error with Adjoint function";
+ASSERT_EQ(u1.Adjoint(), Mat1d::Zero()) << "Error with Adjoint function";
 
 // Wedge test
 Mat1d v = Mat1d::Random();

@@ -35,12 +35,12 @@ typedef G Group;
 typedef U Algebra;
 typedef G g_type_; /** < The group type .*/
 typedef U u_type_; /** < The algebra type .*/
-typedef Eigen::Matrix<tDataType,G::size1_, G::size2_> Mat_G;     /**< The group data type. */
-typedef Eigen::Matrix<tDataType,U::size1_, U::size2_> Mat_C;     /**< The Cartesian space data type. */
-typedef Mat_G Mat_A;                                             /**< The Lie algebra data type. */
+typedef Eigen::Matrix<tDataType,G::size1_, G::size2_> Mat_G;      /**< The group data type. */
+typedef Eigen::Matrix<tDataType,U::size1_, U::size2_> Mat_C;      /**< The Cartesian space data type. */
+typedef typename G::Base::Mat_A Mat_A;                            /**< The Lie algebra data type. */
 typedef typename G::GroupType StateType;
-typedef Eigen::Matrix<tDataType,2*G::dim_, G::dim_> Mat_Adj;     /**< The Adjoint data type. */
-typedef Eigen::Matrix<tDataType,2*U::size1_,1> Mat_SC;           /**< The State Cartesian space data type. */
+// typedef Eigen::Matrix<tDataType,G::dim_ + U::total_num_dim_, G::dim_> Mat_Adj;    /**< The Adjoint data type. */
+typedef Eigen::Matrix<tDataType,G::dim_ + U::total_num_dim_,1> Mat_SC;           /**< The State Cartesian space data type. */
 
 template<typename T>
 using StateTemplate = State<tG, T, tGroupDim, tNumTangentSpaces>;
@@ -48,7 +48,7 @@ using StateTemplate = State<tG, T, tGroupDim, tNumTangentSpaces>;
 template< typename T1, int T2, int T3>
 using GroupTemplate = tG<T1,T2,T3>;
 
-static constexpr unsigned int dim_ = G::dim_ + U::dim_;
+static constexpr unsigned int dim_ = G::dim_ + U::total_num_dim_;
 
 G g_;   /** < The pose of the object.*/
 U u_;   /** < The twist (velocity) of the object.*/
@@ -126,18 +126,18 @@ State operator * (const State& s){
 /**
  * Return a random state element
  */
-static State Random() {
-  return State(false,G::Random(),Mat_C::Random());
+static State Random(const DataType scalar = static_cast<DataType>(1.0)) {
+  return State(false,G::Random(scalar),Mat_C::Random()*scalar);
 } 
 
-/**
- * Returns the state adjoint
- */ 
-Mat_Adj Adjoint(){
-  Mat_Adj tmp;
-  tmp.block(0,0,G::dim_,G::dim_) = g_.Adjoint();
-  tmp.block(G::dim_,0,G::dim_,G::dim_) = u_.Adjoint();
-  return tmp;}
+// /**
+//  * Returns the state adjoint
+//  */ 
+// Mat_Adj Adjoint(){
+//   Mat_Adj tmp;
+//   tmp.block(0,0,G::dim_,G::dim_) = g_.Adjoint();
+//   tmp.block(G::dim_,0,U::total_num_dim_,G::dim_) = u_.Adjoint();
+//   return tmp;}
 
 /**
  * Performs the O-minus operation \f$ \log(S_2^{-1}*S_1) i.e. S_1-S_2\f$
@@ -149,8 +149,8 @@ Mat_Adj Adjoint(){
  */ 
 static Mat_SC OMinus(const Mat_G& g1_data,const Mat_G& g2_data,const Mat_C & u1_data,const Mat_C & u2_data)
 { Mat_SC tmp;
-  tmp.block(0,0,G::dim_,1) = G::OMinus(g1_data,g2_data);
-  tmp.block(G::dim_,0,U::dim_,1) = u1_data - u2_data;
+  tmp.block(0,0,G::dim_,1) = G::OMinus(g1_data,g2_data).block(0,0,G::dim_,1);
+  tmp.block(G::dim_,0,U::total_num_dim_,1) = u1_data - u2_data;
     return tmp;}
 
 /**
@@ -181,8 +181,8 @@ Mat_SC OMinus(const State& s2) const {
  */ 
 static State OPlus(const State& state, Mat_SC cartesian) {
   State tmp;
-  tmp.g_.data_ = state.g_.OPlus(cartesian.block(0,0,G::dim_,1));
-  tmp.u_.data_ = state.u_.data_ + cartesian.block(G::dim_,0,G::dim_,1);
+  tmp.g_.data_ = state.g_.OPlus(cartesian.block(0,0,U::total_num_dim_,1));
+  tmp.u_.data_ = state.u_.data_ +  cartesian.block(G::dim_,0,U::total_num_dim_,1);
   return tmp;
 }
 

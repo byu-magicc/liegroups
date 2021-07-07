@@ -26,6 +26,7 @@ static constexpr unsigned int dim_t_vel_=3; /** < The dimension of the translati
 static constexpr unsigned int dim_a_vel_=3; /** < The dimension of the angular velocity */
 static constexpr unsigned int size1_ = tNumDimensions;
 static constexpr unsigned int size2_ = 1;
+static constexpr unsigned int total_num_dim_ = tNumTangentSpaces*tNumDimensions;
 typedef Eigen::Matrix<tDataType,3,1> Vec3d;
 typedef Eigen::Matrix<tDataType,6,1> Vec6d;
 typedef Eigen::Matrix<tDataType,3,3> Mat3d;

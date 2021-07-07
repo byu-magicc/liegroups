@@ -14,7 +14,7 @@ namespace lie_groups {
 constexpr double kSO2_threshold_ = 1e-7;
 
 template <typename tDataType=double, int tNumDimensions=1, int tNumTangentSpaces=1>
-class SO2 : public GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>>{
+class SO2 : public GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>>{
 
 static_assert(tNumTangentSpaces == 1, "lie_groups::SO2 the number of tangent spaces must be greater than 0.");
 
@@ -30,7 +30,7 @@ static constexpr unsigned int size1_ = 2;
 static constexpr unsigned int size2_ = 2;
 typedef so2<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef Abelian GroupType;
-typedef GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>> Base;
+typedef GroupBase<SO2<tDataType,tNumDimensions,tNumTangentSpaces>,so2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,2,2>, Eigen::Matrix<tDataType,1,1>> Base;
 using Base::BoxPlus;
 using Base::BoxMinus;
 

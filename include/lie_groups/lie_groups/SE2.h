@@ -14,7 +14,7 @@ constexpr double kSE2_threshold_ = 1e-6;
 
 // The GroupBase template needs the Group, Algebra, Group Data, and Cartesian Data
 template <typename tDataType=double, int tNumDimensions=3, int tNumTangentSpaces=1>
-class SE2 : public GroupBase<SE2<tDataType,tNumDimensions,tNumTangentSpaces>,se2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>, tDataType>{
+class SE2 : public GroupBase<SE2<tDataType,tNumDimensions,tNumTangentSpaces>,se2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>, tDataType>{
 
 static_assert(tNumTangentSpaces == 1, "lie_groups::SE2 the number of tangent spaces must be 1.");
 
@@ -32,7 +32,7 @@ static constexpr unsigned int dim_pos_=2;
 static constexpr unsigned int dim_rot_=1; /** < The dimension of the rotation */
 static constexpr unsigned int size1_ = 3;
 static constexpr unsigned int size2_ = 3;
-typedef GroupBase<SE2<tDataType,tNumDimensions,tNumTangentSpaces>,se2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>, tDataType> Base; 
+typedef GroupBase<SE2<tDataType,tNumDimensions,tNumTangentSpaces>,se2<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,3>, Eigen::Matrix<tDataType,3,1>, tDataType> Base; 
 typedef se2<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 

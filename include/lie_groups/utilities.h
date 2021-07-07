@@ -7,7 +7,7 @@ namespace lie_groups { namespace utilities
 {
 
 
-template< template<typename , int > class tG>
+template< template<typename , int, int > class tG>
 struct GroupIsSEN {
     static constexpr bool value = false;
 };
@@ -24,7 +24,7 @@ struct GroupIsSEN<lie_groups::SE3> {
 
 //---------------------------------------------------------------------------
 
-template< template<typename , int > class tG>
+template< template<typename , int, int > class tG>
 struct GroupIsSON {
     static constexpr bool value = false;
 };
@@ -43,7 +43,7 @@ struct GroupIsSON<lie_groups::SO3> {
 //---------------------------------------------------------------------------
 
 
-template< template<typename , int > class tG>
+template< template<typename , int, int > class tG>
 struct GroupIsRN {
     static constexpr bool value = false;
 };
