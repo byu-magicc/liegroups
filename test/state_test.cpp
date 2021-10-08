@@ -185,8 +185,8 @@ TypeParam state1 = TypeParam::Random();
 TypeParam state2 = TypeParam::Random();
 TypeParam state3 = state1*state2;
 
-typename TypeParam::Mat_SC data2 = state3.OMinus(state1);
-typename TypeParam::Mat_SC data2_correct;
+typename TypeParam::Vec_SC data2 = state3.OMinus(state1);
+typename TypeParam::Vec_SC data2_correct;
 data2_correct.block(0,0,TypeParam::g_type_::dim_,1) = state2.g_.Log().block(0,0,TypeParam::g_type_::dim_,1);
 data2_correct.block(TypeParam::g_type_::dim_,0,TypeParam::u_type_::total_num_dim_,1) = state2.u_.data_;
 
@@ -203,6 +203,61 @@ ASSERT_LE( (state4.g_.data_ - state3.g_.data_).norm(), 1e-10);
 ASSERT_LE( (state4.u_.data_ - state3.u_.data_).norm(), 1e-10);
 
 }
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+//                               Jacobian Tests
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+TYPED_TEST(BoxOTest, Jacobians) {
+
+
+TypeParam state = TypeParam::Random(10);
+typename TypeParam::Vec_SC tau = TypeParam::State::Log(state);
+TypeParam state_test = TypeParam::State::Exp(tau);
+
+ASSERT_LT( TypeParam::OMinus(state,state_test).norm(), 1e-9);
+
+typename TypeParam::Mat_SC jacobian, Jr, Jr_inv, Jl, Jl_inv;
+typename TypeParam::Vec_SC perturbation;
+jacobian.setZero();
+perturbation.setZero();
+double dt = 1e-7;
+
+Jr = TypeParam::Jr( tau );
+Jr_inv = TypeParam::JrInv( tau);
+Jl = TypeParam::Jl( -tau );             // Negate them so that Jl(- tau) = Jr(tau)
+Jl_inv = TypeParam::JlInv( -tau );      // Negate them so that Jl(- tau) = Jr(tau)
+
+// Right Jacobian
+for (size_t ii = 0; ii < perturbation.rows(); ++ii) {
+    perturbation.setZero();
+    perturbation(ii,0) = dt;
+
+    typename TypeParam::State state_perturbed = TypeParam::Exp(tau+perturbation);
+    // std::cout << "sp: " << std::endl << state_perturbed.g_.data_ << std::endl;
+    // std::cout << "s: " << std::endl << state.g_.data_ << std::endl;
+
+    jacobian.block(0,ii,TypeParam::dim_,1) = TypeParam::State::OMinus( state_perturbed ,state) / dt;
+
+}
+
+// std::cout << "Jr: " << std::endl << Jr << std::endl;
+// std::cout << "Jr est: " << std::endl << jacobian << std::endl;
+
+ASSERT_LT( (Jr - jacobian).norm(), 1e-6);
+ASSERT_LT( (Jl - jacobian).norm(), 1e-6);
+ASSERT_LT( (Jr_inv - jacobian.inverse()).norm(), 1e-6);
+ASSERT_LT( (Jl_inv - jacobian.inverse()).norm(), 1e-6);
+
+
+}
+
+
+
+
+
 
 
 } // namespace lie_groups

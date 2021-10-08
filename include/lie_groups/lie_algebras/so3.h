@@ -280,7 +280,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Ex
 
     if (th < static_cast<tDataType>(kso3_threshold_)) { // See if the element is close to the identity element.
         // m.setIdentity();
-        m = Mat3d::Identity()+ Wedge(data);
+        m = Mat3d::Identity()+ Wedge(data) + Wedge(data)*Wedge(data)/static_cast<tDataType>(2.0);
     } else {  // Use Rodriguez formula 
         tDataType a = sin(th)/th;
         tDataType b = (static_cast<tDataType>(1.0)-cos(th))/pow(th,2);
@@ -301,7 +301,10 @@ Eigen::Matrix<tDataType,3,1> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Lo
     tDataType t = data.trace();
     if ( (t-3.0) <= kso3_threshold_ && (t-3.0) >= - kso3_threshold_) { // Rotation matrix is close to identity
     
-        u.setZero();
+        Mat3d D = data - Mat3d::Identity();
+        u = so3<tDataType>::Vee( D - D*D/static_cast<tDataType>(2.0) + D*D*D/static_cast<tDataType>(3.0));
+
+        // u.setZero();
 
     } else { // Use Rodriguez formula 
 
@@ -321,7 +324,7 @@ Eigen::Matrix<tDataType,3,3> so3<tDataType,tNumDimensions,tNumTangentSpaces>::Jl
     tDataType th = data_.norm();
 
     if (th < static_cast<tDataType>(kso3_threshold_)) { // See if the element is close to the identity element.
-        m = Mat3d::Identity() + this->Wedge()/static_cast<tDataType>(2.0);
+        m = Mat3d::Identity() + this->Wedge()/static_cast<tDataType>(2.0) +this->Wedge()*this->Wedge()/static_cast<tDataType>(6.0);
     } else {   
         tDataType a = (static_cast<tDataType>(1.0)-cos(th))/pow(th,2);
         tDataType b = (th-sin(th))/pow(th,3);
