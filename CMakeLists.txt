@@ -12,4 +12,4 @@ find_package(Eigen3)
 include_directories(include
 ${EIGEN3_INCLUDE_DIR})
 
-# add_subdirectory(test)
+add_subdirectory(test)

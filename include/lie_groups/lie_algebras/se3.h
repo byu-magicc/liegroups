@@ -413,7 +413,7 @@ tDataType th = w.norm();
 
 
 if (th <= kse3_threshold_) { // Close to the identity element;
-    m = Eigen::Matrix<tDataType,3,3>::Identity() + SSM(p)/static_cast<tDataType>(2.0);
+    m = SSM(p)/static_cast<tDataType>(2.0) + (SSM(w)*SSM(p)-SSM(p)*SSM(w))/static_cast<tDataType>(6.0);
 } else {
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);
@@ -444,7 +444,7 @@ tDataType th = w.norm();
 
 
 if (th <= kse3_threshold_) { // Close to the identity element;
-    m = Eigen::Matrix<tDataType,3,3>::Identity() - SSM(p)/static_cast<tDataType>(2.0);
+    m = - SSM(p)/static_cast<tDataType>(2.0) + (SSM(w)*SSM(p)-SSM(p)*SSM(w))/static_cast<tDataType>(6.0);
 } else {
     tDataType th2 = pow(th,2);
     tDataType th3 = pow(th,3);

@@ -223,7 +223,7 @@ typename TypeParam::Mat_SC jacobian, Jr, Jr_inv, Jl, Jl_inv;
 typename TypeParam::Vec_SC perturbation;
 jacobian.setZero();
 perturbation.setZero();
-double dt = 1e-7;
+double dt = 1e-8;
 
 Jr = TypeParam::Jr( tau );
 Jr_inv = TypeParam::JrInv( tau);
@@ -248,8 +248,8 @@ for (size_t ii = 0; ii < perturbation.rows(); ++ii) {
 
 ASSERT_LT( (Jr - jacobian).norm(), 1e-6);
 ASSERT_LT( (Jl - jacobian).norm(), 1e-6);
-ASSERT_LT( (Jr_inv - jacobian.inverse()).norm(), 1e-6);
-ASSERT_LT( (Jl_inv - jacobian.inverse()).norm(), 1e-6);
+ASSERT_LT( (Jr_inv - jacobian.inverse()).norm(), 1e-5);
+ASSERT_LT( (Jl_inv - jacobian.inverse()).norm(), 1e-5);
 
 
 }

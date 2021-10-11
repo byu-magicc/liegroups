@@ -92,8 +92,8 @@ include(CTest)
 
 # State test
 
-# add_executable(State_test
-# state_test.cpp)
-# target_link_libraries(State_test gtest_main)
-# add_test(NAME AllTestsInState_test COMMAND State_test)
+add_executable(State_test
+state_test.cpp)
+target_link_libraries(State_test gtest_main)
+add_test(NAME AllTestsInState_test COMMAND State_test)
 
