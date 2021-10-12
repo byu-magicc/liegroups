@@ -7,6 +7,7 @@
 #include "lie_groups/lie_algebras/se2.h"
 #include "lie_groups/lie_algebras/so2.h"
 #include "lie_groups/lie_groups/group_base.h"
+#include "lie_groups/lie_groups/SO2.h"
 
 namespace lie_groups {
 
@@ -37,6 +38,7 @@ typedef se2<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 
 typedef so2<tDataType> RotAlgebra;
+typedef SO2<tDataType> RotGroup;
 using Base::BoxPlus;
 using Base::BoxMinus;
 

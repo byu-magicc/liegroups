@@ -6,6 +6,7 @@
 
 #include "lie_groups/lie_algebras/se3.h"
 #include "lie_groups/lie_algebras/so3.h"
+#include "lie_groups/lie_groups/SO3.h"
 #include "lie_groups/lie_groups/group_base.h"
 
 namespace lie_groups {
@@ -33,6 +34,7 @@ static constexpr unsigned int size2_ = 4;
 typedef se3<tDataType,tNumDimensions,tNumTangentSpaces> Algebra;
 typedef NonAbelian GroupType;
 typedef so3<tDataType> RotAlgebra;
+typedef SO3<tDataType> RotGroup;
 typedef GroupBase<SE3<tDataType,tNumDimensions,tNumTangentSpaces>,se3<tDataType,tNumDimensions,tNumTangentSpaces>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,4,4>, Eigen::Matrix<tDataType,6,1>,tDataType> Base; 
 using Base::BoxPlus;
 using Base::BoxMinus;
